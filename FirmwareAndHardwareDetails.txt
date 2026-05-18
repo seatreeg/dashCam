@@ -44,7 +44,7 @@ Software
 Package Versions:
 	Languages
 		- python: 3.14.5
-	Standard Python Packackes
+	Standard Python Packages
 		- argparse
 		- csv
 		- math 
