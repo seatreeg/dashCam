@@ -1,0 +1,74 @@
+"""
+Note: I think this may be a bit minimal so I will be asking about this in the meeting 5/18/2026
+"""
+
+Dashcams:
+	-Garmin DC X310/Dash Cam X310/
+	-REDTIGER F7N TOUCH
+	-ROVE R2-4K DUAL
+	-GoPro HERO
+
+Firmware info
+	-Garmin DC X310:
+		Name: DC X310
+		Model: Dash Cam X310
+		Hardware: V9
+		Unit ID: 3513505261
+		Software Version: 2.80
+		Text Version: 2.80 (American English(
+		Voice Control: 1.04 (en_US)
+		GPS Firmware: 40.00.18
+	-REDTIGER F7N TOUCH:
+		Version (only stated): F7NT_V4.0.28_20250804
+	-ROVE R2-4K DUAL:
+		Model: ROVE R2-4K-DUAL
+		Serial Number: R2D0950622101
+		Software Version: R2-DUAL-07-01-2025-V14
+		Web: www.rovedashcam.com
+		WiFi: ROVE_R2-4K-DUAL_31d440
+		WiFi Password: 12345678
+	-GoPro HERO: 
+		Name: GP24722425
+		Product line: HERO
+		Firmware: v02.30.00
+		Serial No: C3544224722425
+		Read from exiftool (not on GoPro menu): H24.03.02.30.00 
+
+Other:
+	-OBDLink EX FORScan OBD Adaptor
+
+Software
+	-OBDwiz
+
+
+Package Versions:
+	Languages
+		- python: 3.14.5
+	Standard Python Packackes
+		- argparse
+		- csv
+		- math 
+		- re 
+		- struct 
+		- subprocess
+		- sys
+		- threading
+		- time	
+		- datetime
+		- pathlib.Path
+		- statistics.mean
+	Third Party Python Packages 
+		- Pillow: 12.2.0
+		- staticmap: 0.5.7
+	External Binaries
+		- ffmpeg: 8.1.1-full_build (Gyan.dev)
+		- ffprobe: 8.1.1-full_build (Gyan.dev)
+		- exiftool: 13.58
+
+
+Vehicle:
+	- 2023 TOYOTA 4RUNNER SR5
+
+
+
+	
