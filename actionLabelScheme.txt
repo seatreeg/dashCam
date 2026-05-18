@@ -1,0 +1,30 @@
+The current scheme for labeling driving behavior. You can think of this as a csv, where each bracketed number indicates a column. Descriptions beneath a column are mutually exclusive, while individual columns are not. For example, you can be turning left while accelerating, but you cant be turning left while turning right. Not this is the action CSV, not the measured qualities, so the speed modulation section deals with the act of changing speed, not the speed of the car itself in mph.
+
+domain descriptors
+--material [1] # this rarely changes, so it can be logged manually
+----paved 
+----earth 
+--guided [2] # this also rarely changes, so it can be logged manually
+----road (directional, as apposed to a parking lot or field)
+----parking lot
+----not constructed (field vs roads and parking lots)
+--legal mph (how fast you should be going) [3] # this will be derived automatically from the map, during paved sections. Parking lots and not constructed areas will be given an NA, even though parking lots vary from 5-15 and country driving is (generally) 55. since offroading and parking lot driving will likely be its own thing (if ever), this isn't much of a concern.
+
+
+driving behaviors 
+--speed modulation [3] #this is based on the brake light activation to separate cruise/accel and decel/stopped. The mph separates decel and stopped (0 vs not 0), but separating cruising from accelerating will need to be more subjective. This could be done with the change in mph rate, manually logged, or using the gear shifting behavior (slight speed changes dont activate gear
+----cruising
+----accelerating
+----active deceleration (brake light engaged, either hard braking or indicating stop)
+----stopped
+---->REMOVED< coasting (coasting, decelerating with no brake light) #maybe remove since its not very active, and hard to separate from cruising without cruise control, also i generally dont coast without applying the brakelight to warn drivers behind me 
+--non-forced turning [4] # following a winding road does not count as turning. This is based on the blinker direction, so the turn starts when you indicate a turn, and end when the car resets. U turns will have to be manually logged, and short intervals between the same turns will be merged as sometimes cars will reset the blinker when it shouldn't 
+----none
+----left
+----right
+----U
+--lane change [5] #this will be defined in the same way that turns are, the entire action will follow the blinker activity
+----none
+----left
+----right
+--open driving (offroad driving and not following lines in parking lots) [6]
