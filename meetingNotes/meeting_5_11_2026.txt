@@ -1,0 +1,45 @@
+# This is from last weeks meeting
+# basic update: I still need to do the additional repeat trip, and then document that one
+# planned drive: 5/19/2026 - 2:00AM
+# note that i use the horizontal line to separate the completed from the not
+# partially completed tasks will be commented on
+
+- document pipeline and upload.
+--- package version info
+
+
+
+- all of the technical info about each of the dashcams folder
+--- model, directory info, "unimportant info", such as firmware version info. ### dumb but may need to look into getting firmware version
+--- car and obd info
+
+
+# THE BELOW PARAGRAPH IS >PARTIAL<
+# STILL NEED TO RDS THE DATA
+# BUT NEW DATA WILL BE GATHERED SOON
+- document actual data, in terms of sort of roxogen, like we have for data packages
+--- folder in r package called /data where the rds files are stored
+--- the data i have is really data-raw/
+--- include the scripts of what is being done
+--- put the python script in there
+--- [document the structure, rather than dataset itself] document each cameras dataset
+--- for first step leave data raw in files
+
+-------------------- X_X -------------------- <= completion line, # notes if partial
+
+
+- do another run of a shorter drive where we have, downtown driving, slow driving 
+--- slowness makes gps flaws more apparent, buildings stress the gps more
+--- parking garage overkill
+
+
+- set route, do it 3 times
+--- also repeat that drive 3 times
+--- this week, put in a bunch of left turns.
+
+
+(left turns approximately 7 seconds)
+
+
+write the word loop
+L_O_O_P
