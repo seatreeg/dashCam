@@ -41,7 +41,7 @@ from staticmap import StaticMap, CircleMarker
 
 # input paths
 
-RAW_BASE = Path(r"D:\camdriveproj 5 10 2026\claudeDrive\drive cam\all raw")
+RAW_BASE = Path(r"D:\claudeDrive\drive cam\all raw")
 GOPRO_DIR    = RAW_BASE / "gopro" / "DCIM" / "100GOPRO"
 GARMIN_DIR  = RAW_BASE / "garmin" / "DCIM" / "105UNSVD"
 REDTIGER_DIR = RAW_BASE / "RedTiger" / "CARDV" / "Movie_F"
@@ -51,21 +51,23 @@ OBD_CSV      = RAW_BASE / "OBD" / "JTENU5JR8P6211096" / "CSVLog_20260426_010317.
 
 
 # output paths
-OUT_BASE = Path(r"D:\camdriveproj 5 10 2026\claudeDrive\drive cam\just_csvs")
+OUT_BASE = Path(r"D:\claudeDrive\drive cam\just_csvs")
 WORK             = OUT_BASE / "_work"
 GPS_DIR          = WORK / "gps"
 
 GARMIN_GPS_CSV   = GPS_DIR / "garmin_gps.csv"
 REDTIGER_GPS_CSV = GPS_DIR / "redtiger_gps.csv"
+REDTIGER_IMU_CSV = GPS_DIR / "redtiger_imu_per_sec.csv"
 ROVE_GPS_CSV     = GPS_DIR / "rove_gps.csv"
+ROVE_IMU_CSV     = GPS_DIR / "rove_imu_per_sec.csv"
 GOPRO_PER_SEC_CSV = GPS_DIR / "gopro_per_sec.csv"
 SYNC_CSV         = WORK / "trip_synced_1hz.csv"
 
 
 # external binaries
-FFMPEG   = r"C:\Users\coeno\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.1-full_build\bin\ffmpeg.exe"
-FFPROBE  = r"C:\Users\coeno\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.1-full_build\bin\ffprobe.exe"
-EXIFTOOL = r"C:\Users\coeno\AppData\Local\Programs\ExifTool\ExifTool.exe"
+FFMPEG   = r"C:\Users\trogi\bin\ffmpeg\ffmpeg-8.1-essentials_build\bin\ffmpeg.exe"
+FFPROBE  = r"C:\Users\trogi\bin\ffmpeg\ffmpeg-8.1-essentials_build\bin\ffprobe.exe"
+EXIFTOOL = r"C:\Users\trogi\AppData\Local\Programs\ExifTool\ExifTool.exe"
 
 
 # time and offset
@@ -406,10 +408,23 @@ def ddmm_to_decimal(v: float) -> float:
     return sign * (deg + minutes / 60.0)
 
 
+### $$$
+
+# RedTiger G-sensor lives in the freeGPS payload AFTER the device-id text, as
+# three little-endian int32 fields. Found empirically (the float region near
+# offset 84 is GPS-derived junk, NOT accel): offset 128 (longitudinal) tracks the
+# camera's own d(speed) with r = -0.34..-0.73 across clips and is ~0 when parked.
+# Values are COARSE gravity-compensated integer "G-force" (the quantity the
+# RedTiger app graphs), units uncertain (~tenths of g per count); range ~ +/-7.
+# Unlike GoPro/Rove this is gravity-removed (reads ~0 at rest, not ~1g), and the
+# vertical axis (offset 132) is unused (always 0 in all observed clips).
+REDTIGER_GFORCE_OFFS = (124, 128, 132)  # int32 LE: gx (lateral), gy (longitudinal), gz (vertical/unused)
+
 
 def parse_redtiger_chunk(buf: bytes):
     """
-    parse one 0x4000 byte freeGPS chunk into a row dict, or None if invalid
+    parse one 0x4000 byte freeGPS chunk into a row dict, or None if invalid.
+    Always includes the integer G-sensor (gx/gy/gz) regardless of GPS fix.
     """
     if len(buf) < 100 or buf[4:11] != b"freeGPS":
         return None
@@ -419,12 +434,17 @@ def parse_redtiger_chunk(buf: bytes):
     active  = chr(buf[72]) if buf[72] else "?"
     lat_hem = chr(buf[73]) if buf[73] else "?"
     lon_hem = chr(buf[74]) if buf[74] else "?"
+    if len(buf) >= REDTIGER_GFORCE_OFFS[2] + 4:
+        gx, gy, gz = (struct.unpack_from("<i", buf, o)[0] for o in REDTIGER_GFORCE_OFFS)
+    else:
+        gx = gy = gz = ""
     if active != "A":
         return {
             "active": active, "lat_hem": lat_hem, "lon_hem": lon_hem,
             "hour": hour, "minute": minute, "second": second,
             "year": year, "month": month, "day": day,
             "lat_deg": "", "lon_deg": "",
+            "gx": gx, "gy": gy, "gz": gz,
         }
     lat = ddmm_to_decimal(lat_raw)
     if lat_hem == "S":
@@ -437,6 +457,7 @@ def parse_redtiger_chunk(buf: bytes):
         "hour": hour, "minute": minute, "second": second,
         "year": year, "month": month, "day": day,
         "lat_deg": round(lat, 7), "lon_deg": round(lon, 7),
+        "gx": gx, "gy": gy, "gz": gz,
     }
 
 def parse_redtiger_clip(mp4_path: Path):
@@ -496,6 +517,36 @@ def extract_redtiger_gps():
         for r in all_rows:
             w.writerow(r)
     print(f"  [RedTiger] wrote {len(all_rows)} rows -> {REDTIGER_GPS_CSV.name}")
+
+
+def extract_redtiger_imu():
+    """
+    iterate RedTiger clips and write REDTIGER_IMU_CSV: 1Hz integer G-sensor,
+    same schema as GOPRO_PER_SEC_CSV (gyro_* empty -- the F7N has no gyro).
+    See REDTIGER_GFORCE_OFFS for the caveats: coarse, gravity-compensated, gz~0.
+    """
+    print("  [RedTiger-IMU] scanning Movie_F for G-sensor ...")
+    all_rows = []
+    for mp4 in sorted(REDTIGER_DIR.glob("*.MP4")):
+        rows = parse_redtiger_clip(mp4)  # reuses GPS chunk walk; rows carry gx/gy/gz
+        n_g = sum(1 for r in rows if r.get("gx") != "")
+        print(f"    {mp4.name:40s}  records={len(rows):3d}  gsensor={n_g:3d}")
+        all_rows.extend(rows)
+    fields = ["ts_utc", "clip", "t_sec",
+              "accel_x", "accel_y", "accel_z",
+              "gyro_x",  "gyro_y",  "gyro_z"]
+    with REDTIGER_IMU_CSV.open("w", newline="", encoding="utf-8") as fp:
+        w = csv.DictWriter(fp, fieldnames=fields)
+        w.writeheader()
+        for r in all_rows:
+            w.writerow({
+                "ts_utc": r.get("ts_utc", ""), "clip": r.get("clip", ""),
+                "t_sec": r.get("sample_idx", ""),
+                "accel_x": r.get("gx", ""), "accel_y": r.get("gy", ""),
+                "accel_z": r.get("gz", ""),
+                "gyro_x": "", "gyro_y": "", "gyro_z": "",
+            })
+    print(f"  [RedTiger-IMU] wrote {len(all_rows)} rows -> {REDTIGER_IMU_CSV.name}")
 
 
 
@@ -619,6 +670,151 @@ def extract_rove_gps():
         for r in all_rows:
             w.writerow(r)
     print(f"  [Rove] wrote {len(all_rows)} rows -> {ROVE_GPS_CSV.name}")
+
+
+### C2-Rove R2-4K Dual accelerometer extractor (SStarMeta high-rate track)
+
+### $$$
+
+
+"""
+The Rove writes THREE SStarMeta (ssmd) data tracks per clip:
+  - one with 1 frame      -> header/metadata blob
+  - one with ~60 frames   -> 1Hz GPS (parsed by parse_rove_clip above)
+  - one with ~1000 frames -> ~16.6Hz 3-axis accelerometer  <-- this extractor
+
+Each accelerometer sample is 12 bytes = 3x little-endian float32 (x, y, z).
+Values are in units of g (gravity reads ~1.0-1.1 at rest, e.g. (0.06,-1.11,0.15)).
+The Rove has NO gyroscope, so the gyro_* columns are emitted empty.
+
+NOTE ON UNITS: this CSV keeps the Rove's native units (g), whereas
+GOPRO_PER_SEC_CSV stores accel in m/s^2 (GoPro GPMF native). Multiply the Rove
+values by ~9.80665 to compare with GoPro. They are kept native here to avoid
+fabricating precision -- the sensor is uncalibrated (rest magnitude ~1.1g).
+
+CROSS-CAMERA IMU NOTE: all three IMU CSVs share this schema but the accel
+columns are NOT directly comparable:
+  - GoPro  (gopro_per_sec.csv):    raw 3-axis accel in m/s^2, includes gravity.
+  - Rove   (rove_imu_per_sec.csv): raw 3-axis accel in g, includes gravity.
+  - RedTiger (redtiger_imu_per_sec.csv): coarse integer gravity-compensated
+    "G-force" (~0 at rest), see REDTIGER_GFORCE_OFFS.
+Only the GoPro provides a gyroscope; Rove and RedTiger gyro_* columns are empty.
+"""
+
+ROVE_ACCEL_REC_SIZE = 12  # 3x float32 LE
+
+
+def get_duration_sec(mp4_path: Path) -> float:
+    """clip duration in seconds via ffprobe (0.0 if unavailable)."""
+    r = subprocess.run(
+        [FFPROBE, "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=nw=1:nk=1", str(mp4_path)],
+        capture_output=True, text=True, check=True,
+    )
+    try:
+        return float(r.stdout.strip())
+    except ValueError:
+        return 0.0
+
+
+def find_rove_accel_stream(mp4_path: Path):
+    """
+    return the index of the high-rate SStarMeta track (~16Hz, ~1000 frames/clip)
+    that carries the 3-axis accelerometer, or None.
+
+    of the 3 ssmd tracks, the GPS one has ~60 frames; the accel one has the most.
+    """
+    r = subprocess.run(
+        [FFPROBE, "-v", "error", "-show_streams", "-of", "compact",
+         "-show_entries", "stream=index,codec_type,codec_tag_string,nb_frames",
+         str(mp4_path)],
+        capture_output=True, text=True, errors="replace", check=True,
+    )
+    candidates = []
+    for line in r.stdout.splitlines():
+        fields = dict(p.split("=", 1) for p in line.split("|") if "=" in p)
+        if fields.get("codec_type") == "data" and fields.get("codec_tag_string") == "ssmd":
+            try:
+                nb = int(fields.get("nb_frames", "0"))
+            except ValueError:
+                nb = 0
+            candidates.append((int(fields["index"]), nb))
+    if not candidates:
+        return None
+    idx, nb = max(candidates, key=lambda t: t[1])
+    return idx if nb >= 300 else None  # guard: GPS track (~60) is not the accel track
+
+
+def parse_rove_accel(mp4_path: Path):
+    """
+    extract the high-rate SStarMeta stream via ffmpeg, parse 12-byte records
+    into a list of (ax, ay, az) float triplets (units: g). Empty list on failure.
+    """
+    stream_idx = find_rove_accel_stream(mp4_path)
+    if stream_idx is None:
+        return []
+    out_bin = GPS_DIR / f"{mp4_path.stem}_accel.bin"
+    subprocess.run(
+        [FFMPEG, "-y", "-loglevel", "error", "-i", str(mp4_path),
+         "-map", f"0:{stream_idx}", "-c", "copy", "-f", "data", str(out_bin)],
+        check=True,
+    )
+    data = out_bin.read_bytes()
+    out_bin.unlink()
+    n = len(data) // ROVE_ACCEL_REC_SIZE
+    return [struct.unpack_from("<3f", data, i * ROVE_ACCEL_REC_SIZE) for i in range(n)]
+
+
+def rove_clip_start_utc(mp4_path: Path):
+    """
+    derive the clip's UTC start time from its 1Hz GPS track (the date/time fields
+    are present even on no-fix samples). Returns datetime or None.
+    """
+    for r in parse_rove_clip(mp4_path):
+        if r.get("ts_utc"):
+            return datetime.fromisoformat(r["ts_utc"]) - timedelta(seconds=r["sample_idx"])
+    return None
+
+
+def extract_rove_imu():
+    """
+    iterate Rove clips and write ROVE_IMU_CSV: per-UTC-second averaged
+    accelerometer, same schema as GOPRO_PER_SEC_CSV (gyro_* left empty).
+    """
+    print("  [Rove-IMU] scanning Front for accelerometer ...")
+    files = sorted(ROVE_DIR.glob("*.mp4"))
+    all_rows = []
+    for mp4 in files:
+        accel = parse_rove_accel(mp4)
+        start = rove_clip_start_utc(mp4)
+        if not accel or start is None:
+            print(f"    {mp4.name:50s}  (no accel/timestamp, skipping)")
+            continue
+        dur = get_duration_sec(mp4) or (len(accel) / 16.6)
+        rate = (len(accel) / dur) if dur > 0 else 0.0
+        n_seconds = int(round(dur))
+        for s in range(n_seconds):
+            a0, a1 = int(s * rate), int((s + 1) * rate)
+            seg = accel[a0:a1]
+            ts = (start + timedelta(seconds=s)).isoformat()
+            rec = {"ts_utc": ts, "clip": mp4.name, "t_sec": s,
+                   "accel_x": "", "accel_y": "", "accel_z": "",
+                   "gyro_x": "", "gyro_y": "", "gyro_z": ""}
+            if seg:
+                rec["accel_x"] = round(mean(a[0] for a in seg), 5)
+                rec["accel_y"] = round(mean(a[1] for a in seg), 5)
+                rec["accel_z"] = round(mean(a[2] for a in seg), 5)
+            all_rows.append(rec)
+        print(f"    {mp4.name:50s}  accel={len(accel):5d}  dur={dur:6.2f}s  rows={n_seconds}")
+    fields = ["ts_utc", "clip", "t_sec",
+              "accel_x", "accel_y", "accel_z",
+              "gyro_x",  "gyro_y",  "gyro_z"]
+    with ROVE_IMU_CSV.open("w", newline="", encoding="utf-8") as fp:
+        w = csv.DictWriter(fp, fieldnames=fields)
+        w.writeheader()
+        for r in all_rows:
+            w.writerow(r)
+    print(f"  [Rove-IMU] wrote {len(all_rows)} rows -> {ROVE_IMU_CSV.name}")
 
 
 
@@ -752,10 +948,12 @@ def phase1_extract(force: bool):
     four extractors only runs if its output CSV is missing or --force.
     """
     targets = [
-        ("Garmin",   GARMIN_GPS_CSV,   extract_garmin_gps),
-        ("RedTiger", REDTIGER_GPS_CSV, extract_redtiger_gps),
-        ("Rove",     ROVE_GPS_CSV,     extract_rove_gps),
-        ("GoPro",    GOPRO_PER_SEC_CSV, extract_gopro_per_sec),
+        ("Garmin",       GARMIN_GPS_CSV,   extract_garmin_gps),
+        ("RedTiger",     REDTIGER_GPS_CSV, extract_redtiger_gps),
+        ("RedTiger-IMU", REDTIGER_IMU_CSV, extract_redtiger_imu),
+        ("Rove",         ROVE_GPS_CSV,     extract_rove_gps),
+        ("Rove-IMU",     ROVE_IMU_CSV,     extract_rove_imu),
+        ("GoPro",        GOPRO_PER_SEC_CSV, extract_gopro_per_sec),
     ]
     for name, csv_path, runner in targets:
         if force and csv_path.exists():
