@@ -18,5 +18,6 @@ Current Goals
 topics of meeting
 - blinker circuit
 - gopro
+- gyro??
 - other goals
 
