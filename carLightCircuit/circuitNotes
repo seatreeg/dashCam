@@ -1,0 +1,40 @@
+Measuring the blinker and breaking activity can help us better understand when exactly each action took place, and how the driver was reacting to the environement.
+
+The OBD system can provide information on the speed of the car and how the accelerator pedal is being used, but does not provide breaking information.
+
+The TOYOTA 4RUNNER has a 4 way trailer cable, which can send signals about breaking and indicator use to attached trailers.
+
+I plan to plug in to this port to record breaking and indicator use during the drive. 
+
+There are two lines that should provide info on both. 
+  
+Direct connection to the arduino could damage the device, so I have wired my arduino to an optocoupler module which will take in the tailer signals, and transmit them to the arduino safely.
+
+Wanting to simulate the system first, I had programmed another arduino to send pairs of signals to the optocoupler. 
+
+So far, the circuit is working perfectly fine, and I have the circuit set up so that it will record the raw signals to a CSV via the laptop connected to the arduino.
+
+A video of the circuit in action as well as a photo of the circuit is available on the google drive under the "Circuit" directory.
+  
+The CSV contains the timestamp of the signal obsevation, and the state of both wires. The circuit also displays the wire's states live using LEDs so I can make sure the system is working correctly when plugged in.
+
+
+Note that there is a sort of truth table that comes with these signals, rather than sending an objective and unique signal for each action (blinker, breaking), the signals have pairs and pulses that determine the action.
+
+wire 1 | wire 2| action
+-------|-------|--------
+off | off | off/coasting/accelerating
+solid | solid | breaking
+pulse | off | left blinker
+off | pulse | right blinker
+pulse | solid | left blinker + break
+solid | pulse | right blinker + break
+pulse | pulse | hazards
+
+Theres a slight ambiguity to this system; the pulses are slow enough to where it takes a second or two to realize what is going on. 
+  
+Since its not immediately clear what signal is being sent, its best to record the raw signal and interpret them in post, rather than converting the signals into driving actions  (e.g.  0,0 .. 0,1 .. 0,1 instead of "right blinker" ). We can always reduce the signal, but we cant do the opposite. 
+
+My next step (once the 4 way port plug arrives) is to cut into the 4 way port plug and run a live test with the car. If the test is successful, the breaking and indicator recording system will be ready for our drive.
+
+  
