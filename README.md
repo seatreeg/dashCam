@@ -1,11 +1,11 @@
 DASH CAM Project (feel free to edit this/add details)
 
 CURRENT WAITING
-- 4 way cable
 - new gopro
 
 COMPLETED
-- finish the blinker and brake light monitors (the obdlink cannot observen these on its own) [PARTIAL - AWAITING CABLE FOR FULL TEST]
+- full blinker monitor
+- obd monitor py bfile
 
 Current Goals
 - complete second trip, 3x, short drive
@@ -16,8 +16,6 @@ Current Goals
 - After completing the combined csv, use the action definition we specified
 
 topics of meeting
-- blinker circuit
-- gopro
-- gyro??
-- other goals
-
+- limited rove gyro
+- gyro test garmin
+- 
