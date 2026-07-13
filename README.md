@@ -19,6 +19,4 @@ Current Goals
 - list drive
 
 topics of meeting
-- limited rove gyro
-- gyro test garmin
-- 
+- New data / results
