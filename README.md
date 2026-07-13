@@ -16,7 +16,10 @@ Current Goals
 - After completing the combined csv, use the action definition we specified
 
 - reupload pi code used
-- list drive
+- list drive path
+- create combined csv
+- create multi panel video
+- review footage for issues
 
 topics of meeting
 - New data / results
