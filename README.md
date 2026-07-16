@@ -1,25 +1,20 @@
 DASH CAM Project (feel free to edit this/add details)
 
-CURRENT WAITING
-- new gopro
+Completed
+- full blinker monitor COMPLETED
+- obd monitor py file COMPLETED
+- set up GOPRO COMPLETED
+- complete second trip, 3x, short drive COMPLETED
+- After completing 4 seprarate csvs (but still correct time differences), create one final dataset (COMPLETED)
+- create multi panel video COMPLETED
+- review footage for issues COMPLETED (1/2)
 
-COMPLETED
-- full blinker monitor
-- obd monitor py bfile
 
 Current Goals
-- complete second trip, 3x, short drive COMPLETED
-  - planned drive time 5/19/2026 - 2:00AM COMPLETED
-- upload script for new drive (the old script for getting data will need to be modified slightly) [AWAITING GOPRO] COMPLETED
-- Document dataset structure and place it in data-raw rds 
-- After completing 4 seprarate csvs (but still correct time differences), create one final dataset
-- After completing the combined csv, use the action definition we specified
-
+- Document dataset structure and place it in data-raw rds
 - reupload pi code used
 - list drive path
-- create combined csv
-- create multi panel video
-- review footage for issues
 
-topics of meeting
+Topics of Meeting
 - New data / results
+- Parametric
