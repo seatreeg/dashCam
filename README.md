@@ -17,4 +17,5 @@ Current Goals
 
 Topics of Meeting
 - New data / results
+- video panel https://youtu.be/EFSZtRAGe3M
 - Parametric
