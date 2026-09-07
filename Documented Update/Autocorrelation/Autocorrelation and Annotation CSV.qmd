@@ -1,0 +1,221 @@
+---
+title: "Autocorrelation of GPS 8 11 2026"
+format: html
+---
+
+## Background and Annotation CSV
+
+Following the drive on 8 11 2026, which used four cameras: the Garmin X310, the GORPO Hero Black 13, the REDTIGER F7N Touch, and the ROVE R2 4K Dual, as well as a monitoring device that recorded the OBD port outputs and tailight activity, the data collected on the drive was compiled into one dataset. 
+
+I later annotated the video footage manually. Since watching all videos at once is difficult, I had focused on the output of the gopro hero black and the recored tailight activity, and used those two sources to annotate the footage. 
+
+To annotate the video footage, we had set aside a set of actions that, when occured, would require me to record what activities had happened during that time in the footage, and where I believe the car is located based on visual cues. Each recorded location would have a rated "confidence level" which was based on how confident I was the location I had selected was accurate. For example, if I was absolutely certain where the car was, I would rate a 95% or higher, and if the footage was dark and it was hard to see where the car was relative to nearby landmarks, I would give a rating lower than 50%.
+
+Recording this information by hand would be cumbersome, so I set up a program with a GUI that showed the video footage, obd data, breaklight activity, and a satellite map of the area so I could more easily hand annotate the video footage.
+
+The annotation was saved as a CSV called "anno 8 11 2026.csv". This CSV contained the following columns
+
+point_idx: provides and identifier for a specific annotation mark and position. The first annotation mark I put down was zero, which was showing that the car was stopped at the begining of the video, and the next annotation mark was one, which was showing that the car has started moving again at around 137 seconds into the video.
+video_time_sec: timestamp int the combined video used for annotation (drive_composite.mp4) that shows how deep in the video the annotation was made. An annotation made at the begining of the video would be 0.00. Note, this value is in seconds.
+true_time_local: time the annotation takes place, in lincoln. For example, the first annotation is when the video starts, and this is at 2026-07-13T05:28:00-05:00 or 5:28 AM in ISO 8601. Note, the timezone was CDT, as this was in July in Lincoln NE/
+true_time_utc: The time in UTC, also in ISO 8601/
+trip: The circuit was completed 3 times or in 3 "trips", this is a value either 1,2, or 3 indicating which trip it was. The first set of annotations are all 1, and the last set are all 3.
+click_lat: The latitude of the location I selected for this annotation mark. This value is in WGS 84 decimal degrees.
+click_lon: The longetude  of the location I selected for this annotation mark. This value is in WGS 84 decimal degrees.
+confidence_pct: How confident I am that the coordinates I selected were accurate, on a scale from 0 to 100, where 0 is no confidence, and 100 is complete confidence that the location selected is accurate. In practice, I usually rated the starting locations as 95, areas i was moderately confident in as 60-75, and areas i was not very confident in as 50 or less. 
+notes: the app allowed me to record any notes about the annotation, so if I had a concern or remark on a specific annotation, this would show up in this column
+triggers: What triggers I had selected, noted as the quick codes for each action. If multiple actions are selected, they will be joined by a vertical bar.
+trigger_labels: What triggers I had selected, noted as the full description for each action. If multiple actions are selected, they will be joined by a vertical bar.
+custom_trigger: If a custom trigger is used, and not one of the ones in the set that was planned in advance, it will show up here. In practice, I did not use this feature.
+trg_enter_intersection, trg_exit_intersection, trg_begin_stop,trg_finish_stop,trg_blinker_on,trg_lane_change_begin,trg_lane_change_finish,trg_turn_begin_nonint,trg_turn_finish_nonint: All of these values are binary indicators showing if each trigger was selected for the current annotation mark. For example, if only the "began stopping" trigger was selected, all columns will be "0" except for trg_begin_stop, which will be "1".
+location_held: The GUI had a feature where if the begin stopping trigger was activated, it would hold that action until the end stopping action was activated. This just tells you that the feature was used for the specific annotation mark. When the hold feature is used on begin_stopping, the mark that indicates when the stop was completed will have the same exact coordinates as the mark that indicates when the stop was begun.
+stop_group: all stops are in pairs, so stops are in groups. for example, the first start-stop annotation marks both have the integer 1, and the next time the car stops the next pair of annotation marks is labeled as the integer 2. All non-stop annoation marks are marked as empty
+wire_yellow: Taillight activity of the left tailight during the time of the annotation, 1 indicates that the light is on and 0 indicates that the light is off.
+wire_green: Taillight activity of the right tailight during the time of the annotation, 1 indicates that the light is on and 0 indicates that the light is off.
+signal_state: estimate of the action being performed by the car based on the brakelight activity. "off" indicates that both lights are not activated, "left" and "right" indicate that a left or right turn is being peformed, "both" indicate both are flashing (e.g. hazards), "break" indicate both are active but not flashing. Note, the direction takes priority over breaking, so if the car is turning right and is slowing down, this will be labeled as "right". The labels "one wire" and "no data" each only show up once. "no data" showed in the final annotation mark, and "one wire" at 10:52 in the video (around 5:38:53 AM in the video), this was due to an issue with the code, not the lack of data in the actual device. This column maps the tailight activity in an inconsistent way, and should not be used in any final analysis.
+gps_mean_lat,gps_mean_lon: This is the mean latitude and longitude of all available GPS devices.
+garmin_lat,garmin_lon,gopro_lat,gopro_lon,redtiger_lat,redtiger_lon,rove_lat,rove_lon: these columns denote the latitude and longetute reported by each of the cameras GPS systems at the time of the annotation. In theory, if the annotation is accurate and all GPS systems have no errors, they should all match click_lat and click_lon.
+
+
+
+
+
+## Setup
+
+```{r setup}
+# install.packages(c("knitr", "rmarkdown", "sf", "ggplot2"))
+library(sf)
+library(ggplot2)
+
+annotation <- read.csv("Annotation Data/anno 8 11 2026.csv", na.strings = c("", "NA"))
+annotation <- annotation[order(annotation$video_time_sec), ]
+cameras <- c("gps_mean", "garmin", "gopro", "redtiger", "rove")
+
+
+```
+
+
+## Preparation
+
+Currently, the latitute and longetude are in angeles. We want a distance error, so we will convert the readings into a value that shows the distance in metere each reading is from the manually annotated point 
+
+
+```{r to meters}
+
+to_meters <- function(lon, lat) {
+  points <- st_as_sf(data.frame(lon, lat), coords = c("lon", "lat"),
+                     crs = 4326, na.fail = FALSE) # wgs84 system
+  st_coordinates(st_transform(points, 32614)) # convert points to EPSG 32614, so its a flat map coord instead of lat/long (WGS 84 / UTM Zone 14N). Stores in meters east and north instead of degrees
+}
+
+truth <- to_meters(annotation$click_lon, annotation$click_lat)
+errors <- list()
+
+for (camera in cameras) {
+  gps <- to_meters(annotation[[paste0(camera, "_lon")]],
+                   annotation[[paste0(camera, "_lat")]])
+  errors[[camera]] <- data.frame(
+    east = gps[, 1] - truth[, 1],
+    north = gps[, 2] - truth[, 2]
+  )
+}
+```
+
+
+Next we want the error in polar coordinates, since it is currently in cartesian.
+
+
+```{r, topolar}
+for (camera in cameras) {
+  e <- errors[[camera]]
+  e$radius <- sqrt(e$east^2 + e$north^2)
+  e$theta <- atan2(e$north, e$east)
+  e$theta[e$radius == 0] <- NA
+  errors[[camera]] <- e
+}
+```
+
+
+## Analysis, groupedmeasurements
+
+
+Acf uses equal spaced points, we will make equally spaced points by grouping measurements. Within each 5 second interval, the error distance average and angle average. To average the angles, we need to use average the sin and cos values, otherwise we could end up with an event where -179 and +179 average to east instead of west. Empty intervals reamin as Nas.
+
+
+
+
+
+```{r bin time}
+step_seconds <- 5
+bin <- floor(annotation$video_time_sec / step_seconds)
+all_bins <- 0:max(bin)
+
+bin_mean <- function(values) {
+  means <- tapply(values, bin, mean, na.rm = TRUE)
+  as.numeric(means[as.character(all_bins)])
+}
+
+binned <- list()
+for (camera in cameras) {
+  e <- errors[[camera]]
+  u <- bin_mean(cos(e$theta))
+  v <- bin_mean(sin(e$theta))
+  theta <- atan2(v, u)
+  theta[u == 0 & v == 0] <- NA
+  binned[[camera]] <- data.frame(radius = bin_mean(e$radius), theta = theta)
+}
+```
+
+
+
+Recording autocorrelation for distance, a single value, is more direct than direction, two values sin and cos.
+
+We have to recombine the direction measurement, since we are representing the direction as two values. We do so by adding together the acf covariance values and then normalizing based on the first lag step. 
+
+Finally, we save the values for both in the "result" variable/
+
+GOT TIRED BEFORE HERE, RESUME TOMORROW
+TODO:
+  FINISH THIS
+  ANNOTATE COMBINED CSV+CODE
+  
+TODO UNRELATED:
+  PRACT EXAM PDF
+  CONTIN TABLE [EZ]
+  GRADE FIX [EZ]
+  READINGS SOCI
+  HW SOCI?
+  HW THEORY?
+  HW CV?
+
+```{r calculate autocorr}
+
+max_lag_seconds <- 300
+max_lag <- max_lag_seconds / step_seconds
+results <- list()
+
+for (camera in cameras) {
+  b <- binned[[camera]]
+  distance_acf <- acf(b$radius, lag.max = max_lag,
+                      plot = FALSE, na.action = na.pass)
+
+  direction <- cbind(cos(b$theta), sin(b$theta))
+  #print(direction)
+  direction_cov <- acf(direction, type = "covariance", lag.max = max_lag,
+                       plot = FALSE, na.action = na.pass)$acf # type=covariance dont normalize, as we need to combine and normalize later
+  
+  # cosine compared with cosine across time:
+  #   direction_cov[, 1, 1]
+  # sine compared with sine across time:
+  #   direction_cov[, 2, 2]
+  # cross comparison between cosine and sine:
+  #   direction_cov[, 1, 2]
+  # cross comparison in the reverse time ordering:
+  #   direction_cov[, 2, 1]
+  
+  
+  #print(direction_cov)
+  direction_acf <- direction_cov[, 1, 1] + direction_cov[, 2, 2] # dot product of both directions and lag [ x_t,y_t)\cdot(x_{t+k},y_{t+k}) =  x_tx_{t+k}+y_ty_{t+k}) ]
+  direction_acf <- direction_acf / direction_acf[1] # manually normalize, get starting values to one
+
+  lag_seconds <- as.numeric(distance_acf$lag) * step_seconds # convert groups to seconds, since each group is 5 sec
+  results[[camera]] <- data.frame(
+    camera = camera,
+    lag_seconds = rep(lag_seconds, 2),
+    component = rep(c("Distance", "Direction"), each = length(lag_seconds)),
+    autocorrelation = c(as.numeric(distance_acf$acf), direction_acf)
+  )
+}
+result <- do.call(rbind, results)
+
+```
+## Plot 
+
+This final plot displays the autocorrelation with respect to time. As expected the autocorrelation starts as a positive value for both (in other words, a north east directional error implies a north east directional error on the next time chunk, and a large distance error implies a large distance error on the next time chunk). This is expected based on what we know causes biases in gps devices (for example, if a large amount of buildings are present, you expect them to remain nearby for the next time chunk).
+
+The directional error not only dimishes overtime, but becomes slightly negative, an effect not seen in the distance error. This may be due to changing driving directions (?)
+
+```{r plot first autocor}
+#| label: polar-acf
+#| fig-width: 10
+#| fig-height: 4.5
+#| fig-dpi: 180
+#| fig-alt: "Two static line plots of distance and direction autocorrelation against lag in seconds, for four cameras and their saved mean."
+labels <- c("Saved GPS mean", "Garmin", "GoPro", "REDTIGER", "ROVE")
+colors <- c("#222222", "#7C3AED", "#0284C7", "#D97706", "#15803D")
+result$camera <- factor(result$camera, levels = cameras, labels = labels)
+result$component <- factor(result$component, levels = c("Distance", "Direction"))
+
+plot <- ggplot(result, aes(lag_seconds, autocorrelation, color = camera)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ component, nrow = 1) +
+  scale_color_manual(values = colors) +
+  scale_x_continuous(breaks = seq(0, 300, 60)) +
+  labs(x = "Lag (seconds)", y = "Autocorrelation", color = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank())
+
+ggsave("polar_autocorrelation.png", plot, width = 10, height = 4.5, dpi = 300)
+plot
+```
+## Interpolated version
