@@ -1,0 +1,46 @@
+---
+title: "Combined Drive Column Information"
+format: html
+---
+
+
+The combined CSV contains information from 4 separate dashcams, the obd port, and the 4 way tailight port. Explanations for each of the columns in combined_drive can be found below.
+
+true_time_utc: Actual time in UTC.
+true_time_local: Local time in CDT, as the video was taken in June in Lincoln, NE.
+elapsed_sec: Seconds since the start of the combined video footage. Starts at zero.
+
+
+
+The following columns are relevant to all four dashcams
+<camera>_ts_raw: Original timestamp from video footage, in UTC.
+<camera>_clip: The dashcams record in several separate clips that needed to be stiched together, this indicates what clip the footage is pulling from.
+<camera>_sample_idx: Numbered id for gps and speed per video clip, each video starts at zero, and increases with each value until it resets in the next clip.
+<camera>_lat, <camera>_lon: Coordinates recorded by the device.
+<camera>_speed_mph: Speed recorded by the device, extracted from the video footage
+<camera>_speed_mph_calculated: Speed calculated by taking the gps coordinates distance using the haversine distance and time between points. This is much less stable than the extracted speed, so using this value is not recomended.
+<camera>_fix_status: The GPS fix status obtained from the video footage. Each dashcam has a different indicator:
+  GARMIN uses "fix" and "nofix"
+  GOPRO uses "2D", "3D", and "nofix" (note, in practice, our values were 3D for the gopro when it was active)
+  REDTIGER uses "active" and "inactive"
+  ROVE uses "fix" and "nofix"
+<camera>_fix_ok: Value is 1 when the extracted data reports a fix signal, and 0 if it reports a nofix signal. Note: for the gopro, the value is 1 for "2D' and "3d" , but 0 for "nofix".
+<camera>_accel_x,<camera>_accel_y,<camera>_accel_z: Accelerometer values pulled from video footage. Accelerometer data can be found for the GOPRO, REDITGER, and ROVE, but not the GARMIN dashcam, Note that while the REDTIGER camera reports 3 values, the Z axis is always fixed at zero, so it only report two axes.
+
+
+
+The following columns are only relevant to the GOPRO Dashcam:
+
+gopro_gyro_x,gopro_gyro_y,gopro_gyro_z: Gyroscope values for the GOPRO dashcam, extracted from video footage. 
+
+
+Outside of dashcam footage, we also recorded the tailight activity and OBD port readings using a device that used a Rasperry PI 5 to process the signals. The following columns are relavant to that device:
+
+pi_ts_raw: Timestamp given by the pi originally. Clock was not synced with the local time during the recording, and had to be adjusted.
+pi_rpm: Engine RPM of the vehicle, obtained though the OBD port.
+pi_speed_mph: Speed of the vehicle, obtained through the OBD port.
+pi_throttle_pct: Throttle position percentage, recorded by OBD port.
+pi_yellow_wire: Left blinker tailight signal, 1 for on 0 for off, recorded from taillight 4 way port.
+pi_green_wire: Right blinker tailight signal, 1 for on 0 for off, recorded from taillight 4 way port.
+pi_obd_connected: Determines if the OBD is being recorded successfully, 1 =  connected, 0 = disconnected.
+pi_arduino_connected: Determines if the arduino, and thus the 4 way port (taillight activity) is being recorded successfully, 1 =  connected, 0 = disconnected.
