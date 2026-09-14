@@ -1,0 +1,141 @@
+---
+title: "Interpolated Autocorrelation Analysis"
+format: html
+---
+
+
+For the visualizer and the annotator, the satellite images were obtained from Ersi World Imagery.
+Images were kept saved for offline use.
+Leaflet was used to make the interactive labler.
+
+
+
+
+## CSV Columns Documentation
+
+
+
+"camera": which camera the data is pulled from, of the four dash cams (e.g. Garmin X310).
+"clip": which mp4 clip the data was pulled from (e.g GRMN0213.MP4).
+"sample_idx": number of how many rows of data were pulled from a clip, an integer value.
+"ts_utc_raw": original timestamp pulled from video.
+"lat_deg","lon_deg": coordinates pulled from video data.
+"speed_mph_from_camera": Speed reported from the camera.
+"speed_mph_calculated": Speed calculated from the haversine distance and the gps readings. Unstable, not recommended for use.
+"speed_source": shows where the speed is coming from, from_camera indicates that the speed reading came from the cameras internal measurement. This is now redundant, as all values are from_camera.
+"fix_status": reported fix status (GPS funcitoning or not) from the camera, in various formats depending on the camera.
+"fix_ok": Binary value on if the GPS fix is accepted or not. 1 indicates fix or, in the case of gopro, 3D or 2D, and is 0 if there is no fix.
+"accel_x","accel_y","accel_z": accelerometer readings for all 3 axis. GOPRO, REDTIGER, AND ROVE report this, but reditiger only reports the x and y axis, with the z being held at 0.
+"accel_units": Units used by each accelerometer.
+"gyro_x","gyro_y","gyro_z","gyro_units": Gyroscope readings for all 3 axis. Only available for GOPRO.
+"source_row": Unique row number for each camera.
+"t": seconds since start of drive at July 13th 2026 5:28AM.
+"segment": Index for each interval between annotation points.
+"reference_east_m","reference_north_m": Interpolated car coordinates. 
+"reference_reason": Explanation of whether the inerpolated reference passed quality checks or was flagged. supported_v4_model means all checks were passed. 
+"reference_kind": Moving or stop for interval between labeled points.
+"reference_ok": TRUE if references passed the model quality checks for the interval.
+"lap": Which lap on the circuit the car is on, 1-3.
+"point_a","point_b": ID for the starting label point and end label point for the interval labeled by hand.
+"model_available": TRUE if interpolated car position could be calculated at the GPS reading timestamp. Position can be avaialble even if it failed some quality checks as shown in column reference_reason.
+"reference_pixel_y","reference_pixel_x":
+"reference_lat","reference_lon": Interpolated car position, same as reference_East_m and reference_north_m but in decimal  units.
+"camera_id": Number indicating which camera the data was derived from.
+
+"gps_east_m","gps_north_m":
+"gps_pixel_x","gps_pixel_y":
+"east_error_m","north_error_m":
+"radius_m": Polar meters of interpolated car from GPS point
+"theta_rad": Direction of interpolated car from GPS point, in radians.
+"direction_deg": Same as theta_rad, but in degrees.
+"usable": TRUE if fix_ok is 1 and model_available is TRUE
+
+
+
+A few reference_reason flags:
+
+path_obd_distance_disagreement : modeled path distanced divided by obd speed fall outside of (0.75,1.25)
+anchor_confidence_below_60: at least one endpoint annotation had a confidence score below 60%
+construction_or_occluded_lane_uncertainty: interval belonged to route section previously flagged for uncertaihn lane placement.
+flagged_v4_geometry: the saved v4 geometry retained an unsuported/conflict flag
+elevation_grade_needs_review: The elevation profile implied a slope above 15% grade. possibly not accurate.
+conflicting_stop_coordinates: points 0-1 had this, stop with different positions, but this was not severe.
+coincident_anchors_without_held_stop: points 118-119 shared a position without a complete held-stop label
+
+## Code
+
+```{r startup}
+library(ggplot2)
+gps <- read.csv("gps_interpolated_errors.csv", na.strings = c("", "NA"))
+cameras <- c("garmin", "gopro", "redtiger", "rove")
+
+```
+
+Get the eerror for each gps, in terms of distance and direction in radians.
+
+```{r error dist dir}
+east <- gps$gps_east_m - gps$reference_east_m
+north <- gps$gps_north_m - gps$reference_north_m
+gps$radius <- sqrt(east^2 + north^2)
+gps$theta <- atan2(north, east)
+gps$radius[!gps$usable] <- NA
+gps$theta[!gps$usable | (!is.na(gps$radius) & gps$radius == 0)] <- NA
+```
+
+
+
+
+Calculate autcorrelation 
+
+```{r get autocor}
+results <- list()
+for (camera in cameras) {
+  e <- gps[gps$camera_id == camera, ]
+  step <- if (camera == "gopro") 0.1 else 1
+  slot <- round(e$t / step)
+  stopifnot(!anyDuplicated(slot), min(slot) >= 0,
+            max(abs(e$t - slot * step)) < 0.002)
+
+  radius <- theta <- rep(NA_real_, max(slot) + 1)
+  radius[slot + 1] <- e$radius
+  theta[slot + 1] <- e$theta
+  stopifnot(sum(is.finite(radius)) > 1, var(radius, na.rm = TRUE) > 0)
+
+  distance_acf <- acf(radius, lag.max = 300 / step,
+                      plot = FALSE, na.action = na.pass)
+  direction_cov <- acf(cbind(cos(theta), sin(theta)), type = "covariance",
+                       lag.max = 300 / step, plot = FALSE,
+                       na.action = na.pass)$acf
+  direction_acf <- direction_cov[, 1, 1] + direction_cov[, 2, 2]
+  stopifnot(is.finite(direction_acf[1]), direction_acf[1] > 1e-20)
+  direction_acf <- direction_acf / direction_acf[1]
+
+  lag_seconds <- as.numeric(distance_acf$lag) * step
+  results[[camera]] <- data.frame(
+    camera, lag_seconds = rep(lag_seconds, 2),
+    component = rep(c("Distance", "Direction"), each = length(lag_seconds)),
+    autocorrelation = c(as.numeric(distance_acf$acf), direction_acf))
+}
+result <- do.call(rbind, results)
+```
+
+
+
+```{r plot}
+#| fig-width: 10
+#| fig-height: 4.5
+#| fig-alt: "Static distance and direction autocorrelation versus lag in seconds for four receivers, relative to the interpolated v4 lane-center car."
+result$camera <- factor(result$camera, levels = cameras,
+                        labels = c("Garmin", "GoPro", "REDTIGER", "ROVE"))
+result$component <- factor(result$component, levels = c("Distance", "Direction"))
+plot <- ggplot(result, aes(lag_seconds, autocorrelation, color = camera)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ component, nrow = 1) +
+  scale_color_manual(values = c("#7C3AED", "#0284C7", "#D97706", "#15803D")) +
+  scale_x_continuous(breaks = seq(0, 300, 60)) +
+  labs(x = "Lag (seconds)", y = "Autocorrelation", color = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank())
+ggsave("interpolated_autocorrelation.png", plot, width = 10, height = 4.5, dpi = 300)
+plot
+```
