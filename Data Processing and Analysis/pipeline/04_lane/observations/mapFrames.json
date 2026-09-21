@@ -1,0 +1,358 @@
+{
+  "zoom": 19,
+  "pixel_origin": "upper-left; x increases right, y increases down",
+  "image_source": "Existing Esri aerial tile cache; no new download or map correction",
+  "regions": [
+    {
+      "name": "north10th",
+      "x0": 31053184,
+      "y0": 50409408,
+      "x1": 31053952,
+      "y1": 50411008
+    },
+    {
+      "name": "antelope_north",
+      "x0": 31058432,
+      "y0": 50409984,
+      "x1": 31059520,
+      "y1": 50411392
+    },
+    {
+      "name": "antelope_south",
+      "x0": 31058432,
+      "y0": 50411136,
+      "x1": 31059520,
+      "y1": 50412608
+    }
+  ],
+  "source_tiles": [
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196911.png",
+      "sha256": "ff6393392edec194badd05b0fc7d3401b2fed49e38d9e8e31fd62fd2e0e4f5ff"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196912.png",
+      "sha256": "d0fc30cfe5eccb398612ccfcd9c80fd08b60fe147c5c8584a1839aad280b10e3"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196913.png",
+      "sha256": "c14c6633288703837e96b94405b302236bb60fcc99aaac25607c56cea792511b"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196914.png",
+      "sha256": "14c5227b9524f56e16667f388abf4dcbe6a6a5cd6e247851ec6abcd47b7754da"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196915.png",
+      "sha256": "ac7c9be37436160e5d0fd6cb69dda8b21b030dcc9b91a18f26d35abc9845798e"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196916.png",
+      "sha256": "db7149abbe06a32a9759bef843bc232853c78e09685b7f4f78fd92b87049dd44"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121301/196917.png",
+      "sha256": "dbc64ed152d6def1d7b42c57882a877959ff9810efc19f569d3d7f305e496011"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196911.png",
+      "sha256": "1729a219b15e550641ceed125bbcae49098010a4acf609b32312332d05903bd6"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196912.png",
+      "sha256": "c5ea7774e1b4dc317f0988add0f13031eec4a751d1e37573c934e08494996b99"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196913.png",
+      "sha256": "58bed6259ef50f4fd4bd62becbbe433f5af7a181d5503c96c948cde9cc91ea6e"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196914.png",
+      "sha256": "f06977c45ca3bab0193d64c2b9fc7da22bf1f2682cce819ee25ed6ec034f1706"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196915.png",
+      "sha256": "b1b9a3057ae1c252b518b534a2358b08b18118de525ac2a84928aaa8b14cc4f1"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196916.png",
+      "sha256": "4ad3d154748758918e3e7f48f33144a232c90d7026050d1f5e90e0722b3b9204"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121302/196917.png",
+      "sha256": "417c5f9b301c142e119b9590542f7bfc0dac18bcb9801b5c3762816245fd5ad0"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196911.png",
+      "sha256": "f1a0a9da9bc20d649e3907d9377d03b2a6274d4993f2b9b32730e15f4737ee46"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196912.png",
+      "sha256": "7ef60d58e221930b8a1a22b69e3b89a6debc6e0aed46cef64abf33bc07bd7556"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196913.png",
+      "sha256": "50dccfac840099bd2ff2c60fcc87146227de2e6e8c607fba6590cad0b68c8712"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196914.png",
+      "sha256": "6959eb59d55fc502e0bff325ead1d757721fc7df7f63f0698b9f2edd7ea94f84"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196915.png",
+      "sha256": "d9e4f4a9f78b0cf43f5bb5f92ec1625b41c647f7ffb76f6469b336e167f96f21"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196916.png",
+      "sha256": "91628db11e4726d4f4e6747e909200e4da552114c6fb5099f976d3a8eb5ac94a"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121303/196917.png",
+      "sha256": "b0669906b427f74a8eee861f6b85fbfdebc76fc68232cdc067b67b2fc31fa581"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196911.png",
+      "sha256": "c5e08c93624b7b7197faca1f6114a5aad3d10b6caa6f77d4aba5ce09f5c7fb56"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196912.png",
+      "sha256": "13ee740ea2f63ca8d1de254d5476db8fdd39c12ca8e3df65d55ed8c72079a30c"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196913.png",
+      "sha256": "7c2cd799d235e093ff8a2f42827f9045bb1302e2619d94659141253aa292f2fb"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196914.png",
+      "sha256": "9b80a03b8098f2fc4f53797f0335a281324e78218b5110be223af23515e50f7c"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196915.png",
+      "sha256": "c0bd5b360735e74eb8313077fd39eed471afe4ff07aebf0db345fef8562144bd"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196916.png",
+      "sha256": "8213238db1fc367796caa6978b4be89f4a5fd9b7347e04918bfed588848dbca4"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121304/196917.png",
+      "sha256": "872fb77cdfc43f262b1060406f43ffa9bab6cd2bf528019768ae316b8d7d346a"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196914.png",
+      "sha256": "eeb6adf8a2dadb9b930db3b3563bcb6d489fc0279f4dabec3f251678f13efcab"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196915.png",
+      "sha256": "0ed2c0c870b93f71f19d213b6ae490b590d895ae93ff2e0a377ae7ebec5ee57f"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196916.png",
+      "sha256": "acee5f3cc2e5ef6ab78cead295b89e6eb27070a9848f08d28d6d174fc97bd5c5"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196917.png",
+      "sha256": "6d2cb9c897302f23be3f3a07f92eeacb97e10167171dd2bd2580f255ed169d16"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196918.png",
+      "sha256": "187fe190a32dd58e7b460ecc90e05181e4f507733759868fec16ffba2084913c"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196919.png",
+      "sha256": "541a8f2e2aea980c9c29c7ca76b7da5634d18fb6d6ef222a4eea51c6a5cb6cc5"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196914.png",
+      "sha256": "20931a27a2fd4c0a428294e122626913373fb2c4bf4bd7cf47bb9bdcf4023130"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196915.png",
+      "sha256": "befe114937515e0ba96b484a770bc834722ea98acec97bca0e6a7a6a3e5c3858"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196916.png",
+      "sha256": "b370ca1a6a61fe9d816aa51f614aae2edcb48d584124578cdcd06bd7bb5be971"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196917.png",
+      "sha256": "fb38136ce2c589be94421a5f3e7ddd4be4136ea72157a1114f69530930c7a05f"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196918.png",
+      "sha256": "a8c55ef0c90b3671a90275e080398af3caf9bb4f23476bdb0c6a0dd5094fbd4f"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196919.png",
+      "sha256": "57988e01dd419d1d49ebb8782295eb13b3c3efc953b8370eb898c466c7976b9e"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196914.png",
+      "sha256": "eea72b93be45cae0e936ca183af47135615713b23d43bc813ae3bf74811b6104"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196915.png",
+      "sha256": "2d03d09669a9715b6707616d0d44c61487cf3d829cafa1a9144512512ff6dd68"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196916.png",
+      "sha256": "4abbd59a24e6c7257d1390df159974ff1a7b16968051c5b5c028539bffce142b"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196917.png",
+      "sha256": "224a686eb16353637eb5115f03e8bc0532ba9426c9c161d33a0cc41f89f1607f"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196918.png",
+      "sha256": "178909d8514f0bd9a532fde3e6ad71a80937068ce4499daae3c4a3873654b308"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196919.png",
+      "sha256": "5fcb384456a28ce2cd1479555b23705ec5262e4bea22ff52a89cab96c1088558"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196914.png",
+      "sha256": "e123f9f37ff62847a390cca8076bee8b6c124d944a3b2aa5ea34953d2590663c"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196915.png",
+      "sha256": "94106cccf7070f2a19777bf710db7b60fe151ec99fb50ff5590f505b06b0645d"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196916.png",
+      "sha256": "dfb0dcdb1fab87d555a4d5fa29e20efd6dbc189fca6bdf3e767e9aeeeaef7131"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196917.png",
+      "sha256": "7c43465fb36ac37632859003d703b87bd36ac256778d3eb315c6f8a906b86bc4"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196918.png",
+      "sha256": "88ab1efe375b038b1e542e61bd0d090b2b2f4d8cad5829a044163e7d8cf0e111"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196919.png",
+      "sha256": "264e082701820417054b299f8ea47d1e5cb341429ee998454c73799e24f66a40"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196914.png",
+      "sha256": "d881598b6c66f0a5bd7c9cedf518b35863352cad5f988b9348fc79a08f7f967b"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196915.png",
+      "sha256": "c271d988ad23030c644301bcb950fcdd4735b008c1a848bbff8602697128fb00"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196916.png",
+      "sha256": "c6d3a8ed3e2756b740419541b8ce736d56cb298f09014b9b309002fd201eee82"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196917.png",
+      "sha256": "9ef80541030c4c31028c4a50f3222745a1d92799394d1d54d2880979db61fbef"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196918.png",
+      "sha256": "7f96311e83cc795a5f347b1b4095dc4851dea564651334d4baca76e468afe5e9"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196919.png",
+      "sha256": "3ade3a6501f63265acd76c1ab2b3f6339554e22ec531a769e22153c6222252ad"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196920.png",
+      "sha256": "1ae713b668fb2922a88233729e99c411f78a8eb9d929f72ce1604d4397495616"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196921.png",
+      "sha256": "fecbd2dc11bd9bb8c969d12e499999dfd5c443d6253fa4d2d15eeba0a81d4921"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196922.png",
+      "sha256": "9f7670a3ceb4a02b695ecb95d775dfe3920bc89eee201dff337ddd6d5f8a56a9"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196923.png",
+      "sha256": "1d7ca28c620bfbf5fc8433051b7a1b437d0dd216b1d33716a3769d667b008ff5"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121322/196924.png",
+      "sha256": "dc61282f7d17d44fe95b913d219c744758744c3cca11f5fe8a91ce3c680a0a76"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196920.png",
+      "sha256": "a42949bb50fbd2b9dd2b634e9cf8e2674787c38e0a716ceea9b1f3ad9254cb16"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196921.png",
+      "sha256": "7b5e72a7f11264e08176c019c491167b6871925e26916f9b6b70c722e4b8d2ac"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196922.png",
+      "sha256": "034287d1f4d13f9e5143ad75932ae800ec8a9416976638c89a99f4fdf2873c59"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196923.png",
+      "sha256": "c523199b90d28ad695fd8ad52fd17f4f6cdfadc4b0e81c02f88775121de168a0"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121323/196924.png",
+      "sha256": "017698cd964725bdb902e2d422354baec63e9aa4a5484e894bcf101564acf3b1"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196920.png",
+      "sha256": "a2d58a72ac28ba75e468132b58261d0193101771d39e5e33549b1898024bc67d"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196921.png",
+      "sha256": "1c1e9eae291ca43d9aa9fe20153d187e57a0125b434ed20ad49459f67900cc26"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196922.png",
+      "sha256": "7a3afcbb9f0b98493bd2723e44f3296f44a267f9566da364bd542b4b34b22f5c"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196923.png",
+      "sha256": "20c2e765cca116ab2892cc81768e18ec31f509df3b15d7a4c676346e1bc38c83"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121324/196924.png",
+      "sha256": "1e57f8edc303e1af0f1cc8fd4020b116899efa2b900e6a34354ee1ef8cba52ad"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196920.png",
+      "sha256": "facf52ce9ae144014de7ee07bb8ef2f820761ec73f847ceadb0a3a034186020d"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196921.png",
+      "sha256": "c306456d075f2c0924a40b315d699465f354d5c912385372d6e60d8d40a7e791"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196922.png",
+      "sha256": "ce143188aa83a7871d989e600e2b11b256c5f9c6e048878730c07452cb761def"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196923.png",
+      "sha256": "0805ad359afa79e4f9470c4d8381aaf37cbe986d7012ed114295b2cda6ecac49"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121325/196924.png",
+      "sha256": "145e2584a4c37f78c22741cd3ede337e16d63444e7de217865eeec6611fc02ef"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196920.png",
+      "sha256": "488d96017b23e20018f2f60b9b2af2fc06210732ae4266daa03262bbc25d57f1"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196921.png",
+      "sha256": "a0dcc5669e1cbbcae38ecc1693eb9f5bcd0288173fead722017528f3a6ded594"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196922.png",
+      "sha256": "f024d0c394469dc3bfc1bfcd76c1d022a4f133da474b7aaecfe3c280c0ba812b"
+    },
+    {
+      "path": "E:/claude drive 7 13 2026/Process Footage/_work/tiles/19/121326/196923.png",
+      "sha256": "d0c865e0c0c76c600551bb0536e015c810eae0e0835c5b8e9097d6ba5c4f895b"
+    }
+  ]
+}

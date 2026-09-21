@@ -1,0 +1,53 @@
+{
+  "crs": "EPSG:32614",
+  "status": "imagery_and_footage_based_maneuver_assumptions_not_surveyed_truth",
+  "method": "Untimed local geometry observed in cached native zoom-20 aerial imagery. GoPro picture-only crops confirm maneuver and branch identity. No camera GPS, receiver speed, mean GPS, or error score used to choose paths. Coordinates below are east/north meter offsets from each origin. Envelopes and obstacle cores are approximate independent visual checks, not surveyed lane boundaries or vehicle-footprint certification.",
+  "sites": [
+    {
+      "id": "parking_start", "label": "1-2: parking-lot departure", "origin": [694886,4520362],
+      "spans": [[1,2],[123,124],[251,252]], "method": "local_guide", "expected_event": "turn",
+      "knots": [[0,-3],[0,4],[-1.2,8],[-4.5,12],[-8.5,14.8],[-13,15.2],[-22,15.2]],
+      "envelope": [[-24,11],[-7,11],[-5,8],[-5,-3],[2,-3],[2,18],[-24,18]],
+      "obstacles": [[[-12.4,4.6],[-6.8,4.9],[-7.1,6.4],[-9,8.4],[-11.4,8.6],[-12.5,7.8]]],
+      "note": "Initial heading comes from the northbound parking aisle, not a previous lap or a stationary point. Go north past the island, then west. End positions differ legitimately between laps."
+    },
+    {
+      "id": "fork", "label": "54-55: N 10th fork", "origin": [693392,4520855],
+      "spans": [[54,55],[175,177],[306,308]], "method": "local_guide",
+      "knots": [[0,-4],[-0.2,0],[-1,20],[-1.8,40],[-2,60],[-2.8,80],[-4.5,100],[-7,120],[-10.7,140],[-15.8,160],[-23.8,180],[-31,196]],
+      "envelope": [[-3,-3],[3,-3],[2,40],[1,70],[-0.5,100],[-3.5,120],[-7,140],[-12,160],[-20,180],[-29,199],[-35,199],[-26,180],[-19,160],[-14,140],[-10.5,120],[-8,100],[-6.5,70],[-5,40]],
+      "obstacles": [[[-8.5,60],[-7.1,80],[-8.2,100],[-11.8,122],[-16,123],[-13.5,100],[-12.2,80],[-12,60]]],
+      "note": "Follow the right-hand through branch around the painted/physical splitter. Keep intermediate blinker anchors on laps 2 and 3. Construction cones in the drive differ from the aerial scene: branch alignment is supported, exact temporary lane center is uncertain."
+    },
+    {
+      "id": "intersection_58", "label": "58-59: shallow intersection crossing", "origin": [693286,4521206],
+      "spans": [[58,59],[179,180],[310,311]], "method": "local_tangents", "expected_event": "intersection",
+      "entry_direction": [-0.32,0.947], "exit_from_corrected": true, "handle_fraction": 0.3333333333,
+      "envelope": [[-2,-2],[2,-2],[-3,19],[-9,19]], "obstacles": [],
+      "note": "Use the visible local northbound alignment and the start tangent of the corrected N 10th guide; the far end of the 300+ m road bend is not the exit heading of this crossing."
+    },
+    {
+      "id": "roundabout", "label": "60-61: outer roundabout exit", "origin": [693331,4521532],
+      "spans": [[60,61],[181,182],[312,313]], "method": "local_tangents", "expected_event": "intersection",
+      "entry_from_corrected": true, "exit_from_corrected": true, "handle_fraction": 0.32,
+      "envelope": [[-2,-2],[5,-1],[12,3],[16,8],[18,15],[22,22],[31,37],[25,41],[18,33],[12,26],[7,19],[3,11],[-2,5]],
+      "obstacles": [[[16.2,9.5],[22.5,9],[20.5,15],[18.7,14.6],[16.3,12.5]]],
+      "note": "Join the corrected approach and exit with their local tangents. The previous curve was almost northbound at an east-northeast entry. Original entry-anchor/paint conflicts on laps 2 and 3 remain flagged; no original click is moved."
+    },
+    {
+      "id": "intersection_83", "label": "83-84: Antelope / Holdrege crossing", "origin": [694564,4521466],
+      "spans": [[83,84],[205,206],[336,337]], "method": "local_tangents", "expected_event": "intersection",
+      "entry_from_corrected": true, "exit_from_corrected": true, "handle_fraction": 0.3333333333,
+      "envelope": [[-2,3],[3,3],[28,-39],[20,-42]], "obstacles": [],
+      "note": "Continue the local through-lane direction between the two corrected guides. Do not use the distant end of the downstream Antelope bend, which produces a false hook."
+    },
+    {
+      "id": "parking_end", "label": "119-121: parking-lot return", "origin": [694866,4520257],
+      "spans": [[119,121],[246,249],[371,372]], "method": "local_tangents", "expected_event": "turn",
+      "entry_direction": [1,0.03], "exit_direction": [0,1], "handle_fraction": 0.3333333333,
+      "envelope": [[-2,-1.5],[13,-1.5],[15,0],[22,3],[23,18],[15,18],[15,9],[13,9],[13,4],[-2,4]],
+      "obstacles": [[[6,6.5],[7,7.3],[12.5,7.4],[13.6,6.6],[12.2,5.4],[9,5.1],[7,5.8]]],
+      "note": "One turn can contain begin-stop/finish-stop anchors. Preserve the hold and every original anchor, travel east below the parking island, then turn north on its east side. Use each lap's endpoints directly rather than deforming a shared endpoint into an S bend. The 1.6 m pre-stop displacement on lap 2 remains a straight anchor connection with uncertain heading. Low-confidence lap-1 clicks remain low confidence."
+    }
+  ]
+}

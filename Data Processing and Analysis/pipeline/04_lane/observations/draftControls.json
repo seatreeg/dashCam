@@ -1,0 +1,23 @@
+{
+  "status": "draft_for_user_review_not_accepted_truth",
+  "author": "Codex visual trace",
+  "created": "2026-09-07",
+  "method": "Visually selected centers of the annotated travel lanes in cached aerial imagery. Coordinates are image pixels, not GPS fixes or timed car positions.",
+  "routes": [
+    {
+      "id": "north10th_rightmost",
+      "label": "N 10th Street: rightmost lane toward traffic circle",
+      "map": "north10th",
+      "point_pairs": [[59,60],[180,181],[311,312]],
+      "pixels": [[252,1420],[233,1320],[216,1220],[203,1120],[194,1020],[188,920],[187,820],[193,720],[211,620],[240,520],[281,420],[330,320],[382,240],[418,190],[447,152],[478,123],[500,112]]
+    },
+    {
+      "id": "antelope_leftmost_through",
+      "label": "Antelope Valley Parkway: leftmost southbound through lane",
+      "map": "antelope_north",
+      "point_pairs": [[84,85],[206,207],[337,338]],
+      "pixels": [[840,180],[865,250],[890,330],[914,420],[931,510],[939,600],[944,700],[945,800],[940,900],[938,1000],[927,1100],[907,1200],[879,1300],[837,1400],[781,1500],[716,1600],[622,1700],[528,1800],[453,1900],[391,2000],[348,2100],[313,2200],[292,2300],[280,2400],[274,2480]],
+      "note": "For y beyond the north image, inspect antelope_south.png: south-image y = this y - 1152. Both panels share the same global x origin."
+    }
+  ]
+}

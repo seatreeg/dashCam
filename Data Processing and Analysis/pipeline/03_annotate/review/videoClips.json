@@ -1,0 +1,44 @@
+[
+  {
+    "file": "GX010003_review_8d14d3fe501a9c94.mp4",
+    "sourceClip": "GX010003.MP4",
+    "startSec": 0,
+    "endSec": 2702.808,
+    "sourceStartSec": -308.20000000000005,
+    "sourceSeekSec": 308.20000000000005,
+    "recipe": {
+      "sourceClip": "GX010003.MP4",
+      "startSec": 0,
+      "endSec": 2702.808,
+      "sourceStartSec": -308.20000000000005,
+      "sourceSeekSec": 308.20000000000005,
+      "driveStartUtc": "2026-07-13T10:28:00Z",
+      "clockFastSec": 0,
+      "samplePeriodSec": 0.1,
+      "sourceBytes": 5780119517,
+      "sourceModifiedNs": 1789929846000000000,
+      "encoding": "h264-960w-15fps-crf23-v1"
+    }
+  },
+  {
+    "file": "GX020003_review_8868bca40a153b5e.mp4",
+    "sourceClip": "GX020003.MP4",
+    "startSec": 2702.699,
+    "endSec": 3950.946,
+    "sourceStartSec": 2702.699,
+    "sourceSeekSec": 0.0,
+    "recipe": {
+      "sourceClip": "GX020003.MP4",
+      "startSec": 2702.699,
+      "endSec": 3950.946,
+      "sourceStartSec": 2702.699,
+      "sourceSeekSec": 0.0,
+      "driveStartUtc": "2026-07-13T10:28:00Z",
+      "clockFastSec": 0,
+      "samplePeriodSec": 0.1,
+      "sourceBytes": 3166315914,
+      "sourceModifiedNs": 1789929954000000000,
+      "encoding": "h264-960w-15fps-crf23-v1"
+    }
+  }
+]

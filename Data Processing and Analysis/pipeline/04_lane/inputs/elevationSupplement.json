@@ -1,0 +1,822 @@
+{
+  "source": "USGS 3DEP EPQS",
+  "units": "meters",
+  "grid_m": 5,
+  "cells": {
+    "138653_904280": {
+      "value_m": 352.677978516,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7082568&y=40.8208958&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:14.594250+00:00",
+      "response": {
+        "location": {
+          "x": -96.7082568,
+          "y": 40.8208958,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "352.677978516",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138660_904298": {
+      "value_m": 352.310333252,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7078141&y=40.8216976&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:14.514991+00:00",
+      "response": {
+        "location": {
+          "x": -96.7078141,
+          "y": 40.8216976,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "352.310333252",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138661_904300": {
+      "value_m": 352.196655273,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7077518&y=40.8217865&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:14.585608+00:00",
+      "response": {
+        "location": {
+          "x": -96.7077518,
+          "y": 40.8217865,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "352.196655273",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138893_904312": {
+      "value_m": 351.171936035,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6939883&y=40.8220525&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:15.195399+00:00",
+      "response": {
+        "location": {
+          "x": -96.6939883,
+          "y": 40.8220525,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.171936035",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138920_904229": {
+      "value_m": 351.495941162,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6925183&y=40.8182850&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:15.547093+00:00",
+      "response": {
+        "location": {
+          "x": -96.6925183,
+          "y": 40.818285,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.495941162",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138918_904226": {
+      "value_m": 351.30456543,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6926414&y=40.8181524&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:15.870594+00:00",
+      "response": {
+        "location": {
+          "x": -96.6926414,
+          "y": 40.8181524,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.304565430",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138916_904222": {
+      "value_m": 351.090759277,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6927661&y=40.8179747&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:15.808177+00:00",
+      "response": {
+        "location": {
+          "x": -96.6927661,
+          "y": 40.8179747,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.090759277",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138914_904219": {
+      "value_m": 351.03604126,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6928893&y=40.8178421&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:26.346693+00:00",
+      "response": {
+        "location": {
+          "x": -96.6928893,
+          "y": 40.8178421,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.036041260",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138896_904190": {
+      "value_m": 351.689453125,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6940009&y=40.8165582&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:16.620676+00:00",
+      "response": {
+        "location": {
+          "x": -96.6940009,
+          "y": 40.8165582,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.689453125",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138653_904260": {
+      "value_m": 353.803009033,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7082878&y=40.8199956&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:56.789989+00:00",
+      "response": {
+        "location": {
+          "x": -96.7082878,
+          "y": 40.8199956,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "353.803009033",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138655_904287": {
+      "value_m": 352.673706055,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7081274&y=40.8212085&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:57.425325+00:00",
+      "response": {
+        "location": {
+          "x": -96.7081274,
+          "y": 40.8212085,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "352.673706055",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138667_904306": {
+      "value_m": 351.342468262,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7073870&y=40.8220494&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:57.890979+00:00",
+      "response": {
+        "location": {
+          "x": -96.707387,
+          "y": 40.8220494,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.342468262",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138859_904344": {
+      "value_m": 351.241455078,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6959528&y=40.8235330&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:58.292572+00:00",
+      "response": {
+        "location": {
+          "x": -96.6959528,
+          "y": 40.823533,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.241455078",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138873_904327": {
+      "value_m": 350.263671875,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6951499&y=40.8227513&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:00.072300+00:00",
+      "response": {
+        "location": {
+          "x": -96.6951499,
+          "y": 40.8227513,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "350.263671875",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138887_904317": {
+      "value_m": 351.171081543,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6943360&y=40.8222846&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:35:58.773533+00:00",
+      "response": {
+        "location": {
+          "x": -96.694336,
+          "y": 40.8222846,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.171081543",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138904_904303": {
+      "value_m": 351.042572021,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6933507&y=40.8216344&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:01.017523+00:00",
+      "response": {
+        "location": {
+          "x": -96.6933507,
+          "y": 40.8216344,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.042572021",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138910_904295": {
+      "value_m": 351.233062744,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6930077&y=40.8212673&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:00.663353+00:00",
+      "response": {
+        "location": {
+          "x": -96.6930077,
+          "y": 40.8212673,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.233062744",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138919_904282": {
+      "value_m": 351.595733643,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6924948&y=40.8206715&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:01.733426+00:00",
+      "response": {
+        "location": {
+          "x": -96.6924948,
+          "y": 40.8206715,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.595733643",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138921_904274": {
+      "value_m": 351.594787598,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6923888&y=40.8203091&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:01.493935+00:00",
+      "response": {
+        "location": {
+          "x": -96.6923888,
+          "y": 40.8203091,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.594787598",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138923_904245": {
+      "value_m": 351.896728516,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6923156&y=40.8190015&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:04.023468+00:00",
+      "response": {
+        "location": {
+          "x": -96.6923156,
+          "y": 40.8190015,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.896728516",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138922_904237": {
+      "value_m": 351.706878662,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6923873&y=40.8186427&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:05.514916+00:00",
+      "response": {
+        "location": {
+          "x": -96.6923873,
+          "y": 40.8186427,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.706878662",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138921_904233": {
+      "value_m": 351.599060059,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6924528&y=40.8184638&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:05.497493+00:00",
+      "response": {
+        "location": {
+          "x": -96.6924528,
+          "y": 40.8184638,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.599060059",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138919_904228": {
+      "value_m": 351.409423828,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6925791&y=40.8182412&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:06.119966+00:00",
+      "response": {
+        "location": {
+          "x": -96.6925791,
+          "y": 40.8182412,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.409423828",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138919_904227": {
+      "value_m": 351.409423828,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6925806&y=40.8181962&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:05.996277+00:00",
+      "response": {
+        "location": {
+          "x": -96.6925806,
+          "y": 40.8181962,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.409423828",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138915_904221": {
+      "value_m": 351.130523682,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6928269&y=40.8179309&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:06.453319+00:00",
+      "response": {
+        "location": {
+          "x": -96.6928269,
+          "y": 40.8179309,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.130523682",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138913_904218": {
+      "value_m": 350.966583252,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6929501&y=40.8177982&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:06.589435+00:00",
+      "response": {
+        "location": {
+          "x": -96.6929501,
+          "y": 40.8177982,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "350.966583252",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138910_904214": {
+      "value_m": 351.018249512,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6931341&y=40.8176218&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:08.636675+00:00",
+      "response": {
+        "location": {
+          "x": -96.6931341,
+          "y": 40.8176218,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.018249512",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138909_904213": {
+      "value_m": 351.07220459,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6931949&y=40.8175779&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:09.136083+00:00",
+      "response": {
+        "location": {
+          "x": -96.6931949,
+          "y": 40.8175779,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.072204590",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138907_904211": {
+      "value_m": 351.16973877,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6933165&y=40.8174903&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:10.226130+00:00",
+      "response": {
+        "location": {
+          "x": -96.6933165,
+          "y": 40.8174903,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.169738770",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138906_904210": {
+      "value_m": 351.227539062,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6933773&y=40.8174465&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:10.187866+00:00",
+      "response": {
+        "location": {
+          "x": -96.6933773,
+          "y": 40.8174465,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.227539062",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138901_904203": {
+      "value_m": 351.389282227,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6936844&y=40.8171374&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:10.512083+00:00",
+      "response": {
+        "location": {
+          "x": -96.6936844,
+          "y": 40.8171374,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.389282227",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138913_904291": {
+      "value_m": 351.430877686,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6928362&y=40.8210837&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:11.396301+00:00",
+      "response": {
+        "location": {
+          "x": -96.6928362,
+          "y": 40.8210837,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.430877686",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138915_904290": {
+      "value_m": 351.548309326,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6927193&y=40.8210363&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:12.684371+00:00",
+      "response": {
+        "location": {
+          "x": -96.6927193,
+          "y": 40.8210363,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.548309326",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138917_904224": {
+      "value_m": 351.240966797,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6927038&y=40.8180635&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:36:12.467278+00:00",
+      "response": {
+        "location": {
+          "x": -96.6927038,
+          "y": 40.8180635,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.240966797",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138654_904252": {
+      "value_m": 354.251525879,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.7082409&y=40.8196344&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:39:00.805437+00:00",
+      "response": {
+        "location": {
+          "x": -96.7082409,
+          "y": 40.8196344,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "354.251525879",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138923_904247": {
+      "value_m": 352.006958008,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6923124&y=40.8190916&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:39:01.899888+00:00",
+      "response": {
+        "location": {
+          "x": -96.6923124,
+          "y": 40.8190916,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "352.006958008",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    },
+    "138912_904217": {
+      "value_m": 351.006591797,
+      "url": "https://epqs.nationalmap.gov/v1/json?x=-96.6930109&y=40.8177544&units=Meters&wkid=4326&includeDate=true",
+      "fetched_utc": "2026-09-07T19:39:35.609067+00:00",
+      "response": {
+        "location": {
+          "x": -96.6930109,
+          "y": 40.8177544,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          }
+        },
+        "locationId": 0,
+        "value": "351.006591797",
+        "rasterId": 117124,
+        "resolution": 1,
+        "attributes": {
+          "AcquisitionDate": "2/4/2017"
+        }
+      }
+    }
+  },
+  "failures": {}
+}

@@ -1,0 +1,146 @@
+---
+title: "Interpolated Autocorrelation Analysis"
+format: html
+---
+
+
+For the visualizer and the annotator, the satellite images were obtained from Ersi World Imagery.
+Images were kept saved for offline use.
+Leaflet was used to make the interactive labler.
+
+
+
+## CSV Columns Documentation
+
+The data comes from `../04_lane/gpsErrors.csv`, made by the lane interpolation code in 04.
+Each row is an original camera GPS reading compared with the modeled car position at the same time.
+Only the car position is interpolated, not the GPS readings.
+The main reading ID is `camera` plus `readingIndex`, which starts at 1 for each camera and continues across clips.
+`clip` and `sampleIndex` are kept as source references; autocorrelation still uses `timeSec`, not the reading index.
+
+| Column name | Description | Data type in R | Example(s) | Small set / range |
+|---|---|---|---|---|
+| `camera` | Which camera the reading came from. | `character` (text) | `garmin`, `gopro` | `garmin`, `gopro`, `redtiger`, `rove` |
+| `readingIndex` | Chronological GPS reading number for this camera across the drive, not a video frame number. | `integer` | `1`, `2`, `3` | `1` to this camera's total number of readings |
+| `clip` | Original MP4 clip, kept to trace the reading to its source. | `character` (text) | `GRMN0213.MP4`, `GX010003.MP4` | — |
+| `sampleIndex` | Original zero-based record index within the clip, kept as a source reference. | `integer` | `33`, `3082` | — |
+| `timeSec` | Seconds since July 13th 2026, 5:28AM CDT. | `numeric` (decimal) | `0`, `0.1`, `0.2` | — |
+| `latitude` | Camera GPS latitude, in decimal degrees. | `numeric` (decimal) | `40.8110815` | — |
+| `longitude` | Camera GPS longitude, in decimal degrees. | `numeric` (decimal) | `-96.6894486` | — |
+| `speedMps` | Camera-reported speed, converted to meters per second. | `numeric` (decimal) | `0`, `0.022` | — |
+| `fix` | Whether the GPS fix was accepted; GoPro 2D and 3D fixes are accepted. | `integer` | `1` | `0` = not accepted; `1` = accepted. This CSV only contains `1`. |
+| `segment` | Index of the interval between annotation points. | `integer` | `1`, `2` | `1`–`374` in this drive |
+| `referenceLatitude` | Interpolated car latitude, in decimal degrees. | `numeric` (decimal) | `40.8111466` | — |
+| `referenceLongitude` | Interpolated car longitude, in decimal degrees. | `numeric` (decimal) | `-96.6894028` | — |
+| `distanceM` | Distance between the interpolated car and GPS point, in meters. | `numeric` (decimal) | `8.197385`, `6.730981` | — |
+| `directionRad` | Direction from the interpolated car to the GPS point, in radians, counterclockwise from grid east. | `numeric` (decimal) | `-2.035405`, `2.642391` | −π to π (about −3.14159 to 3.14159) |
+
+
+
+Examples are taken from the CSV and rounded where needed. A dash means no short value list or range is shown.
+Missing values are blank in the CSV and read as `NA` in R; these are separate from the values listed above.
+
+
+The quality flags are now in `../../audit/referenceIntervals.csv`, matched using "segment".
+"referenceOk" is TRUE if the interval passed the model quality checks; "reason" explains any flags.
+The default `preserveV4Exclusions` setting in `../../settings.json` keeps the same exclusions as the original analysis.
+Set it to FALSE to include all modeled intervals with accepted GPS fixes instead.
+
+More info on the flags:
+path_obd_distance_disagreement : modeled path distance divided by integrated OBD distance falls outside of (0.75,1.25)
+anchor_confidence_below_60: at least one endpoint annotation had a confidence score below 60%
+construction_or_occluded_lane_uncertainty: interval belonged to route section previously flagged for uncertaihn lane placement.
+flagged_v4_geometry: the saved v4 geometry retained an unsuported/conflict flag
+elevation_grade_needs_review: The elevation profile implied a slope above 15% grade. possibly not accurate.
+conflicting_stop_coordinates: points 0-1 had this, stop with different positions, but this was not severe.
+coincident_anchors_without_held_stop: points 118-119 shared a position without a complete held-stop label
+
+
+
+```{r startup}
+library(ggplot2)
+source("../../buildChecks.R")
+assertCurrentBuild("../..")
+
+gps <- read.csv("../04_lane/gpsErrors.csv", na.strings = c("", "NA"))
+intervals <- read.csv("../../audit/referenceIntervals.csv", na.strings = c("", "NA"))
+settings <- jsonlite::fromJSON("../../settings.json")
+cameras <- c("garmin", "gopro", "redtiger", "rove")
+
+```
+
+
+Get the error for each gps, in terms of distance and direction in radians.
+The new CSV already has these calculated using `sqrt(east^2 + north^2)` and `atan2(north, east)` in projected meters.
+Keep excluded readings as NA so time gaps are not removed.
+
+
+```{r error dist dir}
+gps$radius <- gps$distanceM
+gps$theta <- gps$directionRad
+gps$usable <- gps$fix == 1 & is.finite(gps$radius)
+if (settings$preserveV4Exclusions) {
+  gps$usable <- gps$usable & intervals$referenceOk[match(gps$segment, intervals$segment)]
+}
+gps$usable[is.na(gps$usable)] <- FALSE
+gps$radius[!gps$usable] <- NA
+gps$theta[!gps$usable | (!is.na(gps$radius) & gps$radius == 0)] <- NA
+```
+
+
+Calculate autcorrelation
+
+
+```{r get autocor}
+results <- list()
+for (camera in cameras) {
+  e <- gps[gps$camera == camera, ]
+  step <- if (camera == "gopro") 0.1 else 1
+  slot <- round(e$timeSec / step)
+  stopifnot(!anyDuplicated(slot), min(slot) >= 0,
+            max(abs(e$timeSec - slot * step)) < 0.002)
+
+  radius <- theta <- rep(NA_real_, max(slot) + 1)
+  radius[slot + 1] <- e$radius
+  theta[slot + 1] <- e$theta
+  stopifnot(sum(is.finite(radius)) > 1, var(radius, na.rm = TRUE) > 0)
+
+  distance_acf <- acf(radius, lag.max = 300 / step,
+                      plot = FALSE, na.action = na.pass)
+  direction_cov <- acf(cbind(cos(theta), sin(theta)), type = "covariance",
+                       lag.max = 300 / step, plot = FALSE,
+                       na.action = na.pass)$acf
+  direction_acf <- direction_cov[, 1, 1] + direction_cov[, 2, 2]
+  stopifnot(is.finite(direction_acf[1]), direction_acf[1] > 1e-20)
+  direction_acf <- direction_acf / direction_acf[1]
+
+  lag_seconds <- as.numeric(distance_acf$lag) * step
+  results[[camera]] <- data.frame(
+    camera, lag_seconds = rep(lag_seconds, 2),
+    component = rep(c("Distance", "Direction"), each = length(lag_seconds)),
+    autocorrelation = c(as.numeric(distance_acf$acf), direction_acf))
+}
+result <- do.call(rbind, results)
+```
+
+
+
+```{r plot}
+#| fig-width: 10
+#| fig-height: 4.5
+#| fig-alt: "Static distance and direction autocorrelation versus lag in seconds for four receivers, relative to the interpolated v4 lane-center car."
+result$camera <- factor(result$camera, levels = cameras,
+                        labels = c("Garmin", "GoPro", "REDTIGER", "ROVE"))
+result$component <- factor(result$component, levels = c("Distance", "Direction"))
+plot <- ggplot(result, aes(lag_seconds, autocorrelation, color = camera)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ component, nrow = 1) +
+  scale_color_manual(values = c("#7C3AED", "#0284C7", "#D97706", "#15803D")) +
+  scale_x_continuous(breaks = seq(0, 300, 60)) +
+  labs(x = "Lag (seconds)", y = "Autocorrelation", color = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank())
+
+ggsave("interpolated_autocorrelation.png", plot, width = 10, height = 4.5, dpi = 300)
+plot
+```

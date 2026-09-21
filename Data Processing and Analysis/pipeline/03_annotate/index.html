@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GoPro truth mapper</title>
+  <link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><h1>GoPro truth mapper</h1><p>Original annotations preserved. New saves go to a separate file.</p></header>
+  <main>
+    <section>
+      <video id="video" controls muted playsinline></video>
+      <div class="controls"><button id="back">−0.1 s</button><button id="forward">+0.1 s</button>
+        <label>Drive seconds <input id="time" type="number" min="0" step="0.01" value="0"></label>
+        <button id="seek">Go</button><label>Playback <select id="rate"><option>1</option><option>2</option><option>4</option><option>8</option></select>×</label></div>
+      <p id="telemetry">Loading telemetry…</p><p id="signal"></p>
+      <details><summary>Camera GPS readouts (not annotation truth)</summary><div id="gpsReadout"></div></details>
+      <div class="controls"><button id="previous">Previous point</button><select id="points" aria-label="Annotation point"></select><button id="next">Next point</button></div>
+      <p id="status" role="status">Loading saved annotations…</p>
+    </section>
+    <section>
+      <div class="controls">
+        <label><input id="followGps" type="checkbox" checked> Follow GPS average on pause</label>
+        <button id="centerGps">Center now</button>
+      </div>
+      <div id="map"></div><p id="position">Click the map to choose the car position.</p>
+      <p class="muted">GPS centering moves the view only, never your annotation.</p>
+    </section>
+    <section id="form">
+      <div class="controls"><label>Point <input id="pointId" type="number" readonly></label>
+        <label>Lap <input id="lap" type="number" min="1" max="3" value="1"></label>
+        <label>Confidence % <input id="confidence" type="number" min="0" max="100" value="95"></label>
+        <button id="hold">Hold this location</button><button id="newPoint">New point</button></div>
+      <fieldset><legend>What happened?</legend><div id="triggers"></div></fieldset>
+      <label>Other trigger <input id="customTrigger" type="text"></label>
+      <label>Notes <textarea id="notes" rows="2"></textarea></label>
+      <div class="controls"><button id="update">Apply point changes</button><button id="save">Save a new CSV</button>
+        <label>Reload a new-format CSV <input id="load" type="file" accept=".csv"></label></div>
+      <p class="muted">Apply changes before saving. No GPS snapping. Holding a stop reuses one map position.
+        Edits do not automatically refit the approved v4 lane model.</p>
+    </section>
+  </main>
+  <script src="vendor/leaflet.js"></script><script src="app.js"></script>
+</body>
+</html>

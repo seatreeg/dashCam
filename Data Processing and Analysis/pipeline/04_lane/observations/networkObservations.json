@@ -1,0 +1,55 @@
+{
+  "status": "visual_lane_model_not_surveyed_truth",
+  "crs": "EPSG:32614",
+  "method": "Road-wide review using cached native aerial strips and picture-only GoPro crops. Stations refer to qa/scaffolds.json, only an imagery coordinate frame. center_knots are independently selected lane-center offsets (positive left), not GPS fits. Lane widths/offsets are visual approximations. Model bands are NOT independently surveyed boundaries. Raw annotation coordinates are preserved; derived lane anchors are recorded separately.",
+  "roads": [
+    {
+      "id": "n_st", "spans": [[12,42],[134,163],[262,294]],
+      "center_knots": [[0,-0.5],[40,-0.3],[100,-0.3],[160,-0.4],[220,-0.5],[247,-0.5],[270,-0.4],[290,-0.4],[320,-0.3],[350,-0.2],[378,-0.3],[400,-0.2],[450,-0.4],[490,-0.5],[520,-0.5],[560,-0.5],[600,-0.4],[620,-0.4],[640,-0.5],[690,-0.4],[730,-0.5],[750,-0.6],[770,-0.4],[800,-0.5],[840,-0.5],[875,-0.5],[900,-0.6],[940,-0.6],[980,-0.5],[1000,-0.5],[1020,-0.4],[1080,-0.5],[1110,-0.4],[1140,-0.4],[1200,-0.5],[1235,-0.4],[1260,-0.5],[1270,-0.3],[1280,0.4],[1290,1.5],[1300,2.8],[1320,3.0],[1363,3.0]],
+      "initial_offset": 0, "changes": [[[40,41,-3.4]],[[161,162,-3.4]],[[290,291,-3.4]]],
+      "note": "Hold the westbound/right through lane; enter the right-turn pocket only during the recorded maneuver. Lap 2 is missing the movement-begin trigger: 161 (intersection exit), not the blinker at 160, is an explicitly inferred start. Pocket exists only near the west end."
+    },
+    {
+      "id": "north10_urban", "spans": [[43,54],[164,175],[295,306]],
+      "center_knots": [[0,-3.2],[40,-3.2],[90,-3.3],[100,-3.3],[130,-3.2],[145,-3.2],[160,-2.8],[180,-1.7],[206,-0.7],[228,-1.0],[254,-1.1],[280,-1.2],[310,-0.9],[330,-0.5],[351,-0.2],[373,-0.2]],
+      "initial_offset": 3.4, "changes": [[[49,50,0]],[[170,171,0]],[[301,302,0]]],
+      "note": "Second-from-right lane from N to O; then hold rightmost after each lap's recorded lane change. Curb extensions change the road alignment; a fixed global east coordinate is not a lane."
+    },
+    {
+      "id": "north10_approach", "spans": [[55,59],[177,180],[308,311]],
+      "center_knots": [[-15,-2.0],[0,-2.0],[15,-1.6],[25,-1.2],[45,-0.6],[65,-0.2],[90,0.3],[110,0.6],[130,0.9],[150,1.0],[170,0.7],[187,0.4],[205,0.3]],
+      "initial_offset": 3.2, "changes": [[[56,57,0]],[[177,178,0]],[[308,309,0]]],
+      "note": "Persistent rightmost lane after the fork lane change. Curved curb and lane divider replace straight shortcuts on 178-179 and 309-310. Construction near the upstream fork remains uncertain."
+    },
+    {
+      "id": "salt_turn", "spans": [[68,74],[189,193],[318,324]],
+      "center_knots": [[-10,1.1],[0,1.1],[40,1.1],[80,1.2],[120,1.3],[155,1.4],[180,1.7],[205,2.0],[220,2.3],[230,2.4],[237,2.0],[243,1.0],[249,0.7]],
+      "initial_offset": 1.6, "changes": [[[70,71,0]],[[191,192,0]],[[320,321,0]]],
+      "note": "Right-side lane/pocket follows the rounded bridge curb into the Antelope turn. The lateral movement is a bounded 1.6 m taper inferred from imagery and footage, not a generic full-width lane jump. Existing low-confidence clicks are not forced onto the curb."
+    },
+    {
+      "id": "antelope_north", "spans": [[75,82],[194,202],[325,333]],
+      "center_knots": [[0,7.0],[30,7.0],[60,6.8],[85,7.0],[100,6.0],[120,4.7],[140,4.7],[160,4.6],[180,4.4],[200,3.0],[225,1.3],[252,0.0],[275,0.0],[300,0.0],[330,0.1],[355,0.2],[380,0.2],[395,0.2],[416,0.0]],
+      "initial_offset": -7.0, "changes": [[[77,78,-3.5],[79,80,0]],[[196,197,-3.5],[199,200,0]],[[326,327,-3.5],[328,329,0]]],
+      "note": "Trace the leftmost THROUGH lane around the entire bend, with two separately timed spatial lane changes from right to middle to left. Remain in the through lane when a median-side turn pocket opens. Includes the full curved approach to the held 330-331 stop."
+    },
+    {
+      "id": "antelope_south", "spans": [[85,99],[207,225],[338,354]],
+      "center_knots": [[0,0.0],[32,-0.1],[70,-0.2],[110,-0.2],[129,-0.1],[152,-0.1],[180,-0.2],[225,-0.2],[243,-0.1],[285,-0.2],[320,-0.3],[360,-0.4],[400,-0.4],[440,-0.7],[480,-0.8],[520,-1.0],[560,-1.0],[600,-1.2],[622,-1.2],[650,-1.3],[675,-1.7],[700,-2.0],[720,-2.2],[735,-2.2],[743,-1.8]],
+      "initial_offset": 0, "changes": [[],[],[]],
+      "note": "Continuous southbound left lane follows the median instead of cutting into it. Lane center shifts west as the median widens before K Street; no artificial lane change is added."
+    },
+    {
+      "id": "k_st", "spans": [[100,104],[226,232],[355,359]],
+      "center_knots": [[0,-0.4],[40,-0.4],[80,-0.4],[115,-0.4],[140,-0.4],[170,-0.4],[190,-0.4],[205,-1.2],[220,-3.0],[232,-4.0],[245,-4.0],[260,-4.0]],
+      "initial_offset": 0, "changes": [[[102,103,4.0]],[[228,229,4.0]],[[357,358,4.0]]],
+      "note": "Hold the eastbound left through lane, then enter the left-turn pocket during the annotated lane change. The through-lane base does not follow the pocket's raw clicks."
+    },
+    {
+      "id": "s21_return", "spans": [[105,110],[233,238],[360,363]],
+      "center_knots": [[0,-2.2],[10,-2.1],[25,-1.7],[40,-1.1],[55,-0.6],[70,-0.3],[87,-0.3],[96,-0.3],[115,-0.4],[140,-0.4],[170,-0.4],[200,-0.3],[220,-0.3]],
+      "initial_offset": 0, "changes": [[],[],[]],
+      "note": "Northbound through lane stays right of the changing center/turn-lane markings. Follow the pavement between yellow center markings and right curb, not the median centerline."
+    }
+  ]
+}

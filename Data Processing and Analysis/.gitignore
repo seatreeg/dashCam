@@ -1,0 +1,38 @@
+# Source footage and generated review videos stay outside Git.
+*.[mM][pP]4
+*.[mM][oO][vV]
+*.[mM][kK][vV]
+*.[aA][vV][iI]
+
+# Python environments and caches.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# R / Quarto session files, caches, and generated support assets.
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+Rplots.pdf
+.quarto/
+*_files/
+*.knit.md
+*.utf8.md
+
+# Generated reports; keep QMD sources and the annotator's index.html.
+/pipeline/05_analysis/*.html
+/pipeline/06_docs/*.html
+
+# Temporary build, video-preparation, and browser-profile files.
+/audit/tmp/
+/audit/setup/*Progress.json
+**/review/*.json.tmp
+**/review/*Profile/
+
+# Cached Esri imagery is local-only until redistribution permission is established.
+/imagery/tiles/
+
+# CSVs, annotations, settings, lane inputs, and published audit records stay tracked.

@@ -1,0 +1,13 @@
+{
+  "driveStartUtc": "2026-07-13T10:28:00Z",
+  "extractionEndUtc": "2026-07-13T11:40:00Z",
+  "piClockAnchor": "2026-03-02 00:39:16",
+  "piCorrectionSec": -125.2,
+  "cameraClockFastSec": {"garmin": 0, "gopro": 0, "redtiger": 0, "rove": 0},
+  "samplePeriodSec": {"garmin": 1, "gopro": 0.1, "redtiger": 1, "rove": 1},
+  "expectedClips": {"garmin": 68, "gopro": 2, "redtiger": 68, "rove": 67},
+  "localTimezone": "America/Chicago",
+  "distanceCrs": 32614,
+  "maximumLagSec": 300,
+  "preserveV4Exclusions": true
+}
