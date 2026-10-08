@@ -91,7 +91,7 @@ def numericRows(filePath, textFields=()):
 
 
 def reviewClips():
-    manifest = appDir / "review/videoClips.json"
+    manifest = projectDir / "Data/Data Annotate/review/videoClips.json"
     if not manifest.exists():
         return []
     settings = json.loads((projectDir / "settings.json").read_text())
@@ -101,7 +101,7 @@ def reviewClips():
                 "samplePeriodSec": settings["samplePeriodSec"]["gopro"]}
     # refuse stale timelines instead of showing a frame as though it were current
     return [clip for clip in clips if all(clip.get("recipe", {}).get(key) == value
-            for key, value in expected.items()) and (appDir / "review" / clip["file"]).is_file()]
+            for key, value in expected.items()) and (projectDir / "Data/Data Annotate/review" / clip["file"]).is_file()]
 
 
 
@@ -119,9 +119,9 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/data":
             try:
                 self.jsonResponse({
-                    "annotations": validateAnnotations(readCsv(appDir / "annotations.csv")),
-                    "gps": numericRows(projectDir / "pipeline/02_extract/combined/dashcams.csv", ("camera", "clip")),
-                    "vehicle": numericRows(projectDir / "pipeline/02_extract/combined/vehicle.csv"),
+                    "annotations": validateAnnotations(readCsv(projectDir / "Data/Data Annotate/annotations.csv")),
+                    "gps": numericRows(projectDir / "Data/Data/dashcams.csv", ("camera", "clip")),
+                    "vehicle": numericRows(projectDir / "Data/Data/vehicle.csv"),
                     "clips": reviewClips(),
                     "triggers": triggerLabels,
                 })
@@ -135,7 +135,7 @@ class Handler(BaseHTTPRequestHandler):
         elif re.fullmatch(r"/tiles/\d+/\d+/\d+\.png", route):
             target = projectDir / "imagery" / route.lstrip("/")
         elif re.fullmatch(r"/video/[A-Za-z0-9_-]+\.mp4", route):
-            target = appDir / "review" / route.rsplit("/", 1)[1]
+            target = projectDir / "Data/Data Annotate/review" / route.rsplit("/", 1)[1]
         else:
             self.send_error(404)
             return
@@ -201,8 +201,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.jsonResponse({"annotations": rows})
             elif self.path == "/save":
                 rows = validateAnnotations(body["annotations"])
-                saveDir = appDir / "saves"
-                saveDir.mkdir(exist_ok=True)
+                saveDir = projectDir / "Data/Data Annotate/saves"
+                saveDir.mkdir(parents=True, exist_ok=True)
                 savePath = saveDir / ("annotations_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".csv")
                 with savePath.open("x", newline="", encoding="utf-8") as csvFile:
                     writer = csv.DictWriter(csvFile, fieldnames=fields)

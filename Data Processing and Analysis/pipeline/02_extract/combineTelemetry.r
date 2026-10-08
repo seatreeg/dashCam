@@ -3,7 +3,7 @@ source("helpers.R")
 # CAMERA READINGS: one row for every original GPS observation.
 cameraData <- list()
 for (camera in names(settings$samplePeriodSec)) {
-  original <- readCsv(paste0("pipeline/02_extract/original/", camera, ".csv"))
+  original <- readCsv(paste0("Data/Data/", camera, ".csv"))
   stopifnot(all(original$speedUnits %in% c("mph", "km/h")))
   timeSec <- gpsSeconds(original$timeUtc) - settings$cameraClockFastSec[[camera]]
   speedMps <- ifelse(original$speedUnits == "mph", original$speed * 0.44704, original$speed / 3.6)
@@ -17,11 +17,11 @@ for (camera in names(settings$samplePeriodSec)) {
 }
 dashcams <- do.call(rbind, cameraData)
 dashcams <- dashcams[order(dashcams$timeSec, dashcams$camera), ]
-writeCsv(dashcams, "pipeline/02_extract/combined/dashcams.csv")
+writeCsv(dashcams, "Data/Data/dashcams.csv")
 
 # VEHICLE READINGS: keep the original logging rate for the odometer and wires.
 # The Pi clock was wrong. Apply the documented clock mapping exactly once.
-original <- readCsv("pipeline/01_record/raw/pi/car_telemetry.csv")
+original <- readCsv("Data/Data Raw/pi/car_telemetry.csv")
 rawTime <- as.POSIXct(original$Computer_DateTime, format = "%Y-%m-%d %H:%M:%OS", tz = "UTC")
 piAnchor <- as.POSIXct(settings$piClockAnchor, tz = "UTC")
 keep <- rawTime >= piAnchor
@@ -34,6 +34,6 @@ vehicle <- data.frame(
   obdConnected = original$OBD_Connected, arduinoConnected = original$Arduino_Connected)
 vehicle <- vehicle[order(vehicle$timeSec), ]
 stopifnot(all(is.finite(vehicle$timeSec)), all(diff(vehicle$timeSec) > 0))
-writeCsv(vehicle, "pipeline/02_extract/combined/vehicle.csv")
+writeCsv(vehicle, "Data/Data/vehicle.csv")
 
 cat(nrow(dashcams), "original GPS readings;", nrow(vehicle), "vehicle log rows.\n")

@@ -12,7 +12,7 @@ Leaflet was used to make the interactive labler.
 
 ## CSV Columns Documentation
 
-The data comes from `../04_lane/gpsErrors.csv`, made by the lane interpolation code in 04.
+The data comes from `../../Data/Data/gpsErrors.csv`, made by the lane interpolation code in 04.
 Each row is an original camera GPS reading compared with the modeled car position at the same time.
 Only the car position is interpolated, not the GPS readings.
 The main reading ID is `camera` plus `readingIndex`, which starts at 1 for each camera and continues across clips.
@@ -41,7 +41,7 @@ Examples are taken from the CSV and rounded where needed. A dash means no short 
 Missing values are blank in the CSV and read as `NA` in R; these are separate from the values listed above.
 
 
-The quality flags are now in `../../audit/referenceIntervals.csv`, matched using "segment".
+The quality flags are now in `../../Data/Data/referenceIntervals.csv`, matched using "segment".
 "referenceOk" is TRUE if the interval passed the model quality checks; "reason" explains any flags.
 The default `preserveV4Exclusions` setting in `../../settings.json` keeps the same exclusions as the original analysis.
 Set it to FALSE to include all modeled intervals with accepted GPS fixes instead.
@@ -62,8 +62,8 @@ library(ggplot2)
 source("../../buildChecks.R")
 assertCurrentBuild("../..")
 
-gps <- read.csv("../04_lane/gpsErrors.csv", na.strings = c("", "NA"))
-intervals <- read.csv("../../audit/referenceIntervals.csv", na.strings = c("", "NA"))
+gps <- read.csv("../../Data/Data/gpsErrors.csv", na.strings = c("", "NA"))
+intervals <- read.csv("../../Data/Data/referenceIntervals.csv", na.strings = c("", "NA"))
 settings <- jsonlite::fromJSON("../../settings.json")
 cameras <- c("garmin", "gopro", "redtiger", "rove")
 
@@ -141,6 +141,6 @@ plot <- ggplot(result, aes(lag_seconds, autocorrelation, color = camera)) +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom", panel.grid.minor = element_blank())
 
-ggsave("interpolated_autocorrelation.png", plot, width = 10, height = 4.5, dpi = 300)
+ggsave("../../Data/Data/interpolated_autocorrelation.png", plot, width = 10, height = 4.5, dpi = 300)
 plot
 ```

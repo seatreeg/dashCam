@@ -25,14 +25,14 @@ def clipTiming(row, settings, duration, lastAnnotation):
 
 def prepareVideos(projectDir=None, outputDir=None):
     projectDir = Path(projectDir) if projectDir else Path(__file__).resolve().parents[3]
-    outputDir = Path(outputDir) if outputDir else projectDir / "pipeline/03_annotate/review"
+    outputDir = Path(outputDir) if outputDir else projectDir / "Data/Data Annotate/review"
     outputDir.mkdir(parents=True, exist_ok=True)
     ffmpeg = os.environ.get("FFMPEG", shutil.which("ffmpeg") or "ffmpeg")
     ffprobe = os.environ.get("FFPROBE", shutil.which("ffprobe") or "ffprobe")
     settings = json.loads((projectDir / "settings.json").read_text())
-    with (projectDir / "pipeline/02_extract/original/gopro.csv").open(newline="", encoding="utf-8") as csvFile:
+    with (projectDir / "Data/Data/gopro.csv").open(newline="", encoding="utf-8") as csvFile:
         readings = list(csv.DictReader(csvFile))
-    with (projectDir / "pipeline/03_annotate/annotations.csv").open(newline="", encoding="utf-8") as csvFile:
+    with (projectDir / "Data/Data Annotate/annotations.csv").open(newline="", encoding="utf-8") as csvFile:
         endTime = max(float(row["timeSec"]) for row in csv.DictReader(csvFile))
 
     manifestPath = outputDir / "videoClips.json"
@@ -53,7 +53,7 @@ def prepareVideos(projectDir=None, outputDir=None):
 
     clips = []
     for clipName, row in firstRows.items():
-        sourcePath = projectDir / "pipeline/01_record/raw/gopro" / clipName
+        sourcePath = projectDir / "Data/Data Raw/gopro" / clipName
         timing = clipTiming(row, settings, durationOf(sourcePath), endTime)
         if timing["endSec"] <= timing["startSec"]:
             continue

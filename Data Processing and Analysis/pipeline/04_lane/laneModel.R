@@ -23,7 +23,7 @@ pathDistance <- function(xy) c(0, cumsum(sqrt(rowSums(diff(xy)^2))))
 
 # THE ODOMETER IS THE EXACT INTEGRAL OF LINEARLY INTERPOLATED OBD SPEED.
 readOdometer <- function() {
-  vehicle <- readCsv("pipeline/02_extract/combined/vehicle.csv")
+  vehicle <- readCsv("Data/Data/vehicle.csv")
   vehicle <- vehicle[is.finite(vehicle$speedMps) & vehicle$obdConnected == 1, ]
   stopifnot(all(diff(vehicle$timeSec) > 0), all(vehicle$speedMps >= 0))
   vehicle$distanceM <- c(0, cumsum(diff(vehicle$timeSec) *
@@ -76,8 +76,8 @@ surfaceProfile <- function(path, cells) {
 }
 
 checkReviewedAnnotations <- function() {
-  annotations <- readCsv("pipeline/03_annotate/annotations.csv")
-  original <- readCsv("pipeline/03_annotate/original_annotation/anno 8 11 2026.csv")
+  annotations <- readCsv("Data/Data Annotate/annotations.csv")
+  original <- readCsv("Data/Data Annotate/original_annotation/anno 8 11 2026.csv")
   # these recorded imagery observations are tied to the original reviewed drive
   # the geometry can be rebuilt, but new annotations need a new spatial review
   stopifnot(identical(annotations$pointId, original$point_idx),
@@ -94,15 +94,15 @@ checkReviewedAnnotations <- function() {
 
 buildLaneModel <- function() {
   annotations <- checkReviewedAnnotations()
-  build <- fromJSON("pipeline/04_lane/generated/geometryBuild.json", simplifyVector = FALSE)
+  build <- fromJSON("Data/Data/laneGeometry/geometryBuild.json", simplifyVector = FALSE)
   stopifnot(build$distanceCrs == settings$distanceCrs)
   for (file in names(c(build$inputs, build$code, build$outputs))) {
     expected <- c(build$inputs, build$code, build$outputs)[[file]]
     if (digest::digest(file = file, algo = "sha256") != expected)
       stop("Stale lane geometry: rerun Rscript pipeline/04_lane/buildLaneGeometry.R")
   }
-  shapes <- st_transform(st_read("pipeline/04_lane/generated/lanePaths.geojson", quiet = TRUE), settings$distanceCrs)
-  route <- fromJSON("pipeline/04_lane/generated/laneRoute.json", simplifyVector = FALSE)$segments
+  shapes <- st_transform(st_read("Data/Data/laneGeometry/lanePaths.geojson", quiet = TRUE), settings$distanceCrs)
+  route <- fromJSON("Data/Data/laneGeometry/laneRoute.json", simplifyVector = FALSE)$segments
   stopifnot(nrow(shapes) == nrow(annotations) - 1, length(route) == nrow(shapes))
   vehicle <- readOdometer()
   cells <- readElevation()

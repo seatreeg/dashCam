@@ -5,7 +5,7 @@ interpolateCar <- function() {
   buildLaneGeometry()
 
   model <- buildLaneModel()
-  gps <- readCsv("pipeline/02_extract/combined/dashcams.csv")
+  gps <- readCsv("Data/Data/dashcams.csv")
   reference <- referenceAt(model, gps$timeSec)
   referenceDegrees <- toDegrees(reference$east, reference$north)
   gpsMeters <- toMeters(gps$longitude, gps$latitude)
@@ -20,16 +20,16 @@ interpolateCar <- function() {
   errors <- data.frame(gps, segment = reference$segment,
     referenceLatitude = referenceDegrees[, 2], referenceLongitude = referenceDegrees[, 1],
     distanceM, directionRad)
-  writeCsv(errors, "pipeline/04_lane/gpsErrors.csv")
+  writeCsv(errors, "Data/Data/gpsErrors.csv")
 
   # QUALITY DECISIONS ARE SEPARATE; DO NOT DELETE ROWS OR COMPRESS TIME.
-  writeCsv(model$intervals, "audit/referenceIntervals.csv")
+  writeCsv(model$intervals, "Data/Data/referenceIntervals.csv")
   endTime <- tail(model$annotationTimes, 1)
   reference <- referenceAt(model, sort(unique(c(seq(0, endTime, by = 0.1), endTime))))
   coordinates <- toDegrees(reference$east, reference$north)
   car <- data.frame(timeSec = reference$timeSec, segment = reference$segment,
                     latitude = coordinates[, 2], longitude = coordinates[, 1])
-  writeCsv(car, "pipeline/04_lane/carPath.csv")
+  writeCsv(car, "Data/Data/carPath.csv")
   cat(nrow(errors), "GPS rows;", nrow(car), "display-path rows;",
       sum(model$intervals$referenceOk), "of", nrow(model$intervals), "supported intervals.\n")
 }

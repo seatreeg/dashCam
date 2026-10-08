@@ -23,7 +23,7 @@ cameraNames = {
 
 
 def extractCamera(camera, outputDir=None):
-    clipPaths = sorted((projectDir / "pipeline/01_record/raw" / camera).glob("*"))
+    clipPaths = sorted((projectDir / "Data/Data Raw" / camera).glob("*"))
     clipPaths = [path for path in clipPaths if path.suffix.lower() == ".mp4"]
     if not clipPaths:
         raise FileNotFoundError(f"No original MP4 files for {camera}; finish raw-data copying first.")
@@ -64,7 +64,7 @@ def extractCamera(camera, outputDir=None):
     rows.sort(key=lambda row: (row["timeUtc"], row["clip"], row["sampleIndex"]))
     if not rows:
         raise ValueError(f"No in-window observations for {camera}")
-    outputDir = Path(outputDir) if outputDir is not None else projectDir / "pipeline/02_extract/original"
+    outputDir = Path(outputDir) if outputDir is not None else projectDir / "Data/Data"
     outputDir.mkdir(parents=True, exist_ok=True)
     outputPath = outputDir / f"{camera}.csv"
     with outputPath.open("w", newline="", encoding="utf-8") as csvFile:

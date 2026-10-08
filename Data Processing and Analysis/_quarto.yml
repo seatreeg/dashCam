@@ -1,0 +1,5 @@
+project:
+  type: default
+  output-dir: Data/Data/analysis
+  render:
+    - pipeline/05_analysis/autocorrelationAnalysis.qmd

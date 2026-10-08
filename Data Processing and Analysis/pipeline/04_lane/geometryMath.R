@@ -19,7 +19,7 @@ smoothStep <- function(value) {
 }
 
 readGeometryAnnotations <- function() {
-  points <- readCsv("pipeline/03_annotate/annotations.csv")
+  points <- readCsv("Data/Data Annotate/annotations.csv")
   points <- points[order(points$timeSec), ]
   stopifnot(nrow(points) == 375, all(points$pointId == 0:374),
             all(diff(points$timeSec) > 0), all(points$lap %in% 1:3))

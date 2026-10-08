@@ -23,7 +23,7 @@ Rplots.pdf
 *.utf8.md
 
 # Generated reports; keep QMD sources and the annotator's index.html.
-/pipeline/05_analysis/*.html
+/Data/Data/analysis/
 /pipeline/06_docs/*.html
 
 # Temporary build, video-preparation, and browser-profile files.
@@ -36,3 +36,6 @@ Rplots.pdf
 /imagery/tiles/
 
 # CSVs, annotations, settings, lane inputs, and published audit records stay tracked.
+
+/.quarto/
+**/*.quarto_ipynb

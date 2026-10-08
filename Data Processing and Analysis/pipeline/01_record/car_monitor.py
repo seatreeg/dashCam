@@ -24,6 +24,7 @@ import sys
 import threading
 import time
 from datetime import datetime
+from pathlib import Path
 
 import serial
 import serial.tools.list_ports
@@ -47,7 +48,7 @@ ARDUINO_BAUD = 115200
 OBD_PORT     = None      # None = let python-OBD scan for the ELM327 adapter
 ENABLE_OBD   = True      # set False to skip OBD entirely (Arduino-only logging)
 
-OUTPUT_FILE  = 'car_telemetry.csv'
+OUTPUT_FILE  = Path(__file__).resolve().parents[2] / 'Data/Data Raw/pi/car_telemetry.csv'
 SAMPLE_HZ    = 10        # rows written per second (10 Hz = one row every 100 ms)
 
 ENABLE_GUI   = True      # set False for headless logging (e.g. Pi with no screen)
@@ -191,6 +192,7 @@ def obd_reader(state, stop_event):
 
 def make_writer():
     """Open the CSV in append mode, writing the header only if the file is new."""
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     file = open(OUTPUT_FILE, mode='a', newline='')
     writer = csv.writer(file)
     if file.tell() == 0:

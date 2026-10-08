@@ -4,9 +4,9 @@
 
 buildInputFiles <- function(root = ".") {
   fixed <- c("helpers.R", "buildChecks.R", "runAnalysis.R", "pipeline/02_extract/combineTelemetry.r",
-    "pipeline/03_annotate/convertAnnotations.R", "pipeline/03_annotate/annotations.csv",
-    "pipeline/03_annotate/original_annotation/anno 8 11 2026.csv", "pipeline/01_record/raw/pi/car_telemetry.csv",
-    paste0("pipeline/02_extract/original/", c("garmin", "gopro", "redtiger", "rove"), ".csv"),
+    "pipeline/03_annotate/convertAnnotations.R", "Data/Data Annotate/annotations.csv",
+    "Data/Data Annotate/original_annotation/anno 8 11 2026.csv", "Data/Data Raw/pi/car_telemetry.csv",
+    paste0("Data/Data/", c("garmin", "gopro", "redtiger", "rove"), ".csv"),
     paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "geometryMath.R", "geometryStages.R", "laneModel.R", "interpolateCar.R")))
   sort(c(fixed,
     paste0("pipeline/04_lane/observations/", list.files(file.path(root, "pipeline/04_lane/observations"), "[.]json$")),
@@ -14,9 +14,9 @@ buildInputFiles <- function(root = ".") {
 }
 
 buildOutputFiles <- function(root = ".") {
-  sort(c("pipeline/02_extract/combined/dashcams.csv", "pipeline/02_extract/combined/vehicle.csv",
-    "pipeline/04_lane/gpsErrors.csv", "pipeline/04_lane/carPath.csv", "audit/referenceIntervals.csv",
-    paste0("pipeline/04_lane/generated/", list.files(file.path(root, "pipeline/04_lane/generated"), "[.](json|geojson)$"))))
+  sort(c("Data/Data/dashcams.csv", "Data/Data/vehicle.csv",
+    "Data/Data/gpsErrors.csv", "Data/Data/carPath.csv", "Data/Data/referenceIntervals.csv",
+    paste0("Data/Data/laneGeometry/", list.files(file.path(root, "Data/Data/laneGeometry"), "[.](json|geojson)$"))))
 }
 
 fileHashes <- function(files, root = ".") {
@@ -77,7 +77,7 @@ runVerifiedBuild <- function() {
     if (!complete) writeBuildRecord(list(version = 1, status = "failed",
       note = "No analysis is authorized until a successful rerun."), root)
   })
-  if (!file.exists("pipeline/03_annotate/annotations.csv")) source("pipeline/03_annotate/convertAnnotations.R")
+  if (!file.exists("Data/Data Annotate/annotations.csv")) source("pipeline/03_annotate/convertAnnotations.R")
   source("pipeline/04_lane/laneModel.R")
   checkReviewedAnnotations()
   inputs <- fileHashes(buildInputFiles(root), root)
@@ -109,5 +109,5 @@ runVerifiedBuild <- function() {
     inputs = as.list(inputs), outputs = as.list(outputs)), root)
   assertCurrentBuild(root)
   complete <- TRUE
-  cat("Verified data are ready. Render pipeline/05_analysis/autocorrelation.qmd with Quarto.\n")
+  cat("Verified data are ready. Render pipeline/05_analysis/autocorrelationAnalysis.qmd with Quarto.\n")
 }

@@ -2,7 +2,7 @@
 source("pipeline/04_lane/geometryStages.R")
 
 
-buildLaneGeometry <- function(outputDir = "pipeline/04_lane/generated") {
+buildLaneGeometry <- function(outputDir = "Data/Data/laneGeometry") {
   stopifnot(settings$distanceCrs == 32614)
   dir.create(outputDir, recursive = TRUE, showWarnings = FALSE)
   points <- readGeometryAnnotations()
@@ -55,7 +55,7 @@ buildLaneGeometry <- function(outputDir = "pipeline/04_lane/generated") {
   write_json(anchors, file.path(outputDir, "laneAnchors.json"), pretty = TRUE, digits = 12, na = "null")
   write_json(list(status = "reconstructed_v4_spatial_assumptions_not_surveyed_truth", segments = segments),
     file.path(outputDir, "laneRoute.json"), auto_unbox = TRUE, digits = 12)
-  inputFiles <- c("pipeline/03_annotate/annotations.csv", list.files("pipeline/04_lane/observations", "[.]json$", full.names = TRUE))
+  inputFiles <- c("Data/Data Annotate/annotations.csv", list.files("pipeline/04_lane/observations", "[.]json$", full.names = TRUE))
   codeFiles <- c("helpers.R", paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "geometryMath.R", "geometryStages.R")))
   hashes <- function(files) as.list(setNames(vapply(files, function(file) digest::digest(file = file, algo = "sha256"), ""), files))
   outputFiles <- file.path(outputDir, c("lanePaths.geojson", "laneAnchors.json", "laneRoute.json"))
