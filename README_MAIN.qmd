@@ -1,0 +1,359 @@
+---
+title: "README_MAIN"
+format:
+  html:
+    embed-resources: true
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        .pipeline img { width: 100%; max-width: 900px; max-height: none; }
+        @media print { .pipeline img { max-height: 230mm; width: auto; max-width: 100%; } }
+        body { max-width: 1060px; margin: auto; font-family: system-ui, sans-serif; color: #26352f; }
+        h1, h2, h3 { color: #193d34; }
+        table { width: 100%; font-size: 0.8em; table-layout: fixed; }
+        th, td { vertical-align: top; overflow-wrap: anywhere; padding: 7px 8px !important; }
+        th:first-child, td:first-child { width: 17%; }
+        th:nth-child(2), td:nth-child(2) { width: 33%; }
+        th:nth-child(3), td:nth-child(3) { width: 10%; }
+        th:nth-child(4), td:nth-child(4) { width: 16%; }
+        th:nth-child(5), td:nth-child(5) { width: 24%; }
+        .pipeline img { max-height: 820px; width: auto; display: block; margin: auto; }
+        @media print {
+          @page { size: A4; margin: 17mm 14mm 17mm; }
+          body { font-size: 10pt; line-height: 1.35; }
+          #quarto-header, nav, .anchorjs-link, .code-copy-button { display: none !important; }
+          h2 { break-before: page; }
+          h2, h3, h4 { break-after: avoid; }
+          p, li { orphans: 3; widows: 3; }
+          pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 8pt; }
+          table { font-size: 8pt; } tr { break-inside: avoid; } thead { display: table-header-group; }
+          .pipeline img { max-height: 230mm; }
+          a { color: inherit; text-decoration: none; }
+        }
+        </style>
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+
+## Flowchart
+
+::: {.pipeline}
+
+```{r}
+#| label: flowchart
+#| dev: svg
+#| fig-width: 10
+#| fig-height: 12
+#| fig-alt: "Pipeline from recording to polar autocorrelation, using the GitHub upload paths. The analysis result is an in-memory R object, not a CSV: camera, lag_seconds, component, autocorrelation."
+grid::grid.newpage()
+titles <- c("1. Record", "2. Extract original telemetry", "3. Combine clocks and units",
+  "4. Annotate GoPro footage", "5. Rebuild the v4 lanes",
+  "6. Interpolate the car along the lanes", "7. Calculate polar autocorrelation")
+codes <- c("pipeline/01_record/car_monitor.py + dashcam firmware",
+  "pipeline/02_extract/extractTelemetry.py + decoders.py",
+  "pipeline/02_extract/combineTelemetry.r + settings.json",
+  "pipeline/03_annotate/convertAnnotations.R + server.py",
+  "pipeline/04_lane/buildLaneGeometry.R\ngeometryMath.R + geometryStages.R",
+  "pipeline/04_lane/interpolateCar.R + laneModel.R",
+  "pipeline/05_analysis/autocorrelationAnalysis.qmd")
+arrows <- c(
+  "Data/Data Raw/{camera}/*.mp4\nData/Data Raw/pi/car_telemetry.csv",
+  "Data/Data/{garmin,gopro,redtiger,rove}.csv\n+ original Pi recorder log",
+  "Data/Data/dashcams.csv + Data/Data/vehicle.csv\nData/Data Annotate/original_annotation/ + Data/Data Annotate/review/ + imagery/",
+  "Data/Data Annotate/annotations.csv\npipeline/04_lane/observations/*.json",
+  "Data/Data/laneGeometry/{lanePaths.geojson,laneRoute.json}\nData/Data/{vehicle.csv,dashcams.csv} + pipeline/04_lane/inputs/elevation*.json",
+  "Data/Data/gpsErrors.csv + Data/Data/referenceIntervals.csv\nData/Data/carPath.csv for display")
+ys <- seq(0.945, 0.115, length.out = 7)
+for (index in seq_along(ys)) {
+  grid::grid.roundrect(x = 0.5, y = ys[index], width = 0.94, height = 0.079,
+    r = grid::unit(0.012, "snpc"), gp = grid::gpar(fill = "#eef5f3", col = "#466c62", lwd = 1.3))
+  grid::grid.text(titles[index], x = 0.5, y = ys[index] + 0.018,
+    gp = grid::gpar(fontsize = 13, fontface = "bold", col = "#193d34"))
+  grid::grid.text(codes[index], x = 0.5, y = ys[index] - 0.014,
+    gp = grid::gpar(fontsize = 10.1, col = "#273532"))
+  if (index < length(ys)) {
+    grid::grid.lines(x = c(0.5, 0.5), y = c(ys[index] - 0.04, ys[index + 1] + 0.041),
+      arrow = grid::arrow(length = grid::unit(0.08, "inches")), gp = grid::gpar(col = "#70857f"))
+    grid::grid.rect(x = 0.5, y = mean(ys[c(index, index + 1)]), width = 0.99, height = 0.041,
+      gp = grid::gpar(fill = "white", col = NA))
+    grid::grid.text(arrows[index], x = 0.5, y = mean(ys[c(index, index + 1)]),
+      gp = grid::gpar(fontsize = 9.2, col = "#354840"))
+  }
+}
+grid::grid.text("Output: Data/Data/interpolated_autocorrelation.png", x = 0.5, y = 0.047,
+  gp = grid::gpar(fontsize = 11, col = "#193d34"))
+grid::grid.text("R object result (not a CSV): camera, lag_seconds, component, autocorrelation",
+  x = 0.5, y = 0.022, gp = grid::gpar(fontsize = 9.5, col = "#354840"))
+```
+
+
+
+## CSV column tables
+
+### Original Pi recorder log
+
+Orginal readings from the car direclty (no dashcam). Note this was not in sync with time, but the CSV constructed from it, `Data/Data/vehicle.csv`, was.
+
+`Data/Data Raw/pi/car_telemetry.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `Computer_DateTime` | Uncorrected Pi wall-clock timestamp. Its date/time were wrong during this recording. | text timestamp | 2026-03-02 00:22:06.620 | YYYY-MM-DD HH:MM:SS.mmm; not true UTC |
+| `Seconds_Elapsed` | Elapsed wall-clock seconds since the recorder program started. | number | 0.46 | Nonnegative seconds |
+| `RPM` | Most recent recorded OBD engine speed. | number | 758 | Nonnegative revolutions/minute |
+| `Speed_MPH` | OBD speed already converted to mph and rounded by the original recorder. | number | 0 | Nonnegative miles/hour |
+| `Throttle_Pct` | Most recent recorded OBD throttle position. | number | 15.3 | 0 to 100 percent |
+| `Yellow_Wire` | Left trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `Green_Wire` | Right trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `Arduino_Millis` | Arduino's elapsed counter received over serial. | integer | 70 | Milliseconds since Arduino startup; may wrap/reset |
+| `OBD_Connected` | Recorder's OBD connection flag; does not prove a new sensor reading at every log tick. | integer | 0 | 0 or 1 |
+| `Arduino_Connected` | Recorder's Arduino connection flag. | integer | 1 | 0 or 1 |
+
+### Garmin original extraction
+
+Individual readings from the GARMIN camera.
+
+`Data/Data/garmin.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | GRMN0213.MP4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 33 | 0 or greater |
+| `timeUtc` | GPS/drive timestamp in ISO 8601 UTC. original files retain extracted timestamps. | text timestamp | 2026-07-13T10:28:00+00:00 | YYYY-MM-DDTHH:MM:SS[.fraction]+00:00 or Z |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.8110815 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894486 | -180 to 180 decimal degrees |
+| `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0 | Nonnegative; see speedUnits |
+| `speedUnits` | Units for this camera's original reported speed. | text | mph | mph |
+| `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | fix | fix, nofix |
+
+### GoPro original extraction
+
+Individual readings from the GOPRO camera.
+
+`Data/Data/gopro.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | GX010003.MP4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 3082 | 0 or greater |
+| `timeUtc` | GPS/drive timestamp in ISO 8601 UTC. original files retain extracted timestamps. | text timestamp | 2026-07-13T10:28:00+00:00 | YYYY-MM-DDTHH:MM:SS[.fraction]+00:00 or Z |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.811177 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894718 | -180 to 180 decimal degrees |
+| `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0.0792 | Nonnegative; see speedUnits |
+| `speedUnits` | Units for this camera's original reported speed. | text | km/h | km/h |
+| `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | 3D | 2D, 3D, nofix |
+| `accelX` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -9.5742 | Real numbers in accelUnits; blank if unavailable |
+| `accelY` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.4498 | Real numbers in accelUnits; blank if unavailable |
+| `accelZ` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -2.4052 | Real numbers in accelUnits; blank if unavailable |
+| `accelUnits` | GoPro camera-axis acceleration units. | text | m/s^2 | m/s^2 |
+| `gyroX` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00144 | Real numbers in gyroUnits |
+| `gyroY` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00165 | Real numbers in gyroUnits |
+| `gyroZ` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00383 | Real numbers in gyroUnits |
+| `gyroUnits` | Units for angular rate. Only GoPro supplies gyroscope values. | text | rad/s | rad/s |
+
+### REDTIGER original extraction
+
+Individual readings from the REDTIGER camera.
+
+`Data/Data/redtiger.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | 20260713052715_000198F.MP4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 45 | 0 or greater |
+| `timeUtc` | GPS/drive timestamp in ISO 8601 UTC. original files retain extracted timestamps. | text timestamp | 2026-07-13T10:28:00+00:00 | YYYY-MM-DDTHH:MM:SS[.fraction]+00:00 or Z |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.811145 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894857 | -180 to 180 decimal degrees |
+| `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0 | Nonnegative; see speedUnits |
+| `speedUnits` | Units for this camera's original reported speed. | text | mph | mph |
+| `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | active | active, inactive |
+| `accelX` | Estimated camera-axis X acceleration: original signed count multiplied by redtigerGPerCount = 0.048. No baseline/gravity correction is applied. | number | -0.048 | Signed multiples of 0.048 g; blank if unavailable |
+| `accelY` | Estimated camera-axis Y acceleration: original signed count multiplied by redtigerGPerCount = 0.048. No baseline/gravity correction is applied. | number | -0.144 | Signed multiples of 0.048 g; blank if unavailable |
+| `accelZ` | Unused field; left blank by this decoder, not a measured zero acceleration. | number | (all missing) | Blank in this extraction |
+| `accelUnits` | Estimated g units from the 0.048 g/count scale; not a full sensor calibration. | text | g (estimated) | g (estimated) |
+
+### ROVE original extraction
+
+Individual readings from the ROVE camera.
+
+`Data/Data/rove.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | REC20260713-052715-187.mp4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 45 | 0 or greater |
+| `timeUtc` | GPS/drive timestamp in ISO 8601 UTC. original files retain extracted timestamps. | text timestamp | 2026-07-13T10:28:00+00:00 | YYYY-MM-DDTHH:MM:SS[.fraction]+00:00 or Z |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.8111357 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894297 | -180 to 180 decimal degrees |
+| `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0 | Nonnegative; see speedUnits |
+| `speedUnits` | Units for this camera's original reported speed. | text | mph | mph |
+| `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | fix | fix, nofix |
+| `accelX` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.08493 | Real numbers in accelUnits; blank if unavailable |
+| `accelY` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -1.11563 | Real numbers in accelUnits; blank if unavailable |
+| `accelZ` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.14554 | Real numbers in accelUnits; blank if unavailable |
+| `accelUnits` | ROVE camera-axis acceleration units. | text | g | g |
+
+### Combined camera observations
+
+Combined readings from all cameras in one csv.
+
+`Data/Data/dashcams.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `camera` | Camera supplying this observation. | text | garmin | garmin, gopro, redtiger, rove |
+| `readingIndex` | Chronological GPS reading number across this camera's drive; camera plus readingIndex is the main ID, not a video frame number. | integer | 1 | 1 to this camera's number of readings; does not reset between clips |
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | GRMN0213.MP4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 33 | 0 or greater |
+| `timeSec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | 0 | Seconds; negative times allowed in vehicle log |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.8110815 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894486 | -180 to 180 decimal degrees |
+| `speedMps` | Camera-reported speed converted to meters per second; not calculated from GPS coordinate differences. | number | 0 | Nonnegative metres/second |
+| `fix` | Accepted horizontal GPS fix: 1 accepted, 0 not accepted. Both GoPro 2D and 3D are accepted. | integer | 1 | 0 or 1 |
+
+### Synchronized vehicle observations
+
+Readings directly from the vehicle, not dash cams.
+
+`Data/Data/vehicle.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `timeSec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | -125.0570001 | Seconds; negative times allowed in vehicle log |
+| `speedMps` | Recorded OBD vehicle speed converted from Speed_MPH to meters per second. | number | 0 | Nonnegative metres/second |
+| `rpm` | Most recent recorded OBD engine speed. | number | 763 | Nonnegative revolutions/minute |
+| `throttlePct` | Most recent recorded OBD throttle position. | number | 16.1 | 0 to 100 percent |
+| `yellowWire` | Left trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `greenWire` | Right trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `obdConnected` | Recorder's OBD connection flag; does not prove a new sensor reading at every log tick. | integer | 0 | 0 or 1 |
+| `arduinoConnected` | Recorder's Arduino connection flag. | integer | 1 | 0 or 1 |
+
+### Preserved original annotation file
+
+This is the original annotation format. This was how the annotation file was saved before we cleaned up the structure.
+
+`Data/Data Annotate/original_annotation/anno 8 11 2026.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `point_idx` | Stable zero-based ID of a manually labeled point. IDs are not renumbered on reload. | integer | 0 | 0 or greater; original IDs 0 to 374 |
+| `video_time_sec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | 0 | Seconds; negative times allowed in vehicle log |
+| `true_time_local` | Original annotation's drive timestamp with the fixed CDT offset. | text timestamp | 2026-07-13T05:28:00-05:00 | ISO 8601 with -05:00 offset |
+| `true_time_utc` | GPS/drive timestamp in ISO 8601 UTC. original files retain extracted timestamps. | text timestamp | 2026-07-13T10:28:00+00:00 | YYYY-MM-DDTHH:MM:SS[.fraction]+00:00 or Z |
+| `trip` | Lap around the repeated circuit. | integer | 1 | 1, 2, or 3 |
+| `click_lat` | Latitude: camera GPS in camera tables, hand click in annotation tables, modeled car in carPath. | number | 40.81114659 | -90 to 90 decimal degrees |
+| `click_lon` | Longitude, using the same position source as latitude. | number | -96.6894028 | -180 to 180 decimal degrees |
+| `confidence_pct` | Annotator's subjective placement confidence; not calibrated statistical coverage. | number | 95 | 0 to 100 percent |
+| `notes` | Free-text annotation notes. | text | at starting area, high confidence | Any text or blank |
+| `triggers` | Manually selected event codes separated by \|; multiple events may coincide. | text | begin_stop | enter_intersection; exit_intersection; begin_stop; finish_stop; blinker_on; lane_change_begin; lane_change_finish; turn_begin_nonint; turn_finish_nonint; blank allowed |
+| `trigger_labels` | Human-readable labels corresponding to the trigger codes; redundant in the new save. | text | began stopping | Labels separated by \| |
+| `custom_trigger` | Additional free-text event label. | text | (all missing) | Any text or blank |
+| `trg_enter_intersection` | Manual annotation includes enter_intersection . | integer | 0 | 0 or 1 |
+| `trg_exit_intersection` | Manual annotation includes exit_intersection . | integer | 0 | 0 or 1 |
+| `trg_begin_stop` | Manual annotation includes begin_stop . | integer | 1 | 0 or 1 |
+| `trg_finish_stop` | Manual annotation includes finish_stop . | integer | 0 | 0 or 1 |
+| `trg_blinker_on` | Manual annotation includes blinker_on . | integer | 0 | 0 or 1 |
+| `trg_lane_change_begin` | Manual annotation includes lane_change_begin . | integer | 0 | 0 or 1 |
+| `trg_lane_change_finish` | Manual annotation includes lane_change_finish . | integer | 0 | 0 or 1 |
+| `trg_turn_begin_nonint` | Manual annotation includes turn_begin_nonint . | integer | 0 | 0 or 1 |
+| `trg_turn_finish_nonint` | Manual annotation includes turn_finish_nonint . | integer | 0 | 0 or 1 |
+| `location_held` | Original labeler's held-position marker. | text | no | yes or no |
+| `stop_group` | Shared identifier for points assigned to a held stop. | integer | 1 | Positive integer or blank |
+| `wire_yellow` | Left trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `wire_green` | Right trailer wire electrical state. It can carry brake or turn-signal activity. | integer | 0 | 0 off, 1 on, blank unavailable |
+| `signal_state` | Old labeler's classification using a surrounding wire flashing episode, not just the exact instant. | text | off | off, left, right, both, brake, one_wire, nodata |
+| `gps_mean_lat` | Mean of available camera GPS positions at the original display's sampled time; not a hand click. | number | 40.8111348 | -90 to 90 decimal degrees |
+| `gps_mean_lon` | Mean of available camera GPS positions longitude; omitted from the new annotation save. | number | -96.689459 | -180 to 180 decimal degrees |
+| `garmin_lat` | garmin camera GPS position at the original display's sampled time; not a hand click. | number | 40.8110815 | -90 to 90 decimal degrees |
+| `garmin_lon` | garmin camera GPS position longitude; omitted from the new annotation save. | number | -96.6894486 | -180 to 180 decimal degrees |
+| `gopro_lat` | gopro camera GPS position at the original display's sampled time; not a hand click. | number | 40.811177 | -90 to 90 decimal degrees |
+| `gopro_lon` | gopro camera GPS position longitude; omitted from the new annotation save. | number | -96.6894718 | -180 to 180 decimal degrees |
+| `redtiger_lat` | redtiger camera GPS position at the original display's sampled time; not a hand click. | number | 40.811145 | -90 to 90 decimal degrees |
+| `redtiger_lon` | redtiger camera GPS position longitude; omitted from the new annotation save. | number | -96.6894857 | -180 to 180 decimal degrees |
+| `rove_lat` | rove camera GPS position at the original display's sampled time; not a hand click. | number | 40.8111357 | -90 to 90 decimal degrees |
+| `rove_lon` | rove camera GPS position longitude; omitted from the new annotation save. | number | -96.6894297 | -180 to 180 decimal degrees |
+
+### Simplified annotation save
+
+The original annotation was modified to have a cleaner format, this is the new format.
+
+`Data/Data Annotate/annotations.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `pointId` | Stable zero-based ID of a manually labeled point. IDs are not renumbered on reload. | integer | 0 | 0 or greater; original IDs 0 to 374 |
+| `timeSec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | 0 | Seconds; negative times allowed in vehicle log |
+| `lap` | Lap around the repeated circuit. | integer | 1 | 1, 2, or 3 |
+| `latitude` | Hand-labeled car latitude in decimal degrees. | number | 40.81114659 | -90 to 90 decimal degrees |
+| `longitude` | Hand-labeled car longitude in decimal degrees. | number | -96.6894028 | -180 to 180 decimal degrees |
+| `confidencePct` | Annotator's subjective placement confidence; not calibrated statistical coverage. | number | 95 | 0 to 100 percent |
+| `notes` | Free-text annotation notes. | text | at starting area, high confidence | Any text or blank |
+| `triggers` | Manually selected event codes separated by \|; multiple events may coincide. | text | begin_stop | enter_intersection; exit_intersection; begin_stop; finish_stop; blinker_on; lane_change_begin; lane_change_finish; turn_begin_nonint; turn_finish_nonint; blank allowed |
+| `customTrigger` | Additional free-text event label. | text | (all missing) | Any text or blank |
+| `locationHeld` | Whether this annotation reused a held stop position. | logical | FALSE | TRUE or FALSE |
+| `stopGroup` | Shared identifier for points assigned to a held stop. | integer | 1 | Positive integer or blank |
+
+### Display interpolated car path
+
+Location of interpolated car. Useful for displays and checking quality.
+
+`Data/Data/carPath.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `timeSec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | 0 | Seconds; negative times allowed in vehicle log |
+| `segment` | One-based interval index between successive original annotations. | integer | 1 | 1 to 374 for this drive; blank outside annotation coverage |
+| `latitude` | Modeled lane-center car latitude in decimal degrees. | number | 40.81114659 | -90 to 90 decimal degrees |
+| `longitude` | Modeled lane-center car longitude in decimal degrees. | number | -96.6894028 | -180 to 180 decimal degrees |
+
+### GPS observations and interpolated car errors
+
+GPS errors vs the cars interpolated location. Note, we consider the car's interpolated location to be the ground truth of sorts here.
+
+`Data/Data/gpsErrors.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `camera` | Camera supplying this observation. | text | garmin | garmin, gopro, redtiger, rove |
+| `readingIndex` | Chronological GPS reading number across this camera's drive; camera plus readingIndex is the main ID, not a video frame number. | integer | 1 | 1 to this camera's number of readings; does not reset between clips |
+| `clip` | Original MP4 filename, retained to trace the reading to its extraction source. | text | GRMN0213.MP4 | A source clip filename |
+| `sampleIndex` | Original zero-based telemetry record index within the clip, retained as a source reference; not readingIndex or a video frame number. | integer | 33 | 0 or greater |
+| `timeSec` | Seconds from July 13, 2026 10:28 UTC (05:28 CDT). Vehicle data can include a negative pre-drive time. | number | 0 | Seconds; negative times allowed in vehicle log |
+| `latitude` | Camera GPS latitude in decimal degrees. | number | 40.8110815 | -90 to 90 decimal degrees |
+| `longitude` | Camera GPS longitude in decimal degrees. | number | -96.6894486 | -180 to 180 decimal degrees |
+| `speedMps` | Camera-reported speed converted to meters per second; not calculated from GPS coordinate differences. | number | 0 | Nonnegative metres/second |
+| `fix` | Accepted horizontal GPS fix: 1 accepted, 0 not accepted. Both GoPro 2D and 3D are accepted. | integer | 1 | 0 or 1 |
+| `segment` | One-based interval index between successive original annotations. | integer | 1 | 1 to 374 for this drive; blank outside annotation coverage |
+| `referenceLatitude` | Interpolated lane-center car latitude at this GPS timestamp. | number | 40.81114659 | -90 to 90 decimal degrees; blank without model |
+| `referenceLongitude` | Interpolated lane-center car longitude at this GPS timestamp. | number | -96.6894028 | -180 to 180 decimal degrees; blank without model |
+| `distanceM` | Horizontal distance from the modeled car to the camera GPS position. | number | 8.197385012 | 0 or greater metres; blank without accepted fix/model |
+| `directionRad` | Error direction from modeled car to GPS, counterclockwise from grid east. Undefined at zero distance. | number | -2.035405159 | -pi to pi radians; blank when undefined |
+
+### Separate interval quality check csv
+
+Some of the intervals had concerns of quality, e.g., if the answer was given low confidence (by me), we may not want to trust it as ground truth. Some areas were dark/blurry and warranted less confidence.
+
+`Data/Data/referenceIntervals.csv`
+
+| Column | Description | Type | Example | Values |
+|---|---|---|---|---|
+| `segment` | One-based interval index between successive original annotations. | integer | 1 | 1 to 374 for this drive; blank outside annotation coverage |
+| `pointA` | Original annotation ID at the start of this interval. | integer | 0 | 0 to 373 |
+| `pointB` | Original annotation ID at the end of this interval. | integer | 1 | 1 to 374 |
+| `timeA` | Start/end time of this annotation interval, relative to the drive origin. | number | 0 | 0 to 3952.47 seconds for this drive |
+| `timeB` | Start/end time of this annotation interval, relative to the drive origin. | number | 137.31 | 0 to 3952.47 seconds for this drive |
+| `lap` | Lap around the repeated circuit. | integer | 1 | 1, 2, or 3 |
+| `held` | Reference position is held fixed for this interval, including the two diagnostic holds. | logical | TRUE | TRUE or FALSE |
+| `modelAvailable` | Inputs support calculating a finite reference; does not mean all quality checks passed. | logical | TRUE | TRUE or FALSE |
+| `referenceOk` | Interval passes the preserved v4 quality-selection rules. | logical | FALSE | TRUE or FALSE |
+| `reason` | Separate interval-audit reasons, joined with semicolons. supported_v4_model means no exclusion. | text | conflicting_stop_coordinates;flagged_v4_geometry | supported_v4_model; conflicting_stop_coordinates; coincident_anchors_without_held_stop; flagged_v4_geometry; anchor_confidence_below_60; construction_or_occluded_lane_uncertainty; missing_or_gapped_obd; no_supported_obd_motion; elevation_grade_needs_review; path_obd_distance_disagreement |
+| `obdA` | Cumulative integrated OBD distance at the interval's start/end, from the first retained connected OBD row. | number | 0 | Nonnegative metres; blank beyond OBD coverage |
+| `obdB` | Cumulative integrated OBD distance at the interval's start/end, from the first retained connected OBD row. | number | 0.7689087702 | Nonnegative metres; blank beyond OBD coverage |
+| `surfaceM` | Length of the interval's modeled path including the smoothed terrain profile. | number | 0 | Nonnegative metres; zero for held stops |
+| `maximumGrade` | Maximum absolute terrain elevation change divided by horizontal change along the path. | number | 0.01062666667 | Nonnegative ratio; 0.15 means 15% grade; blank for held stops |
+
+
