@@ -1,104 +1,137 @@
 ---
-title: "README_MAIN"
+title: "Unnamed Dashcam Project"
+subtitle: "Data Descriptor"
+author: ""
+date: "2026-10-22"
 format:
   html:
+    toc: true
+    toc-depth: 2
     embed-resources: true
-    toc: false
-    include-in-header:
-      text: |
-        <style>
-        .pipeline img { width: 100%; max-width: 900px; max-height: none; }
-        @media print { .pipeline img { max-height: 230mm; width: auto; max-width: 100%; } }
-        body { max-width: 1060px; margin: auto; font-family: system-ui, sans-serif; color: #26352f; }
-        h1, h2, h3 { color: #193d34; }
-        table { width: 100%; font-size: 0.8em; table-layout: fixed; }
-        th, td { vertical-align: top; overflow-wrap: anywhere; padding: 7px 8px !important; }
-        th:first-child, td:first-child { width: 17%; }
-        th:nth-child(2), td:nth-child(2) { width: 33%; }
-        th:nth-child(3), td:nth-child(3) { width: 10%; }
-        th:nth-child(4), td:nth-child(4) { width: 16%; }
-        th:nth-child(5), td:nth-child(5) { width: 24%; }
-        .pipeline img { max-height: 820px; width: auto; display: block; margin: auto; }
-        @media print {
-          @page { size: A4; margin: 17mm 14mm 17mm; }
-          body { font-size: 10pt; line-height: 1.35; }
-          #quarto-header, nav, .anchorjs-link, .code-copy-button { display: none !important; }
-          h2 { break-before: page; }
-          h2, h3, h4 { break-after: avoid; }
-          p, li { orphans: 3; widows: 3; }
-          pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 8pt; }
-          table { font-size: 8pt; } tr { break-inside: avoid; } thead { display: table-header-group; }
-          .pipeline img { max-height: 230mm; }
-          a { color: inherit; text-decoration: none; }
-        }
-        </style>
+    css: assets/document.css
 execute:
-  echo: false
-  warning: false
-  message: false
+  eval: false
 ---
 
 
-## Flowchart
+## Abstract
 
-::: {.pipeline}
+This dataset combines positioning observations from four vehicle-mounted cameras with vehicle telemetry and a manually annotated spatial reference for an urban drive in Lincoln, Nebraska. The recording, acquired on 13 July 2026, comprises three laps and includes 51,460 camera positioning observations at nominal frequencies of 1 or 10 Hz. Vehicle speed, engine speed, throttle position, and two trailer connector electrical signals are retained on a common time axis. A set of 375 manually placed annotations and recorded lane observations defines 374 reference intervals. Vehicle progress between annotations is reconstructed from integrated on-board diagnostic speed along modeled lane paths, with cached terrain elevations used for distance adjustment. The data include original format extractions, synchronized observations, annotation records, per-observation error distance and direction, and separate interval-quality flags. 
 
-```{r}
-#| label: flowchart
-#| dev: svg
-#| fig-width: 10
-#| fig-height: 12
-#| fig-alt: "Pipeline from recording to polar autocorrelation, using the GitHub upload paths. The analysis result is an in-memory R object, not a CSV: camera, lag_seconds, component, autocorrelation."
-grid::grid.newpage()
-titles <- c("1. Record", "2. Extract original telemetry", "3. Combine clocks and units",
-  "4. Annotate GoPro footage", "5. Rebuild the v4 lanes",
-  "6. Interpolate the car along the lanes", "7. Calculate polar autocorrelation")
-codes <- c("pipeline/01_record/car_monitor.py + dashcam firmware",
-  "pipeline/02_extract/extractTelemetry.py + decoders.py",
-  "pipeline/02_extract/combineTelemetry.r + settings.json",
-  "pipeline/03_annotate/convertAnnotations.R + server.py",
-  "pipeline/04_lane/buildLaneGeometry.R\ngeometryMath.R + geometryStages.R",
-  "pipeline/04_lane/interpolateCar.R + laneModel.R",
-  "pipeline/05_analysis/autocorrelationAnalysis.qmd")
-arrows <- c(
-  "Data/Data Raw/{camera}/*.mp4\nData/Data Raw/pi/car_telemetry.csv",
-  "Data/Data/{garmin,gopro,redtiger,rove}.csv\n+ original Pi recorder log",
-  "Data/Data/dashcams.csv + Data/Data/vehicle.csv\nData/Data Annotate/original_annotation/ + Data/Data Annotate/review/ + imagery/",
-  "Data/Data Annotate/annotations.csv\npipeline/04_lane/observations/*.json",
-  "Data/Data/laneGeometry/{lanePaths.geojson,laneRoute.json}\nData/Data/{vehicle.csv,dashcams.csv} + pipeline/04_lane/inputs/elevation*.json",
-  "Data/Data/gpsErrors.csv + Data/Data/referenceIntervals.csv\nData/Data/carPath.csv for display")
-ys <- seq(0.945, 0.115, length.out = 7)
-for (index in seq_along(ys)) {
-  grid::grid.roundrect(x = 0.5, y = ys[index], width = 0.94, height = 0.079,
-    r = grid::unit(0.012, "snpc"), gp = grid::gpar(fill = "#eef5f3", col = "#466c62", lwd = 1.3))
-  grid::grid.text(titles[index], x = 0.5, y = ys[index] + 0.018,
-    gp = grid::gpar(fontsize = 13, fontface = "bold", col = "#193d34"))
-  grid::grid.text(codes[index], x = 0.5, y = ys[index] - 0.014,
-    gp = grid::gpar(fontsize = 10.1, col = "#273532"))
-  if (index < length(ys)) {
-    grid::grid.lines(x = c(0.5, 0.5), y = c(ys[index] - 0.04, ys[index + 1] + 0.041),
-      arrow = grid::arrow(length = grid::unit(0.08, "inches")), gp = grid::gpar(col = "#70857f"))
-    grid::grid.rect(x = 0.5, y = mean(ys[c(index, index + 1)]), width = 0.99, height = 0.041,
-      gp = grid::gpar(fill = "white", col = NA))
-    grid::grid.text(arrows[index], x = 0.5, y = mean(ys[c(index, index + 1)]),
-      gp = grid::gpar(fontsize = 9.2, col = "#354840"))
-  }
-}
-grid::grid.text("Output: Data/Data/interpolated_autocorrelation.png", x = 0.5, y = 0.047,
-  gp = grid::gpar(fontsize = 11, col = "#193d34"))
-grid::grid.text("R object result (not a CSV): camera, lag_seconds, component, autocorrelation",
-  x = 0.5, y = 0.022, gp = grid::gpar(fontsize = 9.5, col = "#354840"))
-```
+
+## Background & Summary
+
+Positioning observations recorded by consumer cameras can provide a time indexed account of vehicle movement alongside video. Comparing these observations requires more than placing several tracks on a map. Each device stores telemetry differently, sampling rates differ, recording files are split into clips, and vehicle mounted recorders may use clocks that do not agree. A second difficulty is the construction of a reference trajectory against which the positions can be evaluated. A reference obtained by averaging the receivers being evaluated would share their errors and would not provide an independent spatial comparison, as obstructions that cause GPS errors could cause similar errors across separate devices.
+
+Four cameras recorded the same drive, and a separate vehicle logger collected speed and other telemetry. Recorded lane observations supplied the spatial constraints between those annotations, and vehicle speed supplied the timing of progress along each reference path. The resulting error records remain linked to the source camera, clip, and telemetry sample.
+
+The collection represents one vehicle, one recording session, and three laps of a repeated urban route. The files distinguish three kinds of information: observations reported by devices, positions manually interpreted from video and imagery, and positions calculated using the vehicle's intended path and odometry.
+
+Section not complete
+
+## Methods
+
+### Study design and recording context
+
+The drive took place in Lincoln, Nebraska, on 13 July 2026 using a 2023 Toyota 4Runner SR5. The common analysis origin was 10:28:00 UTC, equivalent to 05:28:00 Central Daylight Time. Three laps were annotated. The final annotation occurred at 3952.47 s after the origin, corresponding to approximately 65 min 52 s of reference coverage. The extraction window extended to 11:40 UTC to include the relevant end-of-drive camera records; this padded limit is not the duration of the annotated route.
 
 
 
-## CSV column tables
+### Instrumentation and vehicle telemetry
 
-### Original Pi recorder log
+The drive used four dashcams Garmin Dash Cam X310, REDTIGER F7N Touch, ROVE R2-4K Dual, and GoPro HERO13 Black. The four cameras were mounted near the rear-view mirror. The nominal GPS extraction interval is 1 s for Garmin, REDTIGER, and ROVE, and 0.1 s for GoPro HERO13 Black. These are telemetry sampling intervals; they do not describe the video frame rates. Many modern dashcams save drive footage in the form of several small clips, so the footage is split originally 68 Garmin clips, two GoPro clips, 68 REDTIGER clips, and 67 ROVE clips. 
 
-Orginal readings from the car direclty (no dashcam). Note this was not in sync with time, but the CSV constructed from it, `Data/Data/vehicle.csv`, was.
+A separate Raspberry Pi logger combined on-board diagnostic (OBD-II) information with Arduino serial readings. The project hardware record identifies an OBDLink EX adapter. The logger measured engine speed, vehicle speed, and throttle position, while a separate reader received an Arduino elapsed-millisecond counter and the binary states of the yellow and green trailer connector wires. The software sampled the most recent values into a CSV at a target rate of 10 Hz. Background sensor updates and CSV logging were asynchronous, so successive rows may contain repeated sensor values. Connection flags identify whether the interfaces were connected; they do not certify that each sensor reading was newly acquired at that logging tick.
 
-`Data/Data Raw/pi/car_telemetry.csv`
+The logger converted OBD speed from kilometres per hour to miles per hour and rounded it to one decimal place before writing Speed_MPH. This recorded value was later converted to metres per second for analysis. Engine speed and throttle readings were retained alongside the electrical states. The two trailer wires carry combined brake and indicator activity. Their instantaneous binary values do not uniquely identify braking, turning, or hazard light use; the raw states were therefore preserved. The flashing activity of the tailights is described in terms of intended action (e.g. using the right blinker, activating the hazards, braking.)
+
+### Workflow and preservation of source observations
+
+The workflow has seven linked stages: recording, video telemetry extraction, clock and unit harmonization, annotation, spatial lane reconstruction, vehicle-motion interpolations.
+
+![Original project flowchart showing recording, extraction, synchronization, annotation, lane reconstruction, car interpolation, and autocorrelation.](assets/pipeline-original.svg)
+
+### Extraction of camera telemetry
+
+The extractor reads original MP4 files and connects to a decoder for each camera. Records are sorted by timestamp, clip, and sample index before writing the camera-specific CSV.
+
+Garmin. The decoder reads GPS records from a private UUID atom in the MP4 container. Twenty-byte records contain a timestamp, coordinate integers, and an encoded camera-reported speed. The timestamp is interpreted relative to the QuickTime epoch of 1 January 1904. Signed coordinate integers are scaled by 360/2^32 to obtain decimal degrees. A sentinel value identifies absent fixes. This extraction produces GPS and speed fields, with no accelerometer or gyroscope output
+
+REDTIGER. The decoder uses an MP4 GPS index to locate Novatek freeGPS records. Latitude and longitude are converted from degrees and minute values to decimal degrees, with hemisphere indicators determining sign. Calendar fields supply the UTC timestamp, an active/void marker supplies fix status, and a camera speed field supplies miles per hour. X and Y acceleration counts are multiplied by an estimated scale of 0.048 g per count. The Z output is blank, rather than a measured zero. The scale is an estimate in the current implementation, and no gravity or baseline calibration is applied.
+
+FFprobe identifies SStarMeta (ssmd) data tracks, and FFmpeg extracts their payloads. Thirty two byte GPS records encode degrees and minute coordinates, calendar fields, fix sentinels, and a speed byte. Approximately 16.6 Hz three-axis acceleration samples are distributed across GPS records according to their relative sample counts and averaged into each GPS observation window. The original data contains multiple acceleration records per GPS reading. Acceleration readings were grouped with GPS readings according to their relative sample counts. For example, if a video contains 100 GPS readings and 1000 acceleration readings, then there will be 10 acceleration readings per GPS reading, and the paired readings will contain 1 GPS reading and the average of all of the 10 acceleration readings. The accuracy of this matching is yet to be validated.
+
+GoPro. ExifTool extracts GPS timestamps, latitude, longitude, reported speed, and fix mode from the embedded GoPro metadata. The current pipeline labels the extracted speed values as kilometres per hour and retains them in that unit in the single camera CSV; these are the extraction tool's reported values, not a statement that every underlying GPMF speed field is stored in that unit. GoPro's metadata format is documented by the manufacturer, and the extraction tags are described by ExifTool.
+
+GoPro GPS observations are retained at their nominal 10 Hz rate. Approximately 200 Hz acceleration and angular sequences are partitioned into GPS windows using the ratio of sequence lengths, then averaged within each window. Inertial values are expressed in the camera coordinate frame. The parser replaces non-finite or excessively large inertial tokens with zero before forming triplets. Both 2D and 3D GoPro fixes are accepted for the horizontal-position comparison
+
+### Time synchronization and unit harmonization
+
+All synchronized observations use timeSec, the elapsed number of seconds relative to the drive origin. For a camera observation, the decoded GPS timestamp is converted to elapsed UTC time and the configured cameraClockFastSec value is subtracted. All four camera corrections are currently zero. Camera speed is converted to metres per second using 0.44704 for miles per hour and division by 3.6 for kilometres per hour. The accepted fix labels are fix, active, 2D, and 3D.
+
+The Pi clock had an incorrect calendar date as well as an offset. The working configuration identifies 2026-03-02 00:39:16 as a Pi-clock anchor. Raw Pi records earlier than this anchor are removed from the synchronized vehicle table, while the original log remains available.
+
+
+The correction is applied once, during combination. Negative timeSec values in vehicle.csv are expected and represent the retained pre-origin portion of the log. 
+
+Combination creates a long format camera table without reducing GoPro to the sampling rate of the other cameras. readingIndex is assigned chronologically within each camera across all clips. It is distinct from sampleIndex, which is local to a source clip. The combination stage rejects duplicate camera timestamps and non-increasing synchronized vehicle times. The result is dashcams.csv together with vehicle.csv.
+
+### Video review and manual annotation
+
+Manual annotations were created by one person viewing the dashcam footage. During the viewing, they had marked when certain actions had taken place during the drive, such as stopping at a stop sign, and recorded the predicted position of the car based on the footage, as well as a confidence value. Confidence percentages were chosen subjectively by that researcher.
+
+he original annotation file contains 375 points across three laps. Each point has a drive time, map position, lap identifier, confidence value, notes, and selected event triggers. Events include entering or leaving intersections, beginning or finishing stops, blinker activation, lane change boundaries, and turn boundaries outside intersections. A held location flag and a stop group identifier preserve repeated positions during stationary periods. Point identifiers are stable and run from 0 to 374.
+
+The current review application displays GoPro video, a Leaflet map using cached Esri imagery, and nearby vehicle telemetry. It also exposes nearby camera GPS values. An average of available camera fixes may center the map viewport, but it does not change a chosen annotation coordinate. The original annotation save also retains GPS display values. Consequently, although the lane builder does not numerically fit its geometry to camera GPS, annotation should not be described as blinded to GPS information.
+
+### Imagery and spatial observations
+
+The project records Esri World Imagery as the map source. 
+
+### Reconstruction of the lane geometry
+
+Complicated, working on rewriting this.
+
+
+
+### Terrain adjustment and vehicle progress
+
+The reference-motion model uses cached elevation values identified in the project as USGS 3D Elevation Program Elevation Point Query Service data. 
+
+Along moving paths, elevation is sampled at 5 m intervals and smoothed by local linear fits over a 30 m neighborhood. The smoothed profile converts horizontal path distance to a surface-distance coordinate. Paths are additionally sampled at approximately 0.5 m spacing for interpolation. Missing elevation cells cause the build to stop rather than substitute camera altitude. Elevation is used to allocate progress along the path; the reported positional error remains horizontal.
+
+The vehicle speed curve uses finite, nonnegative speed values from rows with an OBD connection. Between retained speed samples, velocity is assumed to change linearly. Its cumulative integral is obtained by the trapezoidal rule, and the exact integral of that local linear velocity is used when an evaluation time falls between rows. For an annotation interval with start time a and end time b, the motion fraction is:
+
+f(t) = [D(t) − D(a)] / [D(b) − D(a)]
+
+Here D is the integrated OBD distance. The reference position is evaluated at f(t) times the interval's total modeled surface length. The geometry and endpoint annotations determine the path, while OBD speed determines how progress is distributed in time. This interval based normalization does not assert that the raw OBD distance and modeled path length agree exactly. Their ratio is checked separately, and may not match. Held stop intervals remain at one position rather than moving along a curve.
+
+
+
+
+
+## Data Records
+
+### Organization and file relationships
+
+
+The recording layer is Data/Data Raw/; the original Pi log is available under its pi/ subdirectory. Camera recordings, when available, belong in camera-specific subdirectories. The extracted and modeled tables are in Data/Data/. Annotation originals, the simplified working annotations, video-review manifests, and new saves belong under Data/Data Annotate/. Spatial observation inputs and elevation caches are under pipeline/04_lane/, and the generated geometry is under Data/Data/laneGeometry/
+
+CSV records use a header row and named columns. Blank fields represent missing values and are read as NA by the R workflow. A blank value is distinct from a numerical zero, a false flag, or an inactive electrical state. Camera names use the stable lowercase values garmin, gopro, redtiger, and rove. Geographic positions are stored in decimal degrees. GeoJSON coordinate arrays are ordered longitude, latitude; projected internal coordinates are east, north in EPSG:32614 metres.
+
+
+### Non-tabular records
+
+wip
+
+### Column dictionaries
+
+The following 12 tables reproduce the column tables from the original README_MAIN.qmd, in the same order and without changing their table text. They cover the original Pi log, all four native camera extractions, combined cameras, synchronized vehicle data, the preserved original annotation, simplified annotations, the display reference, GPS errors, and interval quality. 
+
+
+#### Table 1. Original Pi recorder log
+
+File: `Data/Data Raw/pi/car_telemetry.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -113,11 +146,9 @@ Orginal readings from the car direclty (no dashcam). Note this was not in sync w
 | `OBD_Connected` | Recorder's OBD connection flag; does not prove a new sensor reading at every log tick. | integer | 0 | 0 or 1 |
 | `Arduino_Connected` | Recorder's Arduino connection flag. | integer | 1 | 0 or 1 |
 
-### Garmin original extraction
+#### Table 2. Garmin original extraction
 
-Individual readings from the GARMIN camera.
-
-`Data/Data/garmin.csv`
+File: `Data/Data/garmin.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -130,11 +161,9 @@ Individual readings from the GARMIN camera.
 | `speedUnits` | Units for this camera's original reported speed. | text | mph | mph |
 | `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | fix | fix, nofix |
 
-### GoPro original extraction
+#### Table 3. GoPro original extraction
 
-Individual readings from the GOPRO camera.
-
-`Data/Data/gopro.csv`
+File: `Data/Data/gopro.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -155,11 +184,9 @@ Individual readings from the GOPRO camera.
 | `gyroZ` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00383 | Real numbers in gyroUnits |
 | `gyroUnits` | Units for angular rate. Only GoPro supplies gyroscope values. | text | rad/s | rad/s |
 
-### REDTIGER original extraction
+#### Table 4. REDTIGER original extraction
 
-Individual readings from the REDTIGER camera.
-
-`Data/Data/redtiger.csv`
+File: `Data/Data/redtiger.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -176,11 +203,9 @@ Individual readings from the REDTIGER camera.
 | `accelZ` | Unused field; left blank by this decoder, not a measured zero acceleration. | number | (all missing) | Blank in this extraction |
 | `accelUnits` | Estimated g units from the 0.048 g/count scale; not a full sensor calibration. | text | g (estimated) | g (estimated) |
 
-### ROVE original extraction
+#### Table 5. ROVE original extraction
 
-Individual readings from the ROVE camera.
-
-`Data/Data/rove.csv`
+File: `Data/Data/rove.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -197,11 +222,9 @@ Individual readings from the ROVE camera.
 | `accelZ` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.14554 | Real numbers in accelUnits; blank if unavailable |
 | `accelUnits` | ROVE camera-axis acceleration units. | text | g | g |
 
-### Combined camera observations
+#### Table 6. Combined camera observations
 
-Combined readings from all cameras in one csv.
-
-`Data/Data/dashcams.csv`
+File: `Data/Data/dashcams.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -215,11 +238,9 @@ Combined readings from all cameras in one csv.
 | `speedMps` | Camera-reported speed converted to meters per second; not calculated from GPS coordinate differences. | number | 0 | Nonnegative metres/second |
 | `fix` | Accepted horizontal GPS fix: 1 accepted, 0 not accepted. Both GoPro 2D and 3D are accepted. | integer | 1 | 0 or 1 |
 
-### Synchronized vehicle observations
+#### Table 7. Synchronized vehicle observations
 
-Readings directly from the vehicle, not dash cams.
-
-`Data/Data/vehicle.csv`
+File: `Data/Data/vehicle.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -232,11 +253,9 @@ Readings directly from the vehicle, not dash cams.
 | `obdConnected` | Recorder's OBD connection flag; does not prove a new sensor reading at every log tick. | integer | 0 | 0 or 1 |
 | `arduinoConnected` | Recorder's Arduino connection flag. | integer | 1 | 0 or 1 |
 
-### Preserved original annotation file
+#### Table 8. Preserved original annotation file
 
-This is the original annotation format. This was how the annotation file was saved before we cleaned up the structure.
-
-`Data/Data Annotate/original_annotation/anno 8 11 2026.csv`
+File: `Data/Data Annotate/original_annotation/anno 8 11 2026.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -277,11 +296,9 @@ This is the original annotation format. This was how the annotation file was sav
 | `rove_lat` | rove camera GPS position at the original display's sampled time; not a hand click. | number | 40.8111357 | -90 to 90 decimal degrees |
 | `rove_lon` | rove camera GPS position longitude; omitted from the new annotation save. | number | -96.6894297 | -180 to 180 decimal degrees |
 
-### Simplified annotation save
+#### Table 9. Simplified annotation save
 
-The original annotation was modified to have a cleaner format, this is the new format.
-
-`Data/Data Annotate/annotations.csv`
+File: `Data/Data Annotate/annotations.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -297,11 +314,9 @@ The original annotation was modified to have a cleaner format, this is the new f
 | `locationHeld` | Whether this annotation reused a held stop position. | logical | FALSE | TRUE or FALSE |
 | `stopGroup` | Shared identifier for points assigned to a held stop. | integer | 1 | Positive integer or blank |
 
-### Display interpolated car path
+#### Table 10. Display interpolated car path
 
-Location of interpolated car. Useful for displays and checking quality.
-
-`Data/Data/carPath.csv`
+File: `Data/Data/carPath.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -310,11 +325,9 @@ Location of interpolated car. Useful for displays and checking quality.
 | `latitude` | Modeled lane-center car latitude in decimal degrees. | number | 40.81114659 | -90 to 90 decimal degrees |
 | `longitude` | Modeled lane-center car longitude in decimal degrees. | number | -96.6894028 | -180 to 180 decimal degrees |
 
-### GPS observations and interpolated car errors
+#### Table 11. GPS observations and interpolated car errors
 
-GPS errors vs the cars interpolated location. Note, we consider the car's interpolated location to be the ground truth of sorts here.
-
-`Data/Data/gpsErrors.csv`
+File: `Data/Data/gpsErrors.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -333,11 +346,9 @@ GPS errors vs the cars interpolated location. Note, we consider the car's interp
 | `distanceM` | Horizontal distance from the modeled car to the camera GPS position. | number | 8.197385012 | 0 or greater metres; blank without accepted fix/model |
 | `directionRad` | Error direction from modeled car to GPS, counterclockwise from grid east. Undefined at zero distance. | number | -2.035405159 | -pi to pi radians; blank when undefined |
 
-### Separate interval quality check csv
+#### Table 12. Separate interval quality check csv
 
-Some of the intervals had concerns of quality, e.g., if the answer was given low confidence (by me), we may not want to trust it as ground truth. Some areas were dark/blurry and warranted less confidence.
-
-`Data/Data/referenceIntervals.csv`
+File: `Data/Data/referenceIntervals.csv`.
 
 | Column | Description | Type | Example | Values |
 |---|---|---|---|---|
@@ -355,5 +366,52 @@ Some of the intervals had concerns of quality, e.g., if the answer was given low
 | `obdB` | Cumulative integrated OBD distance at the interval's start/end, from the first retained connected OBD row. | number | 0.7689087702 | Nonnegative metres; blank beyond OBD coverage |
 | `surfaceM` | Length of the interval's modeled path including the smoothed terrain profile. | number | 0 | Nonnegative metres; zero for held stops |
 | `maximumGrade` | Maximum absolute terrain elevation change divided by horizontal change along the path. | number | 0.01062666667 | Nonnegative ratio; 0.15 means 15% grade; blank for held stops |
+
+
+## Data Overview
+
+The saved collection contains 51,460 original camera observations, 38,767 synchronized vehicle rows, and 375 annotations defining 374 intervals. The reference spans 0–3952.47 s; camera observations extend to 3994 s, so some final observations fall outside reference coverage. Table 13 gives file-level record counts from the current checkout. Counts describe the available records, not independent experimental replicates or evidence of positioning accuracy.
+
+**Table 13. Record counts in the current working dataset.**
+
+| Record | File | Rows |
+|---|---|---:|
+| Original Garmin observations | `Data/Data/garmin.csv` | 3,985 |
+| Original GoPro observations | `Data/Data/gopro.csv` | 39,509 |
+| Original REDTIGER observations | `Data/Data/redtiger.csv` | 3,989 |
+| Original ROVE observations | `Data/Data/rove.csv` | 3,977 |
+| Combined original camera observations | `Data/Data/dashcams.csv` | 51,460 |
+| Synchronized vehicle observations | `Data/Data/vehicle.csv` | 38,767 |
+| Simplified manual annotations | `Data/Data Annotate/annotations.csv` | 375 |
+| Original observations with reference errors | `Data/Data/gpsErrors.csv` | 51,460 |
+| Reference intervals and quality decisions | `Data/Data/referenceIntervals.csv` | 374 |
+| Display reference trajectory | `Data/Data/carPath.csv` | 39,526 |
+
+
+
+
+
+## Notes
+
+### Choosing records and joining them correctly
+
+
+
+### Software and versioning
+
+
+
+## Data Availability
+
+
+
+## Code Availability
+
+
+
+## References
+
+
+
 
 
