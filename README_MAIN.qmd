@@ -63,7 +63,7 @@ FFprobe identifies SStarMeta (ssmd) data tracks, and FFmpeg extracts their paylo
 
 GoPro. ExifTool extracts GPS timestamps, latitude, longitude, reported speed, and fix mode from the embedded GoPro metadata. The current pipeline labels the extracted speed values as kilometres per hour and retains them in that unit in the single camera CSV; these are the extraction tool's reported values, not a statement that every underlying GPMF speed field is stored in that unit. GoPro's metadata format is documented by the manufacturer, and the extraction tags are described by ExifTool.
 
-GoPro GPS observations are retained at their nominal 10 Hz rate. Approximately 200 Hz acceleration and angular sequences are partitioned into GPS windows using the ratio of sequence lengths, then averaged within each window. Inertial values are expressed in the camera coordinate frame. The parser replaces non-finite or excessively large inertial tokens with zero before forming triplets. Both 2D and 3D GoPro fixes are accepted for the horizontal-position comparison
+GoPro GPS observations are retained at their nominal 10 Hz rate. Approximately 200 Hz acceleration and angular sequences are partitioned into GPS windows using the ratio of sequence lengths, then averaged within each window. Inertial values are expressed in the camera coordinate frame. The parser replaces non- or excessively large inertial tokens with zero before forming triplets. Both 2D and 3D GoPro fixes are accepted for the horizontal-position comparison
 
 ### Time synchronization and unit harmonization
 
@@ -100,7 +100,7 @@ The reference-motion model uses cached elevation values identified in the projec
 
 Along moving paths, elevation is sampled at 5 m intervals and smoothed by local linear fits over a 30 m neighborhood. The smoothed profile converts horizontal path distance to a surface-distance coordinate. Paths are additionally sampled at approximately 0.5 m spacing for interpolation. Missing elevation cells cause the build to stop rather than substitute camera altitude. Elevation is used to allocate progress along the path; the reported positional error remains horizontal.
 
-The vehicle speed curve uses finite, nonnegative speed values from rows with an OBD connection. Between retained speed samples, velocity is assumed to change linearly. Its cumulative integral is obtained by the trapezoidal rule, and the exact integral of that local linear velocity is used when an evaluation time falls between rows. For an annotation interval with start time a and end time b, the motion fraction is:
+Between retained speed samples, velocity is assumed to change linearly. Its cumulative integral is obtained by the trapezoidal rule, and the exact integral of that local linear velocity is used when an evaluation time falls between rows. For an annotation interval with start time a and end time b, the motion fraction is:
 
 f(t) = [D(t) − D(a)] / [D(b) − D(a)]
 
