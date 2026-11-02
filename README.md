@@ -71,9 +71,7 @@ These commands write [Data/inertial](Data/inertial/README.md), preserving origin
 
 ## Videos and documentation
 
-The existing [video folder link](https://drive.google.com/drive/folders/1zoSIooI2SAtxGwRLMBdtWv0mleSRVWXk?usp=sharing) is also recorded in [linkToVideos](linkToVideos); its current permissions and completeness have not been verified. A permanent data-release location has not yet been chosen. Preserve original files and embedded telemetry when distributing footage.
-
-Render the descriptor at the repository root with:
+The existing [video folder link](https://drive.google.com/drive/folders/1zoSIooI2SAtxGwRLMBdtWv0mleSRVWXk?usp=sharing) is also recorded in [linkToVideos](linkToVideos); Note: This is not where the video files will be hosted long term.
 
 ```sh
 quarto render "Data Descriptor.qmd"
