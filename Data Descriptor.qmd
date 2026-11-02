@@ -376,7 +376,7 @@ File: [Data/referenceIntervals.csv](Data/referenceIntervals.csv).
 
 The inertial columns are retained for provenance and exploratory use. [The combination stage](pipeline/02_extract/combineTelemetry.r) does not include them in the combined camera table, and they do not drive the present GPS-error or autocorrelation analysis.
 
-Neither GoPro nor ROVE acceleration has been rotated into vehicle coordinates or corrected for gravity or a stationary baseline. The REDTIGER conversion likewise applies no baseline correction. The September investigation found sustained-stop REDTIGER median original integer values of X = −1 and Y = −3 in each lap. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.
+Neither GoPro nor ROVE acceleration has been rotated into vehicle coordinates or corrected for gravity or a stationary baseline. The REDTIGER conversion likewise applies no baseline correction. During sustained stops in each lap, we found median REDTIGER integer values of X = −1 and Y = −3. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.
 
 ### Checks during the designated stationary periods
 

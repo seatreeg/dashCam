@@ -3713,7 +3713,7 @@ img[src*='pipeline-original'], .pipeline { max-height: 1000px; }
 <section id="inertial-units-and-baseline-checks" class="level3">
 <h3 class="anchored" data-anchor-id="inertial-units-and-baseline-checks">Inertial units and baseline checks</h3>
 <p>The inertial columns are retained for provenance and exploratory use. <a href="pipeline/02_extract/combineTelemetry.r">The combination stage</a> does not include them in the combined camera table, and they do not drive the present GPS-error or autocorrelation analysis.</p>
-<p>Neither GoPro nor ROVE acceleration has been rotated into vehicle coordinates or corrected for gravity or a stationary baseline. The REDTIGER conversion likewise applies no baseline correction. The September investigation found sustained-stop REDTIGER median original integer values of X = −1 and Y = −3 in each lap. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.</p>
+<p>Neither GoPro nor ROVE acceleration has been rotated into vehicle coordinates or corrected for gravity or a stationary baseline. The REDTIGER conversion likewise applies no baseline correction. During sustained stops in each lap, we found median REDTIGER integer values of X = −1 and Y = −3. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.</p>
 </section>
 <section id="checks-during-the-designated-stationary-periods" class="level3">
 <h3 class="anchored" data-anchor-id="checks-during-the-designated-stationary-periods">Checks during the designated stationary periods</h3>
