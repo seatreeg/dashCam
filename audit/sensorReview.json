@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-02",
+  "scope": "This July 13 recording; firmware variants elsewhere may differ.",
+  "reportedFirmware": {
+    "redtiger": "F7NT_V4.0.28_20250804",
+    "rove": "R2-DUAL-07-01-2025-V14",
+    "source": "FirmwareAndHardwareDetails.txt"
+  },
+  "redtigerSpeed": {
+    "previousLabel": "mph",
+    "correctedLabel": "knots",
+    "evidence": [
+      {
+        "clip": "20260713053615_000207F.MP4",
+        "sampleIndex": 43,
+        "timeUtc": "2026-07-13T10:36:58+00:00",
+        "videoDisplayedMph": 29,
+        "storedSpeed": 25.37,
+        "knotsConvertedToMph": 29.195274596357276,
+        "videoSeekSeconds": 43
+      },
+      {
+        "clip": "20260713055715_000228F.MP4",
+        "sampleIndex": 22,
+        "timeUtc": "2026-07-13T10:57:37+00:00",
+        "videoDisplayedMph": 25,
+        "storedSpeed": 21.73,
+        "knotsConvertedToMph": 25.006437405551576,
+        "videoSeekSeconds": 22
+      },
+      {
+        "clip": "20260713062215_000254F.MP4",
+        "sampleIndex": 25,
+        "timeUtc": "2026-07-13T11:22:40+00:00",
+        "videoDisplayedMph": 31,
+        "storedSpeed": 27.43,
+        "knotsConvertedToMph": 31.56588025928577,
+        "videoSeekSeconds": 25
+      }
+    ],
+    "method": "Read visible integer MPH stamps in original frames at the listed clip times; select approximately steady speed to reduce display-delay effects. Labels corrected without changing stored numeric values.",
+    "limitation": "Integer rounding and overlay latency remain; these checks identify the unit scale, not the absolute accuracy of GPS speed."
+  },
+  "roveSpeed": {
+    "correctedLabel": "knots",
+    "source": "https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/QuickTimeStream.pl"
+  },
+  "inertialBuild": "Data/inertial/build-all.json",
+  "scaleReview": "Data/inertial/scaleReview.json",
+  "stationaryReview": "Data/inertial/stationaryReview.json",
+  "remaining": [
+    "GoPro within-block interpolation and arrival-time latency",
+    "ROVE arrival-time jitter and unverified acceleration calibration",
+    "No independent reference-IMU calibration",
+    "No new six-orientation recording supplied"
+  ]
+}

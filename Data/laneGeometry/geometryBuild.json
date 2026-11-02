@@ -1,0 +1,55 @@
+{
+  "status": "built_from_annotations_and_recorded_spatial_observations",
+  "intervals": 374,
+  "annotations": 375,
+  "persistentLaneIntervals": 248,
+  "v4ChangedIntervals": 19,
+  "maximumEndpointGapM": 1.951476397719e-09,
+  "rightmostMinimumClearanceM": 1.651235148367,
+  "corridorChecks": {
+    "salt_creek_after_circle": {
+      "minimumClearanceM": 1.679291165415,
+      "smoothingSpar": 0.45,
+      "maximumCenterShiftM": 0.1534388162847
+    },
+    "antelope_before_bend": {
+      "minimumClearanceM": 1.380259971859,
+      "smoothingSpar": 0.65,
+      "maximumCenterShiftM": 0.1525950410657
+    },
+    "north10th_rightmost": {
+      "minimumClearanceM": 1.48352203271,
+      "smoothingSpar": 0.45,
+      "maximumCenterShiftM": 0.07678423488541
+    },
+    "antelope_leftmost_through": {
+      "minimumClearanceM": 1.406090206077,
+      "smoothingSpar": 0.55,
+      "maximumCenterShiftM": 0.2483528259009
+    }
+  },
+  "finishedPathsRead": false,
+  "cameraGpsRead": false,
+  "distanceCrs": 32614,
+  "inputs": {
+    "Annotation Data/annotations.csv": "5955a106a42a39934e914a479218ace8cdad1ac65119884744ae39b7e20e2cc5",
+    "pipeline/04_lane/observations/corridorObservations.json": "0ed4d70ef431c23312be267c2c70cb20119e52f8953d191a1e8462e5f0a68bdd",
+    "pipeline/04_lane/observations/draftControls.json": "e9d68cf9c0d93f8139e033d2689020fb7e89f3b9620deeb5c64d383e5e9e57ac",
+    "pipeline/04_lane/observations/maneuverObservations.json": "f0bbe432064472b04c4c8350ff31448afe42a4f9a2dcb3f39a9274ccd08b86a6",
+    "pipeline/04_lane/observations/mapFrames.json": "f2e6e6f5e577711285e1a58e43cdecb4bf5863df337d5e39cddf067553b3a987",
+    "pipeline/04_lane/observations/networkObservations.json": "b1b2559a55b91216a59e43df762aa352875c21c032c5429d95318ac750fb8fa7",
+    "pipeline/04_lane/observations/rightmostObservations.json": "0d47089ad9ed320e2b64a0292a2ab7fc8f8c02a6b737ef20424461d452eedf9c",
+    "pipeline/04_lane/observations/roadChecks.json": "2eb9a29ec654aeb7bcb7e6ddfc34d4f891702f1ee11889844d9b9476d06eb122"
+  },
+  "code": {
+    "helpers.R": "10fdfa3c20f7bf954e0d4cafb0b198c4bd4f62b0f5cf370b3a875ddf9abd0d9d",
+    "pipeline/04_lane/buildLaneGeometry.R": "bcc8de0f20e0a20109dcb924147d741a2c069cc67dc3f1ad748f5c5c2ccbcbc0",
+    "pipeline/04_lane/geometryMath.R": "b5cfd2e925a1a84c211d3027a3dc35621d093a737d149d48ac8f508c16730dbc",
+    "pipeline/04_lane/geometryStages.R": "b78186357d4dca9fcbf35d7c60f212183d6cc803ae4d463b4c5e362e26fc7bec"
+  },
+  "outputs": {
+    "Data/laneGeometry/lanePaths.geojson": "78e833784e8e72cff93c44a8b676e7e27288e8aa983de3a7ef32d6b76d1ae05d",
+    "Data/laneGeometry/laneAnchors.json": "b9d036707e51a75f9ae29c9331be108406a7d8bb7f7402f502a6ab2bc3a7e260",
+    "Data/laneGeometry/laneRoute.json": "2c70f68e019a174d5d08f92c39d535228d583814ea0d53368c561639591b24f1"
+  }
+}

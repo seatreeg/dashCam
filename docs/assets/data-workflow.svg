@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="690" viewBox="0 0 1000 690" role="img" aria-labelledby="title desc">
+<title id="title">Data analysis workflow</title><desc id="desc">Camera CSVs and the Pi log feed synchronized tables. Annotations and spatial observations define lane paths. Lane paths and OBD speed produce a reference and GPS errors for autocorrelation analysis.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#41616d"/></marker></defs>
+<rect width="1000" height="690" fill="#f8fafb" rx="10"/>
+<g font-family="Arial, sans-serif" fill="#213944" text-anchor="middle">
+<text x="500" y="38" font-size="24" font-weight="bold">From source tables to GPS-error analysis</text>
+<g fill="#e7f1f4" stroke="#87a6b2" stroke-width="1.5">
+<rect x="40" y="70" width="440" height="85" rx="8"/><rect x="520" y="70" width="440" height="85" rx="8"/>
+<rect x="40" y="210" width="440" height="85" rx="8"/><rect x="520" y="210" width="440" height="85" rx="8"/>
+<rect x="170" y="370" width="660" height="110" rx="8"/><rect x="170" y="550" width="660" height="100" rx="8"/>
+</g>
+<g font-size="20" font-weight="bold"><text x="260" y="103">Individual camera CSVs + Pi log</text><text x="740" y="103">Reviewed annotations + lane observations</text><text x="260" y="242">Clock and speed-unit harmonization</text><text x="740" y="242">Spatial reference construction</text><text x="500" y="404">Vehicle progress and per-observation comparison</text><text x="500" y="584">Quality selection and autocorrelation</text></g>
+<g font-size="16"><text x="260" y="133">Data Raw/Dashcam Extract/ · Data Raw/pi/</text><text x="740" y="133">Annotation Data/ · pipeline/04_lane/observations/</text><text x="260" y="272">Data/dashcams.csv · Data/vehicle.csv</text><text x="740" y="272">Data/laneGeometry/ · cached elevation inputs</text><text x="500" y="433">OBD speed allocates progress along reviewed paths</text><text x="500" y="459">Data/carPath.csv · gpsErrors.csv · referenceIntervals.csv</text><text x="500" y="614">pipeline/05_analysis/autocorrelationAnalysis.qmd</text><text x="500" y="637">Data/analysis/</text></g>
+</g>
+<g stroke="#41616d" stroke-width="2.5" fill="none" marker-end="url(#arrow)"><path d="M260 155V203"/><path d="M740 155V203"/><path d="M260 295V328H370V363"/><path d="M740 295V328H630V363"/><path d="M500 480V543"/></g>
+</svg>

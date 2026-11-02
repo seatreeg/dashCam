@@ -1,0 +1,536 @@
+{
+  "inputHashes": {
+    "settings.json": "309de7e38dcb2c99bfabc4bd2135bfebf330aa2b8d16818dffa8c663f65947d4",
+    "Data\\vehicle.csv": "03d37c16f7291c275da18c013a426b75dac8a77640c12d638b7ec6fda468f1da",
+    "Annotation Data\\annotations.csv": "5955a106a42a39934e914a479218ace8cdad1ac65119884744ae39b7e20e2cc5",
+    "Data Raw\\Dashcam Extract\\redtiger.csv": "273bdfd1ede71fa0c98681982fa91e833aeee6a3bbaeef6d814670f4723034e0"
+  },
+  "sourceMetadataHashes": {
+    "Data Raw\\gopro\\GX010003.MP4": "646a0a1955c3e9b2e4f105a9a94997020d6e58004b1661ef1b8249d8094ccb1c",
+    "Data Raw\\gopro\\GX020003.MP4": "e58ddaa54051acdd769d84bedc00f233bac3bfad93026a662382b7323d3c90ee",
+    "Data Raw\\rove\\REC20260713-052715-187.mp4": "81fe783b1a317ef162e3eae510d2b938515dd2c340602affee9359ea0c5ad489",
+    "Data Raw\\rove\\REC20260713-052815-188.mp4": "35e5dc1bdaa418bfe4b8672ddcaba16b0d5b742e9603530e66d90f7a4ca0d204",
+    "Data Raw\\rove\\REC20260713-052915-189.mp4": "24b1d1b184453255f1a53d35201b5bdecdbbda567f16d563c98c261205bd184b",
+    "Data Raw\\rove\\REC20260713-053015-190.mp4": "da86b0b2ac6b0f6ade9f2204cced7f84ad690ab8f935143b0f44ba0f8e33a2d1",
+    "Data Raw\\rove\\REC20260713-053115-191.mp4": "53a9441390de70e227345d33eb96e186855e3d963c3089fd1db27356dd553d00",
+    "Data Raw\\rove\\REC20260713-053215-192.mp4": "90262df4914f6238cb6b3f4ebb520f63e085de7b0f9ef1a5995ddb5849de0304",
+    "Data Raw\\rove\\REC20260713-053315-193.mp4": "cde945a12932c80cdeb8eb22e8a94e70d11115c387f4db5c9fef3963c87945a8",
+    "Data Raw\\rove\\REC20260713-053415-194.mp4": "9014bfc21f46c4ec37217d4191538ca14724d96874a85fddc6380a1777076b25",
+    "Data Raw\\rove\\REC20260713-053515-195.mp4": "f54470c127f5e694068aa570e013a18586618e1637d12652fd69d5697dca93c0",
+    "Data Raw\\rove\\REC20260713-053615-196.mp4": "a49a516b196c355371309e2014ed9f1b1da122bc27046e9dc985a1744116eb77",
+    "Data Raw\\rove\\REC20260713-053715-197.mp4": "28e02686b54f8bbc1a4c3f58ab41c8fe7f868d744ee1cb350ea489334f1d7470",
+    "Data Raw\\rove\\REC20260713-053815-198.mp4": "2da2e0dbbd8c4c0afb5f94852670215b1402f745e3d1a0c6d3f0e1f3a04c946e",
+    "Data Raw\\rove\\REC20260713-053915-199.mp4": "f8872b16112d3f2f22617100072752adde9c721acea3fae3962c81720d895877",
+    "Data Raw\\rove\\REC20260713-054016-200.mp4": "5f1fbb9a6738b0c7ca44bdbcaf8481d660028e7c4fe50ef668ef8dc80e61ad9d",
+    "Data Raw\\rove\\REC20260713-054116-201.mp4": "d616fba05801520177688c763da938473fa84032f82ccf8fb22e94f64ab16d15",
+    "Data Raw\\rove\\REC20260713-054216-202.mp4": "9cac14ea1d6fe96e0706671647c79e22a4e96aaa5e75dea20731372591bd277a",
+    "Data Raw\\rove\\REC20260713-054316-203.mp4": "bf6720f784f8bfe3d97bf5c6e6130cf864c5f8d3e850585051b581835778f459",
+    "Data Raw\\rove\\REC20260713-054416-204.mp4": "068a37a6a606a242b19606270452f2e085816de52040daa4a6d11d2179243401",
+    "Data Raw\\rove\\REC20260713-054516-205.mp4": "36cfb94915dfc12f861542591917e559e838835f52bc887a0d1fada3503e2e63",
+    "Data Raw\\rove\\REC20260713-054616-206.mp4": "c5a09332abb1659326ac8cc4e1ea18434f327eddfc576501be5ef9e64e8e3b9a",
+    "Data Raw\\rove\\REC20260713-054716-207.mp4": "7e6c3906f893f0b2b4491f96fdc89397e262564660e0d538cfb820f88a4ec1fd",
+    "Data Raw\\rove\\REC20260713-054816-208.mp4": "7ee81d07440d6eb7d4464743616cbf5f481d1305a41a9430e3893cff590cd0b0",
+    "Data Raw\\rove\\REC20260713-054916-209.mp4": "9876132c4f154db8ffd08f82bb5fe48eb7f1ce9817c7e5e420ce507c684769c2",
+    "Data Raw\\rove\\REC20260713-055016-210.mp4": "0419e55c6e5bbc3d64ee64d59ff408e929f6d1d01c4086d96c431b3dcc170ecf",
+    "Data Raw\\rove\\REC20260713-055116-211.mp4": "48a15dded28d33f2365a67f66a743de445ff1fa08326e683506c3f845c112ec9",
+    "Data Raw\\rove\\REC20260713-055216-212.mp4": "ec99254c8c976dae271fe1cd062d6867abd98ee5f8e7e5007e3cfb9aaa38f48e",
+    "Data Raw\\rove\\REC20260713-055316-213.mp4": "563f5c12ccf520fa495b8b6261867604ecb56fec752b3814cd365d5ab9db7f1d",
+    "Data Raw\\rove\\REC20260713-055416-214.mp4": "a9363c08358a802a2ae6f4c0862e0cb5dbbc38e9e026ba75c96b184c6c847161",
+    "Data Raw\\rove\\REC20260713-055516-215.mp4": "94abfad06e44706ca9fc1ff53eb6e3b0ac5701202f187d80a74ec1cb0cf96b74",
+    "Data Raw\\rove\\REC20260713-055616-216.mp4": "b955b1768c99bdc61b3366f4c4afaf98ea5d82895b0a2f8e46df47e3e051fa23",
+    "Data Raw\\rove\\REC20260713-055716-217.mp4": "c372872c3faef5d5f6a4b82055c04192e668ddcd4f0e3bebcaa05e2d8cc4d4cc",
+    "Data Raw\\rove\\REC20260713-055816-218.mp4": "1bc2723d4d872aa9aeba7e2803086b63077f0099e9ab04e632df8c511f8fab7e",
+    "Data Raw\\rove\\REC20260713-055917-219.mp4": "868616d9d9ae63ff539082daacdafe339457b38fe33d0f7e7e571af58e0bd419",
+    "Data Raw\\rove\\REC20260713-060017-220.mp4": "03590b79bad6a379350d6fa017208c720a7a32e5435b75df479c34022621b939",
+    "Data Raw\\rove\\REC20260713-060117-221.mp4": "442c8cf0bd17ed449e129c2c57f6615e2c05296727d1c41947638d73c0c57ed6",
+    "Data Raw\\rove\\REC20260713-060217-222.mp4": "24934b0264a6d92f4a8bc440374eca633d45ef354c70a7cfe71b435865ea1c61",
+    "Data Raw\\rove\\REC20260713-060317-223.mp4": "9731c8f96ca11dd15fc95b4093fc844d1626fe0b0d5aa7d327fc48377dea22cb",
+    "Data Raw\\rove\\REC20260713-060417-224.mp4": "8eead097d88213c073c96c754a7fc7666b770470a412de05b84dd47694502871",
+    "Data Raw\\rove\\REC20260713-060517-225.mp4": "0fdc0b7a864c67046214e2ee69f726949ff217f12a8e84298721907549a63c0b",
+    "Data Raw\\rove\\REC20260713-060617-226.mp4": "97bbb811a70fd448e11a7fd6290924643a9e75028787ee4d4c7026d02efea398",
+    "Data Raw\\rove\\REC20260713-060717-227.mp4": "dec0269171523e0c6898e278b4391e688ec493ffe3d93bb3c3e9947a7da75dc8",
+    "Data Raw\\rove\\REC20260713-060817-228.mp4": "af19b88daae328517360a59d65befb39025e0dd814e0e506cc1453d7ccd322cf",
+    "Data Raw\\rove\\REC20260713-060917-229.mp4": "e635da67d1c25d5c7936925ccc0c015cbf5415c1ae9cfe9bdfda5f304e3960e1",
+    "Data Raw\\rove\\REC20260713-061017-230.mp4": "fa8213a89a4d7e2da23e0a77a7901077651e2d2a179094ac368aefd440f621ab",
+    "Data Raw\\rove\\REC20260713-061117-231.mp4": "b81e75fa42215957472bc0083ee43ca63e4ecd186bbb895272a8a4d37e36bbd0",
+    "Data Raw\\rove\\REC20260713-061217-232.mp4": "a0e187f92e0f5458dfbaca1f97aa33feae2cb133ce6f5426e3182673b6eb0d7a",
+    "Data Raw\\rove\\REC20260713-061317-233.mp4": "39662d0ef03583c3c550902e9d15fbc4032f6695b6ab64ae3d66d3479a0e0f7e",
+    "Data Raw\\rove\\REC20260713-061417-234.mp4": "b65351bd7a24a401707ca11aa11fc8010c490915c5d15c3e70f054c73552380c",
+    "Data Raw\\rove\\REC20260713-061517-235.mp4": "da615863b292a3cd00d7e86a318f938788c08daf76a8684a06dfc85e31229fe4",
+    "Data Raw\\rove\\REC20260713-061618-236.mp4": "abc55beef7b2a158e55808c517d2378d415eae8d5d3ee6dfec06bca2ed0a46b9",
+    "Data Raw\\rove\\REC20260713-061718-237.mp4": "fdb874ad5945dbbf00ac8d0feb98ce162d3602048529ded05e1cd0b5108402d1",
+    "Data Raw\\rove\\REC20260713-061818-238.mp4": "2a18b68a547e8d25b79a2185865ac755d86c8e5c8ec44aa514a0e42590458eef",
+    "Data Raw\\rove\\REC20260713-061918-239.mp4": "e3f8011e79d17e240c4c5d3d80728315cee75bd3bc52e56211fe2693741e03b1",
+    "Data Raw\\rove\\REC20260713-062018-240.mp4": "2701c7f8b23d75d301ff35e7a98b4fddbc6d936c309a2799e3e13a8ba3c71012",
+    "Data Raw\\rove\\REC20260713-062118-241.mp4": "5004aed7c76f49df9d2fc22cc3559fd9034566ffbbefd4d1bf447b7fa869ddea",
+    "Data Raw\\rove\\REC20260713-062218-242.mp4": "c28d5631991787d2562c39863dc59d01e78848ffe6a504201d125a8fa7b34565",
+    "Data Raw\\rove\\REC20260713-062318-243.mp4": "6c8c00759b5bc40e7130f6a3d1a313d7c4cc664b184867515fcc350a2ef00237",
+    "Data Raw\\rove\\REC20260713-062418-244.mp4": "26846e6ad13f4cb399393bbcf2df13fb9e4a8c718fd8f3cd00417a8f4bef3f9d",
+    "Data Raw\\rove\\REC20260713-062518-245.mp4": "6ff8e5625aecfa71d166a3035e754e63efed9ec11f6c0a2f0904ef7aadea2bd4",
+    "Data Raw\\rove\\REC20260713-062618-246.mp4": "cc432f1b89cf3085eb36461769527b6abaa3502b64745ffaf5ec6e389cf4cd84",
+    "Data Raw\\rove\\REC20260713-062718-247.mp4": "b5868c89fc264e95fb1f95bff93bf4e60993e17670cd83ad2337a4dd2e3b1a14",
+    "Data Raw\\rove\\REC20260713-062818-248.mp4": "7b7ed019aa484749fc97bfe866be9bf1dfd6f8a868eb794c50e4af1c3d3e02c1",
+    "Data Raw\\rove\\REC20260713-062918-249.mp4": "dd2bef4b90da2d8f2961a0f688353c9c7e9f9ddb6a37f146559e5c2ea2ec5b2f",
+    "Data Raw\\rove\\REC20260713-063018-250.mp4": "015dadf6bf6e645764b4eece72b57e1f339b8f1ce006ed60fbcb1e41d2e8986f",
+    "Data Raw\\rove\\REC20260713-063118-251.mp4": "cb69e605d8caf92bbcadfbc74618e816ffad3b1eeb3f4ac3182fd9afb3ad496a",
+    "Data Raw\\rove\\REC20260713-063219-252.mp4": "312fa6b13810a6ce6dac5a4d2dfb870ecaae32802926726eccce04e066e7ec7a",
+    "Data Raw\\rove\\REC20260713-063319-253.mp4": "7bede7c7d5666009c8436354e52bfd37f0afef765d9892bcc8ad2521c98a18cb"
+  },
+  "codeSha256": "568413723730d9823b559cbb2eb79ec0a9495e6a5454b6b4f5fcab9295a2d750",
+  "selection": "Annotation stop intervals trimmed by 15 s at both ends; nearest OBD within 0.25 s must be connected and report exactly zero speed. Raw sensor samples, not GPS-window averages.",
+  "limitations": [
+    "A single mounting orientation cannot separate gravity, mounting tilt, zero offset, and gain.",
+    "Sample standard deviations describe variation in this recording, not independent-sample uncertainty.",
+    "Final-stop telemetry is limited by the end of the OBD log."
+  ],
+  "stops": [
+    {
+      "name": "initial_stop",
+      "requestedStartSec": 15.0,
+      "requestedEndSec": 122.31,
+      "cameras": {
+        "gopro": {
+          "ACCL": {
+            "nRawSamples": 21220,
+            "firstSec": 15.00483533949488,
+            "lastSec": 122.30720814930278,
+            "axisMean": [
+              -9.582637076013006,
+              0.47965054911772914,
+              -2.4095297183553703
+            ],
+            "axisMedian": [
+              -9.582733812949641,
+              0.48201438848920863,
+              -2.4100719424460433
+            ],
+            "axisStd": [
+              0.05028276092728326,
+              0.07407685294843275,
+              0.05849448627891728
+            ],
+            "axisSlopePerMinute": [
+              0.0011015377826268226,
+              0.016563379690679482,
+              -0.006387570446025841
+            ],
+            "medianMagnitude": 9.892946696106378
+          },
+          "GYRO": {
+            "nRawSamples": 21220,
+            "firstSec": 15.00483533949488,
+            "lastSec": 122.30720814930278,
+            "axisMean": [
+              -0.0054473194757683,
+              -0.001563417476429836,
+              -0.000924891521350953
+            ],
+            "axisMedian": [
+              -0.005324813631522897,
+              -0.0010649627263045794,
+              -0.0010649627263045794
+            ],
+            "axisStd": [
+              0.0012366090832443195,
+              0.0022999473486263245,
+              0.0032204900243511703
+            ],
+            "axisSlopePerMinute": [
+              -0.0006858070796884846,
+              6.676820858509235e-05,
+              -2.718696166793723e-05
+            ],
+            "medianMagnitude": 0.006564871142671966
+          }
+        },
+        "rove": {
+          "ACCL": {
+            "nRawSamples": 1763,
+            "firstSec": 15.063814263467968,
+            "lastSec": 122.28450497665341,
+            "axisMean": [
+              0.08942479551603391,
+              -1.1158654495727185,
+              0.14298363934760736
+            ],
+            "axisMedian": [
+              0.08993157744407654,
+              -1.116324543952942,
+              0.14271749556064606
+            ],
+            "axisStd": [
+              0.008914434628300083,
+              0.008638877150733424,
+              0.006131861724374307
+            ],
+            "axisSlopePerMinute": [
+              0.0035794220725701474,
+              -0.000893320928845287,
+              -0.0012303687319537098
+            ],
+            "medianMagnitude": 1.1287432054790065
+          }
+        },
+        "redtiger": {
+          "ACCL_counts": {
+            "nRawSamples": 108,
+            "firstSec": 15.0,
+            "lastSec": 122.0,
+            "axisMean": [
+              -1.0277777777777777,
+              -2.9074074074074074
+            ],
+            "axisMedian": [
+              -1.0,
+              -2.9999999999999996
+            ],
+            "axisStd": [
+              0.16510168678179266,
+              0.29121200284126864
+            ],
+            "axisSlopePerMinute": [
+              -0.000857412329589684,
+              -0.07488067678413397
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "between_laps_1_2",
+      "requestedStartSec": 1123.03,
+      "requestedEndSec": 1313.54,
+      "cameras": {
+        "gopro": {
+          "ACCL": {
+            "nRawSamples": 37655,
+            "firstSec": 1123.0336746887328,
+            "lastSec": 1313.5386520994969,
+            "axisMean": [
+              -9.63199711376815,
+              0.46909149615641943,
+              -2.384497776894654
+            ],
+            "axisMedian": [
+              -9.633093525179856,
+              0.4724220623501199,
+              -2.383693045563549
+            ],
+            "axisStd": [
+              0.0411103397043604,
+              0.04508562452492795,
+              0.030206395748547714
+            ],
+            "axisSlopePerMinute": [
+              0.0010542040989807864,
+              0.0016415191264800254,
+              -0.0017773079541914868
+            ],
+            "medianMagnitude": 9.934116074470165
+          },
+          "GYRO": {
+            "nRawSamples": 37655,
+            "firstSec": 1123.0336746887328,
+            "lastSec": 1313.5386520994969,
+            "axisMean": [
+              -0.009368306420786213,
+              0.001957036934592189,
+              -0.0004210074397495803
+            ],
+            "axisMedian": [
+              -0.009584664536741214,
+              0.002129925452609159,
+              -0.0010649627263045794
+            ],
+            "axisStd": [
+              0.0012563011648125532,
+              0.0013838350735169438,
+              0.0021922620440103227
+            ],
+            "axisSlopePerMinute": [
+              -0.0005514548090322684,
+              -9.286367592794298e-05,
+              8.529222958627035e-05
+            ],
+            "medianMagnitude": 0.009876058035671676
+          }
+        },
+        "rove": {
+          "ACCL": {
+            "nRawSamples": 3124,
+            "firstSec": 1123.0326769240962,
+            "lastSec": 1313.5212466367009,
+            "axisMean": [
+              0.108183045138184,
+              -1.1159014959799343,
+              0.13444364857210012
+            ],
+            "axisMedian": [
+              0.10752688348293304,
+              -1.1153470277786255,
+              0.1348973661661148
+            ],
+            "axisStd": [
+              0.0068861761146757836,
+              0.007402973965844706,
+              0.004624530993644159
+            ],
+            "axisSlopePerMinute": [
+              0.0003934219441246288,
+              -0.0002889465330337159,
+              -0.00016761207768947547
+            ],
+            "medianMagnitude": 1.1290496180309448
+          }
+        },
+        "redtiger": {
+          "ACCL_counts": {
+            "nRawSamples": 190,
+            "firstSec": 1124.0,
+            "lastSec": 1313.0,
+            "axisMean": [
+              -1.0052631578947369,
+              -3.0736842105263156
+            ],
+            "axisMedian": [
+              -1.0,
+              -2.9999999999999996
+            ],
+            "axisStd": [
+              0.07254762501100115,
+              0.2996331182788027
+            ],
+            "axisSlopePerMinute": [
+              -0.008870343397761295,
+              -0.02918290490624459
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "between_laps_2_3",
+      "requestedStartSec": 2422.62,
+      "requestedEndSec": 2576.32,
+      "cameras": {
+        "gopro": {
+          "ACCL": {
+            "nRawSamples": 30381,
+            "firstSec": 2422.6213500119566,
+            "lastSec": 2576.3156375382982,
+            "axisMean": [
+              -9.622666949880228,
+              0.4791626755867953,
+              -2.3728646193344507
+            ],
+            "axisMedian": [
+              -9.623501199040767,
+              0.48201438848920863,
+              -2.3741007194244603
+            ],
+            "axisStd": [
+              0.041168756191996586,
+              0.0427424099303522,
+              0.03445502097640932
+            ],
+            "axisSlopePerMinute": [
+              0.0003670326086853256,
+              -0.0014548908001034767,
+              0.0017723958801818547
+            ],
+            "medianMagnitude": 9.923062611234087
+          },
+          "GYRO": {
+            "nRawSamples": 30381,
+            "firstSec": 2422.6213500119566,
+            "lastSec": 2576.3156375382982,
+            "axisMean": [
+              -0.008186412399232467,
+              0.0014418587874355144,
+              -0.00036487268418105326
+            ],
+            "axisMedian": [
+              -0.008519701810436636,
+              0.0010649627263045794,
+              0.0
+            ],
+            "axisStd": [
+              0.0011022122495692017,
+              0.0014861828891562841,
+              0.0019132829202795768
+            ],
+            "axisSlopePerMinute": [
+              -0.00014589555246607194,
+              -0.0003963548855093954,
+              0.00021736017716704898
+            ],
+            "medianMagnitude": 0.008651798088004219
+          }
+        },
+        "rove": {
+          "ACCL": {
+            "nRawSamples": 2513,
+            "firstSec": 2422.6638213825677,
+            "lastSec": 2576.301805004669,
+            "axisMean": [
+              0.1087335107534519,
+              -1.1200630668146032,
+              0.13564343337774562
+            ],
+            "axisMedian": [
+              0.10850439965724945,
+              -1.1202346086502075,
+              0.1358748823404312
+            ],
+            "axisStd": [
+              0.0063740925484775685,
+              0.007641856756312692,
+              0.004603926838149557
+            ],
+            "axisSlopePerMinute": [
+              -0.0002917631381844781,
+              0.00048114307058139377,
+              0.0004939591562785079
+            ],
+            "medianMagnitude": 1.1335814593891298
+          }
+        },
+        "redtiger": {
+          "ACCL_counts": {
+            "nRawSamples": 154,
+            "firstSec": 2423.0,
+            "lastSec": 2576.0,
+            "axisMean": [
+              -1.025974025974026,
+              -3.064935064935065
+            ],
+            "axisMedian": [
+              -1.0,
+              -2.9999999999999996
+            ],
+            "axisStd": [
+              0.15957672558078242,
+              0.31675075612776643
+            ],
+            "axisSlopePerMinute": [
+              -0.0021686093792355767,
+              -0.00374577983686218
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "final_stop",
+      "requestedStartSec": 3543.79,
+      "requestedEndSec": 3937.47,
+      "cameras": {
+        "gopro": {
+          "ACCL": {
+            "nRawSamples": 44476,
+            "firstSec": 3543.793245158454,
+            "lastSec": 3768.7421575687345,
+            "axisMean": [
+              -9.606793834650748,
+              0.45938870811795035,
+              -2.3720164977829015
+            ],
+            "axisMedian": [
+              -9.606714628297363,
+              0.460431654676259,
+              -2.3741007194244603
+            ],
+            "axisStd": [
+              0.04706630249036876,
+              0.0742813745520751,
+              0.07377082007979525
+            ],
+            "axisSlopePerMinute": [
+              0.0002358166051752139,
+              0.007074672043293566,
+              -0.00018304594416200442
+            ],
+            "medianMagnitude": 9.906126508786768
+          },
+          "GYRO": {
+            "nRawSamples": 44476,
+            "firstSec": 3543.793245158454,
+            "lastSec": 3768.7421575687345,
+            "axisMean": [
+              -0.006682906893292234,
+              0.0007052899789392727,
+              0.00044616086157104636
+            ],
+            "axisMedian": [
+              -0.006389776357827476,
+              0.0010649627263045794,
+              0.0
+            ],
+            "axisStd": [
+              0.0011710414588057567,
+              0.002727167578159321,
+              0.0027481022149508727
+            ],
+            "axisSlopePerMinute": [
+              -5.2046403423314485e-05,
+              0.00010507910342906898,
+              1.7515459432758165e-05
+            ],
+            "medianMagnitude": 0.007143987148561628
+          }
+        },
+        "rove": {
+          "ACCL": {
+            "nRawSamples": 3677,
+            "firstSec": 3543.8280629230235,
+            "lastSec": 3768.743968004196,
+            "axisMean": [
+              0.102188686890133,
+              -1.1184526420430643,
+              0.14002341080658587
+            ],
+            "axisMedian": [
+              0.10166177898645401,
+              -1.1182795763015747,
+              0.13978494703769684
+            ],
+            "axisStd": [
+              0.009837036098351569,
+              0.009155870728796018,
+              0.005448220590335295
+            ],
+            "axisSlopePerMinute": [
+              0.00030883455553085083,
+              0.0002095155596289734,
+              -1.4363153951047302e-05
+            ],
+            "medianMagnitude": 1.1318284797406593
+          }
+        },
+        "redtiger": {
+          "ACCL_counts": {
+            "nRawSamples": 225,
+            "firstSec": 3544.0,
+            "lastSec": 3768.0,
+            "axisMean": [
+              -1.0177777777777777,
+              -3.0311111111111106
+            ],
+            "axisMedian": [
+              -1.0,
+              -2.9999999999999996
+            ],
+            "axisStd": [
+              0.1324374665254604,
+              0.23887966021302834
+            ],
+            "axisSlopePerMinute": [
+              0.012262958280657469,
+              0.007269279393173612
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
