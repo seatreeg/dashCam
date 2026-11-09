@@ -4,9 +4,9 @@ This repository compares GPS observations from four vehicle-mounted cameras agai
 
 The reference is a reviewed model, not a surveyed ground-truth track. The implemented workflow uses the saved v4 lane observations; the previously proposed Lincoln GIS migration is not implemented.
 
-The [Data Descriptor](Data%20Descriptor.qmd) describes collection, methods, file relationships, column dictionaries, and scientific limitations. A [rendered HTML copy](Data%20Descriptor.html) is available for local reading. Some writing sections and the camera-setup photograph remain unfinished.
+The [Data Descriptor](Data%20Descriptor.qmd) describes collection, methods, file relationships, column dictionaries, and scientific limitations. A [rendered HTML copy](Data%20Descriptor.html) is available for local reading. Some writing sections remain unfinished.
 
-The removed video-extraction text is preserved verbatim in [Video Extraction Details.txt](Video%20Extraction%20Details.txt). This is an archive of earlier wording, including superseded unit and processing claims; consult the descriptor and current code for the corrected interpretation.
+The remaining historical video-extraction text is preserved in [Video Extraction Details.txt](Video%20Extraction%20Details.txt). This is an archive of earlier wording, including superseded unit and processing claims; consult the descriptor and current code for the corrected interpretation.
 
 ## Repository layout
 
@@ -54,20 +54,19 @@ Open <http://127.0.0.1:8799>. Video/map review additionally needs the prepared v
 
 [pipeline/01_record/car_monitor.py](pipeline/01_record/car_monitor.py) is the Pi/OBD/Arduino recorder. Its agreement with the current device copy remains to be checked. [pipeline/02_extract](pipeline/02_extract/) contains the optional original-video preparation tools, which require ExifTool and FFmpeg/FFprobe. They are not needed when using the supplied camera CSVs.
 
-Acceleration columns are retained as source-table attributes. REDTIGER's conversion is empirical, ROVE's acceleration-unit interpretation remains provisional, and the source-table inertial averages use historical sample-count grouping. Separate timestamp-based derivatives are now available. Both ROVE and REDTIGER speed are recorded in knots; REDTIGER's conversion is supported by checks against its video speed stamps. See the descriptor's Technical Validation section before using these fields. The acceleration columns are not used in the GPS-error analysis.
+Acceleration columns are retained as source-table attributes. GoPro uses measured sensor offsets and scale factors, ROVE uses measured calibration values with unresolved transfer to July, REDTIGER retains its provisional 0.048 estimate, and the source-table inertial averages use historical sample-count grouping. Separate timestamp-based derivatives are now available. Both ROVE and REDTIGER speed are recorded in knots; REDTIGER's conversion is supported by checks against its video speed stamps. See the descriptor's Technical Validation section before using these fields. The acceleration columns are not used in the GPS-error analysis.
 
 ## Reprocess and review inertial data
 
 With the original local videos available, run:
 
 ```sh
-python -m pip install numpy pandas scipy matplotlib
+python -m pip install numpy pandas
 python pipeline/02_extract/rebuildInertial.py
-python pipeline/05_analysis/checkInertialScale.py
 python pipeline/05_analysis/checkStationary.py
 ```
 
-These commands write [Data/inertial](Data/inertial/README.md), preserving original camera acceleration columns. The new means use recorded timestamps and elapsed-time weights, with explicit flags for timing assumptions and missing coverage. They do not establish hardware synchronization or apply a gravity/baseline calibration. The scale review repeats the historical comparison alongside the new preparation; the stationary review uses the designated stops between laps.
+These commands write [Data/inertial](Data/inertial/README.md). The camera tables and timestamp-based derivatives apply the saved acceleration offsets and scale factors in [sensorCalibration.json](pipeline/02_extract/sensorCalibration.json); ROVE calibration transfer to July remains unresolved. The derivatives use elapsed-time weights and retain timing and coverage flags. Gravity remains, and no vehicle-frame rotation or gyro correction is applied. The stationary review uses the designated stops between laps.
 
 ## Videos and documentation
 

@@ -46,12 +46,13 @@
     "source": "https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/QuickTimeStream.pl"
   },
   "inertialBuild": "Data/inertial/build-all.json",
-  "scaleReview": "Data/inertial/scaleReview.json",
   "stationaryReview": "Data/inertial/stationaryReview.json",
   "remaining": [
     "GoPro within-block interpolation and arrival-time latency",
-    "ROVE arrival-time jitter and unverified acceleration calibration",
-    "No independent reference-IMU calibration",
-    "No new six-orientation recording supplied"
-  ]
+    "ROVE arrival-time jitter and unresolved calibration transfer to July data",
+    "Missing negative-Y calibration pose and unmeasured dynamic/temperature response",
+    "REDTIGER calibration recordings contain zero-filled telemetry; 0.048 remains provisional"
+  ],
+  "accelerationUpdateDate": "2026-11-09",
+  "accelerationCalibration": "pipeline/02_extract/sensorCalibration.json"
 }

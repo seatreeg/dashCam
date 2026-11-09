@@ -12,6 +12,7 @@ import json
 import tempfile
 from pathlib import Path
 from sensorTimeline import goproTimeline, roveTimeline, gpsWindowAverages
+from config import SENSOR_CALIBRATION
 
 root = Path(__file__).resolve().parents[2]
 
@@ -80,9 +81,11 @@ def main():
         'ROVE averages use actual track intervals; their association with GPS has arrival jitter.',
         'Piecewise-linear integration excludes gaps >25 ms (GoPro) or >250 ms (ROVE).',
         'Incomplete and terminal undefined windows are blank, never zero-filled.',
-        'No baseline subtraction, gain calibration, or camera-to-vehicle rotation is applied.']
+        'Saved per-axis acceleration offsets/scales are applied once; ROVE calibration transfer to July remains unresolved.',
+        'Gravity is retained; no camera-to-vehicle rotation or gyro bias correction is applied.']
+    report['accelerationCalibration'] = SENSOR_CALIBRATION['acceleration']
     report['codeSha256'] = {name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
-                           for name in ['mp4Telemetry.py', 'sensorTimeline.py', 'rebuildInertial.py']}
+                           for name in ['mp4Telemetry.py', 'sensorTimeline.py', 'rebuildInertial.py', 'config.py', 'sensorCalibration.json']}
     report['sourceMetadataHashRecipe'] = ('SHA-256 over moov payload, then all gpmd payloads for GoPro; '
         'moov payload, then GPS payloads, then acceleration payloads for ROVE. Video pixels are not read.')
     manifest.write_text(json.dumps(report, indent=2) + '\n')

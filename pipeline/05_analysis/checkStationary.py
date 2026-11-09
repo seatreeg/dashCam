@@ -1,4 +1,4 @@
-"""Describe raw inertial stability during the user-designated long stops."""
+"""Describe full-rate inertial stability with the saved acceleration corrections."""
 from pathlib import Path
 import sys,json,hashlib
 import numpy as np
@@ -6,6 +6,7 @@ import pandas as pd
 root=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(root/'pipeline/02_extract'))
 from sensorTimeline import goproTimeline,roveTimeline,interpolateClock
+from config import SENSOR_CALIBRATION, SENSOR_CALIBRATION_PATH
 from datetime import datetime
 origin=datetime.fromisoformat(json.loads((root/'settings.json').read_text())['driveStartUtc'])
 vehicle=pd.read_csv(root/'Data/vehicle.csv')
@@ -14,7 +15,7 @@ annotations=pd.read_csv(root/'Annotation Data/annotations.csv').set_index('point
 windows=[(name,float(annotations.loc[i,'timeSec'])+15,float(annotations.loc[i+1,'timeSec'])-15)
          for name,i in [('initial_stop',0),('between_laps_1_2',122),('between_laps_2_3',250),('final_stop',373)]]
 sourceHashes={str(path.relative_to(root)):hashlib.sha256(path.read_bytes()).hexdigest() for path in
-              [root/'settings.json',root/'Data/vehicle.csv',root/'Annotation Data/annotations.csv',root/'Data Raw/Dashcam Extract/redtiger.csv']}
+              [root/'settings.json',root/'Data/vehicle.csv',root/'Annotation Data/annotations.csv',root/'Data Raw/Dashcam Extract/redtiger.csv',SENSOR_CALIBRATION_PATH]}
 metadataHashes={}
 data={}
 for camera in ['gopro','rove']:
@@ -30,8 +31,10 @@ for camera in ['gopro','rove']:
     data[camera]={sensor:np.vstack(parts) for sensor,parts in collected.items()}
 red=pd.read_csv(root/'Data Raw/Dashcam Extract/redtiger.csv')
 rt=(pd.to_datetime(red.timeUtc,format='mixed',utc=True)-pd.Timestamp(origin)).dt.total_seconds()
-data['redtiger']={'ACCL_counts':np.column_stack([rt,red.accelX/.048,red.accelY/.048])}
-report={'inputHashes':sourceHashes,'sourceMetadataHashes':metadataHashes,'codeSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'selection':'Annotation stop intervals trimmed by 15 s at both ends; nearest OBD within 0.25 s must be connected and report exactly zero speed. Raw sensor samples, not GPS-window averages.',
+redtigerScale=SENSOR_CALIBRATION['acceleration']['redtiger']['gPerIntegerIncrement']
+data['redtiger']={'ACCL_integer_values':np.column_stack([rt,red.accelX/redtigerScale,red.accelY/redtigerScale])}
+report={'inputHashes':sourceHashes,'sourceMetadataHashes':metadataHashes,'codeSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'selection':'Annotation stop intervals trimmed by 15 s at both ends; nearest OBD within 0.25 s must be connected and report exactly zero speed. Full-rate sensor samples with saved acceleration offsets/scales, not GPS-window averages.',
+        'accelerationCalibration':SENSOR_CALIBRATION['acceleration'],
         'limitations':['A single mounting orientation cannot separate gravity, mounting tilt, zero offset, and gain.',
                        'Sample standard deviations describe variation in this recording, not independent-sample uncertainty.',
                        'Final-stop telemetry is limited by the end of the OBD log.'], 'stops':[]}

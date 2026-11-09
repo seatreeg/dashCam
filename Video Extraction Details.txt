@@ -1,13 +1,11 @@
 Removed from the repository Data Descriptor on 2026-11-02.
-Preserved verbatim below as historical wording, including unresolved claims.
+Remaining historical wording is preserved below; superseded REDTIGER scale wording was removed on 2026-11-09.
 
 ### Extraction of camera telemetry
 
 The extractor `02_extract/extractTelemetry.py` reads original MP4 files and connects to a decoder (`02_extract/decorders.py`) for each camera. Records are sorted by timestamp, clip, and sample index before writing the camera-specific CSV.
 
 Garmin. The decoder reads GPS records from a private UUID atom in the MP4 container. Twenty-byte records contain a timestamp, coordinate integers, and an encoded camera-reported speed. The timestamp is interpreted relative to the QuickTime epoch of 1 January 1904. Signed coordinate integers are scaled by 360/2^32 to obtain decimal degrees. A sentinel value identifies absent fixes. This extraction produces GPS and speed fields, without  accelerometer or gyroscope output.
-
-REDTIGER. The decoder uses an MP4 GPS index to locate [Novatek freeGPS](citation) records. Initially extracted records of latitude and longitude are converted from degrees and minute values to decimal degrees, with hemisphere indicators determining sign. Calendar fields supply the UTC timestamp, an active/void marker supplies fix status, and a camera speed field supplies miles per hour. X and Y acceleration are reported as integer values between 1 and 3 -- presumably to indicate a low, medium, or high gravitational force. Multiplication of these integers by 0.048 g brings these values into a range that is comparable to the acceleration records of the other dashcams. No gravity or baseline calibration is applied.
 
 Rove. The decoder extracts records in FFprobe format. FFprobe identifies SStarMeta (ssmd) data tracks, and FFmpeg extracts their payloads. Thirty two byte GPS records encode degrees and minute coordinates, calendar fields, fix sentinels, and a speed byte. Approximately 16.6 Hz three-axis acceleration samples are distributed across GPS records according to their relative sample counts and averaged into each GPS observation window. The original data contains multiple acceleration records per GPS reading. The average of the acceleration readings was grouped with the corresponding GPS reading. 
 

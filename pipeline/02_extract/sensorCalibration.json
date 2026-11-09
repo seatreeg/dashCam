@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "measurementDate": "2026-11-09",
+  "accelerationFormula": "corrected = (decoded - offset) * scale, component by component; gravity remains; no vehicle-frame rotation",
+  "acceleration": {
+    "gopro": {
+      "status": "measured candidate",
+      "columnOrder": [
+        "accelX",
+        "accelY",
+        "accelZ"
+      ],
+      "sensorAxisOrder": [
+        "Z",
+        "X",
+        "Y"
+      ],
+      "inputUnits": "m/s^2",
+      "outputUnits": "m/s^2",
+      "offset": [
+        -0.09488155254211471,
+        0.018185198637344635,
+        -0.04291143700988087
+      ],
+      "scale": [
+        0.9900513134547879,
+        0.9965410217684263,
+        0.9955525616175961
+      ],
+      "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
+      "limitation": "Sensor axes, not vehicle axes."
+    },
+    "rove": {
+      "status": "measured; July transfer mismatch unresolved",
+      "columnOrder": [
+        "accelX",
+        "accelY",
+        "accelZ"
+      ],
+      "sensorAxisOrder": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "inputUnits": "native floating-point values",
+      "outputUnits": "g (measured calibration)",
+      "offset": [
+        0.049733752652784624,
+        -0.17592824767766158,
+        0.018258813734971693
+      ],
+      "scale": [
+        1.0016063000500262,
+        0.9946887072105666,
+        1.0153648858784063
+      ],
+      "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
+      "limitation": "Full fitted calibration gave 0.944-0.948 g for July stationary mean vectors; transfer remains unresolved."
+    },
+    "redtiger": {
+      "status": "provisional empirical estimate",
+      "outputUnits": "g (estimated)",
+      "gPerIntegerIncrement": 0.048,
+      "limitation": "November calibration clips contained zero-filled telemetry, so no measured replacement is available."
+    }
+  },
+  "gyroscope": {
+    "gopro": {
+      "apply": false,
+      "sensorAxisOrder": [
+        "Z",
+        "X",
+        "Y"
+      ],
+      "units": "rad/s",
+      "firstPassOffset": [
+        -0.00398506907231663,
+        -0.0016937951061715677,
+        -0.0004135939489603579
+      ],
+      "finalPassOffset": [
+        -0.006490805105904718,
+        -0.0015133984844627167,
+        -0.0014381278187462418
+      ],
+      "reason": "Stationary offsets varied as the camera warmed; no transferable gyro gain or fixed bias was established."
+    }
+  }
+}

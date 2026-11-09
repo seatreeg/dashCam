@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import mean
 
-from config import EXIFTOOL, FFMPEG, FFPROBE, KMH_TO_MPH, UTC
+from config import EXIFTOOL, FFMPEG, FFPROBE, KMH_TO_MPH, UTC, SENSOR_CALIBRATION
 
 
 # SHARED ROW FIELDS
@@ -51,12 +51,10 @@ noFixInt32 = -2147483648  # Garmin no-fix sentinel (0x80000000)
 # Rove no-fix sentinel, as raw double bits.
 roveNoFixBits = 0x41EFFFFFFFE00000
 
-# REDTIGER stores three little-endian int32 acceleration values. Z was zero in
-# the inspected footage. The native CSV applies the provisional scale below.
-# The 2026-09-20 exploratory GoPro/OBD/ROVE comparison estimated this gain;
-# it is not a manufacturer constant. No fitted baseline, lag or rotation is applied.
+# REDTIGER Z is not established as a usable channel. Its retained scale is
+# provisional: the November recordings supplied no usable calibration telemetry.
 redtigerAccelOffsets = (124, 128, 132)
-redtigerGPerCount = 0.048  # Estimated g per count; no baseline/gravity correction. 
+redtigerGPerInteger = SENSOR_CALIBRATION["acceleration"]["redtiger"]["gPerIntegerIncrement"]
 
 # REDTIGER speed is float32, little-endian, KNOTS at byte 96 in this recording.
 # The footage's own MPH overlay corroborates the conversion on all three laps;
@@ -66,6 +64,15 @@ redtigerSpeedOffset = 96
 
 roveAccelRecordSize = 12  # Three little-endian float32 values
 roveGpsRecordSize = 32
+
+
+def correctAcceleration(camera, values):
+    """Apply saved offsets/scales once to decoded values; do not fit a model."""
+    calibration = SENSOR_CALIBRATION["acceleration"][camera]
+    if len(values) != 3:
+        raise ValueError("Expected three acceleration components")
+    return tuple((value - offset) * scale for value, offset, scale in
+                 zip(values, calibration["offset"], calibration["scale"]))
 
 # Keep scientific notation and invalid numeric slots together when reading IMU text.
 numberPattern = re.compile(
@@ -280,8 +287,8 @@ def parseRedtiger(clipPath: Path):
                 # fix sentinel, so its original vocabulary is preserved.
                 fix_status="active" if sample["active"] == "A" else "inactive",
                 fix_ok=1 if sample["active"] == "A" else 0,
-                accel_x="" if sample["gx"] == "" else sample["gx"] * redtigerGPerCount,  
-                accel_y="" if sample["gy"] == "" else sample["gy"] * redtigerGPerCount,  
+                accel_x="" if sample["gx"] == "" else sample["gx"] * redtigerGPerInteger,
+                accel_y="" if sample["gy"] == "" else sample["gy"] * redtigerGPerInteger,
                 accel_z="",  # Unused field; not a measured zero acceleration. 
                 accel_units="g (estimated)",  
             )
@@ -414,11 +421,13 @@ def parseRove(clipPath: Path):
                 int(sampleIndex * accelPerGps):int((sampleIndex + 1) * accelPerGps)
             ]
             if accelWindow:
+                original = [round(mean(sample[axis] for sample in accelWindow), 5) for axis in range(3)]
+                corrected = correctAcceleration("rove", original)
                 row.update(
-                    accel_x=round(mean(accelSample[0] for accelSample in accelWindow), 5),
-                    accel_y=round(mean(accelSample[1] for accelSample in accelWindow), 5),
-                    accel_z=round(mean(accelSample[2] for accelSample in accelWindow), 5),
-                    accel_units="g",
+                    accel_x=round(corrected[0], 7),
+                    accel_y=round(corrected[1], 7),
+                    accel_z=round(corrected[2], 7),
+                    accel_units=SENSOR_CALIBRATION["acceleration"]["rove"]["outputUnits"],
                 )
         rows.append(row)
     return rows
@@ -530,10 +539,13 @@ def parseGopro(clipPath: Path):
                 int(sampleIndex * accelPerGps):int((sampleIndex + 1) * accelPerGps)
             ]
             if window:
+                # Preserve the existing column order: GPMF Z, X, Y.
+                original = [round(mean(sample[axis] for sample in window), 4) for axis in range(3)]
+                corrected = correctAcceleration("gopro", original)
                 row.update(
-                    accel_x=round(mean(imuSample[0] for imuSample in window), 4),
-                    accel_y=round(mean(imuSample[1] for imuSample in window), 4),
-                    accel_z=round(mean(imuSample[2] for imuSample in window), 4),
+                    accel_x=round(corrected[0], 6),
+                    accel_y=round(corrected[1], 6),
+                    accel_z=round(corrected[2], 6),
                     accel_units="m/s^2",
                 )
         if gyroPerGps:

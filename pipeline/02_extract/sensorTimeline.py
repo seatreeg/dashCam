@@ -10,6 +10,7 @@ import struct
 import hashlib
 import numpy as np
 from mp4Telemetry import metadataTracks, streams, number, moov
+from config import SENSOR_CALIBRATION, SENSOR_CALIBRATION_PATH
 
 
 def requireIncreasing(values, label):
@@ -127,6 +128,11 @@ def goproTimeline(path, origin):
                     if scale <= 0:
                         raise ValueError('Nonpositive sensor scale')
                     values = np.frombuffer(payload, dtype='>i2').reshape(count, 3).astype(float) / scale
+                    if sensor == 'ACCL':
+                        calibration = SENSOR_CALIBRATION['acceleration']['gopro']
+                        if fields.get('ORIN', (None, None, None, b''))[3].rstrip(b'\0') != b'ZXY':
+                            raise ValueError('GoPro calibration requires the recorded ZXY component order')
+                        values = (values - np.asarray(calibration['offset'])) * np.asarray(calibration['scale'])
                     blocks[sensor].append(dict(stamp=number(fields['STMP']) / 1e6,
                                                counter=number(fields['TSMP']), values=values))
     utc = requireIncreasing(gps, 'GPS UTC')
@@ -142,6 +148,7 @@ def goproTimeline(path, origin):
     metadata['lastGpsAnchorClock'] = float(anchorClock[-1])
     metadata['sourceMetadataSha256'] = metadataHash.hexdigest()
     metadata['sourceBytes'] = path.stat().st_size
+    metadata['sensorCalibrationSha256'] = hashlib.sha256(SENSOR_CALIBRATION_PATH.read_bytes()).hexdigest()
     return dict(utc=utc, clock=gpsClock, signals=signals, metadata=metadata,
                 method='gopro_STMP_arrival_with_interpolated_block_samples')
 
@@ -170,9 +177,12 @@ def roveTimeline(path, origin):
             values.append(struct.unpack('<3f', payload))
     utc = requireIncreasing(utc, 'ROVE UTC')
     clock = requireIncreasing(gpsTrack['times'], 'ROVE GPS track')
+    calibration = SENSOR_CALIBRATION['acceleration']['rove']
+    values = (np.asarray(values) - np.asarray(calibration['offset'])) * np.asarray(calibration['scale'])
     signal = TimedSignal(imuTrack['times'], values, 0.25)
     return dict(utc=utc, clock=clock, signals={'ACCL': signal},
                 metadata={'sourceMetadataSha256': metadataHash.hexdigest(), 'sourceBytes': path.stat().st_size,
+                          'sensorCalibrationSha256': hashlib.sha256(SENSOR_CALIBRATION_PATH.read_bytes()).hexdigest(),
                           'samples': len(values), 'gpsTrackUtcOffsetRangeSec': float(np.ptp(utc - clock)),
                           'imuMedianIntervalSec': float(np.median(np.diff(signal.times))),
                           'imuMaxIntervalSec': float(np.max(np.diff(signal.times)))},
@@ -191,7 +201,7 @@ def gpsWindowAverages(timeline, camera):
         row = dict(sampleIndex=i, timeStartSec=float(start), timeEndSec='' if terminal else float(utc[i + 1]),
                    timeMidSec='' if terminal else float((start + utc[i + 1]) / 2),
                    sensorClockStart=float(clock[i]), sensorClockEnd='' if terminal else float(clock[i + 1]),
-                   accelX='', accelY='', accelZ='', accelUnits='m/s^2' if camera == 'gopro' else 'g (provisional)',
+                   accelX='', accelY='', accelZ='', accelUnits=SENSOR_CALIBRATION['acceleration'][camera]['outputUnits'],
                    gyroX='', gyroY='', gyroZ='', gyroUnits='rad/s' if camera == 'gopro' else '',
                    accelCoverage=0.0, gyroCoverage='' if camera == 'rove' else 0.0,
                    accelSamples=0, gyroSamples='' if camera == 'rove' else 0, timingMethod=timeline['method'])

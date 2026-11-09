@@ -11,6 +11,7 @@ execute:
   eval: false
 ---
 
+**IMPORTANT TO DO NOTE:** The redtiger calibration has failed, but it just needs its own calibration run, so that is the next step
 
 ## Abstract
 
@@ -61,11 +62,11 @@ The analysis begins with the individual camera CSVs in [Data Raw/Dashcam Extract
 
 **REDTIGER F7N Touch.** [redtiger.csv](Data%20Raw/Dashcam%20Extract/redtiger.csv) contains nominally 1 Hz GPS observations, speed in knots, and two acceleration components labeled `g (estimated)`. The X and Y columns contain the original signed integer sensor values multiplied by a provisional scale of 0.048 g per integer increment. The original integer values within the analysis window span −12 to +7 on X and −11 to +5 on Y. The Z column is blank because the recorded zero-valued field has not been established as a usable measurement.
 
-The provisional conversion of 0.048 g per integer increment was estimated, not a manufacturer specification or a complete calibration. A single scale factor was fitted jointly to the REDTIGER X and Y acceleration values, together with axis orientation and a constant offset, using GoPro acceleration on lap 1. The fitted model was evaluated on laps 2 and 3. At a 2 s Gaussian smoothing scale, separate lap fits gave 0.04776, 0.04800, and 0.04829 g per integer increment. OBD speed changes and ROVE acceleration provided supporting comparisons, while a GPS-heading-based lateral comparison gave a lower scale.
+**ROVE R2-4K Dual.** [rove.csv](Data%20Raw/Dashcam%20Extract/rove.csv) contains nominally 1 Hz GPS observations, speed in knots, and three acceleration components labeled `g (measured calibration)`. The retained values are averages of multiple sensor readings with the current calibration values applied.
 
-**ROVE R2-4K Dual.** [rove.csv](Data%20Raw/Dashcam%20Extract/rove.csv) contains nominally 1 Hz GPS observations, speed in knots, and three acceleration components labeled `g`. That acceleration unit is the current decoder's interpretation; no device-specific manufacturer conversion has been verified. The retained values are averages of multiple sensor readings. The calibration limitations below apply to their use.
+We obtained the GoPro and ROVE acceleration offsets and scale factors by calibrating the cameras in stationary orientations. The applied values are saved in [sensorCalibration.json](pipeline/02_extract/sensorCalibration.json). REDTIGER's calibration values have not yet been measured successfully, so its X and Y acceleration readings still use a provisional estimate of 0.048 g per integer increment. (NOTE: Strangely, ROVE's corrected readings show a combined acceleration of about 0.94–0.95 g while the car was stopped during the July drive. Note to self: check calibration.)
 
-All four camera tables retain source clip names and within-clip sample indices. Their latitude and longitude columns are already decimal degrees. For the REDTIGER source-format attribution, the appropriate technical reference is Phil Harvey's [ExifTool QuickTime stream implementation](https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/QuickTimeStream.pl), which documents support for Novatek/freeGPS variants. This is a decoder reference, not a manufacturer GPS standard or evidence for the 0.048 conversion.
+All four camera tables retain source clip names and within-clip sample indices. Their latitude and longitude columns are already decimal degrees. For the REDTIGER source-format attribution, the appropriate technical reference is Phil Harvey's [ExifTool QuickTime stream implementation](https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/QuickTimeStream.pl), which documents support for Novatek/freeGPS variants. This is a decoder reference, not a manufacturer GPS standard.
 
 ### Time synchronization and unit harmonization
 
@@ -165,7 +166,7 @@ File: [Data Raw/Dashcam Extract/garmin.csv](Data%20Raw/Dashcam%20Extract/garmin.
 | `speedUnits` | Units for this camera's original reported speed. | text | mph | mph |
 | `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | fix | fix, nofix |
 
-#### Table 3. GoPro original extraction
+#### Table 3. GoPro camera table
 
 File: [Data Raw/Dashcam Extract/gopro.csv](Data%20Raw/Dashcam%20Extract/gopro.csv).
 
@@ -179,13 +180,13 @@ File: [Data Raw/Dashcam Extract/gopro.csv](Data%20Raw/Dashcam%20Extract/gopro.cs
 | `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0.0792 | Nonnegative; see speedUnits |
 | `speedUnits` | Units for this camera's original reported speed. | text | km/h | km/h |
 | `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | 3D | 2D, 3D, nofix |
-| `accelX` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -9.5742 | Real numbers in accelUnits; blank if unavailable |
-| `accelY` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.4498 | Real numbers in accelUnits; blank if unavailable |
-| `accelZ` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -2.4052 | Real numbers in accelUnits; blank if unavailable |
+| `accelX` | Mean acceleration with saved offset and scale applied; sensor Z axis, in accelUnits. Historical column name retained; GPMF component order is Z, X, Y. | number | -9.385012 | Real numbers in accelUnits; blank if unavailable |
+| `accelY` | Mean acceleration with saved offset and scale applied; sensor X axis, in accelUnits. Historical column name retained; GPMF component order is Z, X, Y. | number | 0.430122 | Real numbers in accelUnits; blank if unavailable |
+| `accelZ` | Mean acceleration with saved offset and scale applied; sensor Y axis, in accelUnits. Historical column name retained; GPMF component order is Z, X, Y. | number | -2.351782 | Real numbers in accelUnits; blank if unavailable |
 | `accelUnits` | GoPro camera-axis acceleration units. | text | m/s^2 | m/s^2 |
-| `gyroX` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00144 | Real numbers in gyroUnits |
-| `gyroY` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00165 | Real numbers in gyroUnits |
-| `gyroZ` | GoPro camera-axis angular rate averaged over the GPS window, not orientation angles. | number | -0.00383 | Real numbers in gyroUnits |
+| `gyroX` | GoPro sensor Z-axis angular rate averaged over the GPS window; historical column name retained, not an orientation angle. | number | -0.00144 | Real numbers in gyroUnits |
+| `gyroY` | GoPro sensor X-axis angular rate averaged over the GPS window; historical column name retained, not an orientation angle. | number | -0.00165 | Real numbers in gyroUnits |
+| `gyroZ` | GoPro sensor Y-axis angular rate averaged over the GPS window; historical column name retained, not an orientation angle. | number | -0.00383 | Real numbers in gyroUnits |
 | `gyroUnits` | Units for angular rate. Only GoPro supplies gyroscope values. | text | rad/s | rad/s |
 
 #### Table 4. REDTIGER original extraction
@@ -207,7 +208,7 @@ File: [Data Raw/Dashcam Extract/redtiger.csv](Data%20Raw/Dashcam%20Extract/redti
 | `accelZ` | Unused field; left blank by this decoder, not a measured zero acceleration. | number | (all missing) | Blank in this extraction |
 | `accelUnits` | Estimated g units from the scale of 0.048 g per integer increment; not a full sensor calibration. | text | g (estimated) | g (estimated) |
 
-#### Table 5. ROVE original extraction
+#### Table 5. ROVE camera table
 
 File: [Data Raw/Dashcam Extract/rove.csv](Data%20Raw/Dashcam%20Extract/rove.csv).
 
@@ -221,10 +222,10 @@ File: [Data Raw/Dashcam Extract/rove.csv](Data%20Raw/Dashcam%20Extract/rove.csv)
 | `speed` | Reported camera speed in its listed original/extraction units; not position-differenced speed. | number | 0 | Nonnegative; see speedUnits |
 | `speedUnits` | Units for this camera's original reported speed. | text | knots | knots |
 | `fixStatus` | Decoder-preserved camera fix label. An accepted fix is not an accuracy guarantee. | text | fix | fix, nofix |
-| `accelX` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.08493 | Real numbers in accelUnits; blank if unavailable |
-| `accelY` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | -1.11563 | Real numbers in accelUnits; blank if unavailable |
-| `accelZ` | Camera-axis acceleration, in accelUnits. GoPro/ROVE values are averaged over GPS windows; REDTIGER supplies estimated X/Y and leaves Z blank. | number | 0.14554 | Real numbers in accelUnits; blank if unavailable |
-| `accelUnits` | ROVE camera-axis acceleration units. | text | g | g |
+| `accelX` | Mean acceleration with saved offset and scale applied; sensor X axis, in accelUnits. Measured calibration. | number | 0.0352528 | Real numbers in accelUnits; blank if unavailable |
+| `accelY` | Mean acceleration with saved offset and scale applied; sensor Y axis, in accelUnits. Measured calibration. | number | -0.9347107 | Real numbers in accelUnits; blank if unavailable |
+| `accelZ` | Mean acceleration with saved offset and scale applied; sensor Z axis, in accelUnits. Measured calibration. | number | 0.1292368 | Real numbers in accelUnits; blank if unavailable |
+| `accelUnits` | ROVE acceleration units with the measured calibration correction. | text | g (measured calibration) | g (measured calibration) |
 
 #### Table 6. Combined camera observations
 
@@ -378,15 +379,14 @@ File: [Data/referenceIntervals.csv](Data/referenceIntervals.csv).
 
 The inertial columns are retained for provenance and exploratory use. [The combination stage](pipeline/02_extract/combineTelemetry.r) does not include them in the combined camera table, and they do not drive the present GPS-error or autocorrelation analysis.
 
-Neither GoPro nor ROVE acceleration has been rotated into vehicle coordinates or corrected for gravity or a stationary baseline. The REDTIGER conversion likewise applies no baseline correction. During sustained stops in each lap, we found median REDTIGER integer values of X = −1 and Y = −3. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.
+The saved GoPro and ROVE sensor offsets and scale factors are applied without removing gravity or rotating the readings into vehicle coordinates. The REDTIGER conversion applies no baseline correction. During sustained stops in each lap, we found median REDTIGER integer values of X = −1 and Y = −3. A 0.048 multiplier alone therefore does not produce zero acceleration at rest. Stop values cannot by themselves distinguish mounting tilt, road grade, sensor bias, and firmware processing.
 
 ### Checks during the designated stationary periods
 
-The initial stop, two pauses between laps, and final stop were checked using full-rate inertial samples. Annotation intervals were trimmed by 15 s at both ends; the nearest OBD row had to be connected, within 0.25 s, and report zero speed. The final interval was limited to available OBD coverage. REDTIGER's median original X/Y integer values were −1/−3 in every selected stop. ROVE's median vector magnitudes were 1.1287, 1.1291, 1.1336 and 1.1318 in its provisional g units. GoPro's corresponding acceleration magnitudes were 9.8930, 9.9341, 9.9231 and 9.9061 m/s². GoPro's gyro also had small nonzero stationary baselines that varied between stops.
+The initial stop, two pauses between laps, and final stop were checked using full-rate inertial samples. Annotation intervals were trimmed by 15 s at both ends; the nearest OBD row had to be connected, within 0.25 s, and report zero speed. The final interval was limited to available OBD coverage. REDTIGER's median original X/Y integer values were −1/−3 in every selected stop. GoPro's gyro also had small nonzero stationary baselines that varied between stops.
 
-The [stationary review](pipeline/05_analysis/checkStationary.py) and [detailed results](Data/inertial/stationaryReview.json) preserve axis variation and trends. These repeated stops establish observed baseline stability in the installed orientation. No acceleration baseline subtraction or gravity removal was applied to the new derivatives.
+The [stationary review](pipeline/05_analysis/checkStationary.py) and [detailed results](Data/inertial/stationaryReview.json) preserve axis variation and trends. These repeated stops establish observed baseline stability in the installed orientation. The camera tables and inertial derivatives use the same saved acceleration correction; gravity remains in both. Gyroscope values are unchanged.
 
-> **NOTE TO SELF: MEASURE USING THIS SETUP:** Record the ROVE camera resting in a stable fixture in six known positions: right side up, left side up, top up, bottom up, lens facing up, and lens facing down. Here, “up” means that face points toward the ceiling. Let the powered camera warm up, then record 30–60 seconds without movement in each position after it has settled. Repeat the six positions in a different order to check the result independently. Use the opposite positions, which should give approximately +1 g and −1 g along each corresponding axis, to estimate the sensor offsets and scale factors.
 
 
 

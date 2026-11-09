@@ -30,6 +30,8 @@ def extractCamera(camera, outputDir=None):
     if camera == "redtiger":
         warnings.warn("REDTIGER acceleration scale remains provisional; "
                       "consult the Data Descriptor before inertial reuse.")
+    if camera == "rove":
+        warnings.warn("ROVE uses measured calibration values; transfer to the July recording remains unresolved.")
     clipPaths = sorted((projectDir / "Data Raw" / camera).glob("*"))
     clipPaths = [path for path in clipPaths if path.suffix.lower() == ".mp4"]
     if not clipPaths:
