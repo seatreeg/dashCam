@@ -1,3 +1,7 @@
+**meeting notes:**
+
+I found out that the redtiger cam likely only stores accelerometer data if it has gps data, as it stores both in the freeGPS records. The repeat REDTIGER calibration now provides measured X and Y offsets and scale factors. The issue with separate recording devices is there is no failure feedback until the microSD card is returned after a recording is complete.
+
 # dashCam
 
 This repository compares GPS observations from four vehicle-mounted cameras against a modeled reference trajectory for a three-lap drive in Lincoln, Nebraska, on 13 July 2026. The cameras are Garmin Dash Cam X310, GoPro HERO13 Black, REDTIGER F7N Touch, and ROVE R2-4K Dual. A Raspberry Pi recorded vehicle telemetry, and manually reviewed video/map annotations and lane observations define the spatial reference.
@@ -54,7 +58,7 @@ Open <http://127.0.0.1:8799>. Video/map review additionally needs the prepared v
 
 [pipeline/01_record/car_monitor.py](pipeline/01_record/car_monitor.py) is the Pi/OBD/Arduino recorder. Its agreement with the current device copy remains to be checked. [pipeline/02_extract](pipeline/02_extract/) contains the optional original-video preparation tools, which require ExifTool and FFmpeg/FFprobe. They are not needed when using the supplied camera CSVs.
 
-Acceleration columns are retained as source-table attributes. GoPro uses measured sensor offsets and scale factors, ROVE uses measured calibration values with unresolved transfer to July, REDTIGER retains its provisional 0.048 estimate, and the source-table inertial averages use historical sample-count grouping. Separate timestamp-based derivatives are now available. Both ROVE and REDTIGER speed are recorded in knots; REDTIGER's conversion is supported by checks against its video speed stamps. See the descriptor's Technical Validation section before using these fields. The acceleration columns are not used in the GPS-error analysis.
+Acceleration columns are retained as source-table attributes. GoPro uses measured sensor offsets and scale factors, ROVE uses measured calibration values with unresolved transfer to July, REDTIGER uses measured X and Y offsets and scale factors, and the source-table inertial averages use historical sample-count grouping. Separate timestamp-based derivatives are now available. Both ROVE and REDTIGER speed are recorded in knots; REDTIGER's conversion is supported by checks against its video speed stamps. See the descriptor's Technical Validation section before using these fields. The acceleration columns are not used in the GPS-error analysis.
 
 ## Reprocess and review inertial data
 

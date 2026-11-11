@@ -51,8 +51,8 @@
     "GoPro within-block interpolation and arrival-time latency",
     "ROVE arrival-time jitter and unresolved calibration transfer to July data",
     "Missing negative-Y calibration pose and unmeasured dynamic/temperature response",
-    "REDTIGER calibration recordings contain zero-filled telemetry; 0.048 remains provisional"
+    "REDTIGER Z is unavailable; transfer of the November 11 measured X/Y correction to July has not been independently validated"
   ],
-  "accelerationUpdateDate": "2026-11-09",
+  "accelerationUpdateDate": "2026-11-11",
   "accelerationCalibration": "pipeline/02_extract/sensorCalibration.json"
 }

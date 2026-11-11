@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="667" viewBox="0 0 900 667" role="img" aria-labelledby="title description">
+  <title id="title">Shared stationary accelerometer calibration protocol</title>
+  <desc id="description">GoPro, ROVE, and REDTIGER use the same two prescribed holder-orientation sequences. Stable readings and the gravity reference determine each camera's offsets and scales, accounting for its sensor-axis orientation. Separate stationary holds check the corrections. Gravity is retained.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#557b8b"/></marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #20343e; }
+      .heading { font-size: 25px; font-weight: 700; }
+      .body { font-size: 22px; }
+      .formula { font-size: 23px; font-family: Consolas, monospace; }
+      .card { fill: #f4f8fa; stroke: #b8ccd4; stroke-width: 1.5; }
+      .number { fill: white; font-size: 21px; font-weight: 700; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="900" height="667" rx="12" fill="white"/>
+  <text x="450" y="38" text-anchor="middle" class="heading">Stationary accelerometer calibration</text>
+
+  <rect x="24" y="66" width="852" height="146" rx="10" class="card"/>
+  <circle cx="57" cy="97" r="18" fill="#28596c"/><text x="57" y="104" class="number">1</text>
+  <text x="88" y="105" class="heading">Record two passes with cameras fixed in the holder</text>
+  <text x="48" y="139" class="body">Pass 1: Z+ → Z− → X+ → X− → Y+</text>
+  <text x="48" y="166" class="body">Pass 2: X− → Y+ → Z+ → X+ → Z−</text>
+  <text x="48" y="193" class="body">Orientation labels identify the holder face pointing upward.</text>
+  <path d="M450 213 V237" stroke="#557b8b" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="24" y="246" width="852" height="106" rx="10" class="card"/>
+  <circle cx="57" cy="277" r="18" fill="#28596c"/><text x="57" y="284" class="number">2</text>
+  <text x="88" y="285" class="heading">Allow the holder to settle, then select stable readings</text>
+  <text x="48" y="318" class="body">Keep the stable interior of each stationary hold.</text>
+  <text x="48" y="343" class="body">Use the holder orientation as the gravity reference.</text>
+  <path d="M450 353 V377" stroke="#557b8b" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="24" y="386" width="852" height="98" rx="10" class="card"/>
+  <circle cx="57" cy="417" r="18" fill="#28596c"/><text x="57" y="424" class="number">3</text>
+  <text x="88" y="425" class="heading">Estimate each camera's offsets and scale factors</text>
+  <text x="48" y="465" class="formula">corrected value = (sensor value − offset) × scale</text>
+  <path d="M450 485 V509" stroke="#557b8b" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="24" y="518" width="852" height="127" rx="10" fill="#edf5f5" stroke="#93b8ba" stroke-width="1.5"/>
+  <circle cx="57" cy="549" r="18" fill="#28596c"/><text x="57" y="556" class="number">4</text>
+  <text x="88" y="557" class="heading">Check against separate stationary holds</text>
+  <text x="48" y="589" class="body">Use separate recordings of the same positions to check the correction.</text>
+  <text x="48" y="621" class="body">Save the measured values in sensorCalibration.json.</text>
+</svg>

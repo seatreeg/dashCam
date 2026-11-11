@@ -31,8 +31,13 @@ for camera in ['gopro','rove']:
     data[camera]={sensor:np.vstack(parts) for sensor,parts in collected.items()}
 red=pd.read_csv(root/'Data Raw/Dashcam Extract/redtiger.csv')
 rt=(pd.to_datetime(red.timeUtc,format='mixed',utc=True)-pd.Timestamp(origin)).dt.total_seconds()
-redtigerScale=SENSOR_CALIBRATION['acceleration']['redtiger']['gPerIntegerIncrement']
-data['redtiger']={'ACCL_integer_values':np.column_stack([rt,red.accelX/redtigerScale,red.accelY/redtigerScale])}
+redtigerCalibration=SENSOR_CALIBRATION['acceleration']['redtiger']
+redtigerG=red[['accelX','accelY']].to_numpy()
+redtigerInteger=redtigerG/np.asarray(redtigerCalibration['scale'])+np.asarray(redtigerCalibration['offset'])
+if not np.allclose(redtigerInteger,np.rint(redtigerInteger),atol=1e-9,rtol=0,equal_nan=True):
+    raise ValueError('REDTIGER CSV does not match the saved measured calibration')
+data['redtiger']={'ACCL_integer_values':np.column_stack([rt,np.rint(redtigerInteger)]),
+                  'ACCL_g':np.column_stack([rt,redtigerG])}
 report={'inputHashes':sourceHashes,'sourceMetadataHashes':metadataHashes,'codeSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'selection':'Annotation stop intervals trimmed by 15 s at both ends; nearest OBD within 0.25 s must be connected and report exactly zero speed. Full-rate sensor samples with saved acceleration offsets/scales, not GPS-window averages.',
         'accelerationCalibration':SENSOR_CALIBRATION['acceleration'],
         'limitations':['A single mounting orientation cannot separate gravity, mounting tilt, zero offset, and gain.',

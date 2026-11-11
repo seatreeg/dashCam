@@ -3,8 +3,8 @@
     "settings.json": "309de7e38dcb2c99bfabc4bd2135bfebf330aa2b8d16818dffa8c663f65947d4",
     "Data\\vehicle.csv": "03d37c16f7291c275da18c013a426b75dac8a77640c12d638b7ec6fda468f1da",
     "Annotation Data\\annotations.csv": "5955a106a42a39934e914a479218ace8cdad1ac65119884744ae39b7e20e2cc5",
-    "Data Raw\\Dashcam Extract\\redtiger.csv": "273bdfd1ede71fa0c98681982fa91e833aeee6a3bbaeef6d814670f4723034e0",
-    "pipeline\\02_extract\\sensorCalibration.json": "c08fb17f4255771d23081bfea0eae84b51a8b459dd8f16134e17408b179b6f2c"
+    "Data Raw\\Dashcam Extract\\redtiger.csv": "46f153e5bc0be7852c351c4f8d885183964e2a23abf30a4d96adaeca877a653a",
+    "pipeline\\02_extract\\sensorCalibration.json": "2ccfad9e2e66f5fd14487623072b55068de77c15e563f01d7eb64700cf361de2"
   },
   "sourceMetadataHashes": {
     "Data Raw\\gopro\\GX010003.MP4": "646a0a1955c3e9b2e4f105a9a94997020d6e58004b1661ef1b8249d8094ccb1c",
@@ -77,7 +77,7 @@
     "Data Raw\\rove\\REC20260713-063219-252.mp4": "312fa6b13810a6ce6dac5a4d2dfb870ecaae32802926726eccce04e066e7ec7a",
     "Data Raw\\rove\\REC20260713-063319-253.mp4": "7bede7c7d5666009c8436354e52bfd37f0afef765d9892bcc8ad2521c98a18cb"
   },
-  "codeSha256": "020617905e3f1b2ea054740b7d18a1631d1f8cb718d8a6b96f18b4b01159bad2",
+  "codeSha256": "f9e4970e794e4e0f4e176715a7e36d8c993826aaeb77b511a15192d17b65c609",
   "selection": "Annotation stop intervals trimmed by 15 s at both ends; nearest OBD within 0.25 s must be connected and report exactly zero speed. Full-rate sensor samples with saved acceleration offsets/scales, not GPS-window averages.",
   "accelerationCalibration": {
     "gopro": {
@@ -105,7 +105,8 @@
         0.9955525616175961
       ],
       "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
-      "limitation": "Sensor axes, not vehicle axes."
+      "limitation": "Sensor axes, not vehicle axes.",
+      "measurementDate": "2026-11-09"
     },
     "rove": {
       "status": "measured; July transfer mismatch unresolved",
@@ -132,13 +133,32 @@
         1.0153648858784063
       ],
       "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
-      "limitation": "Full fitted calibration gave 0.944-0.948 g for July stationary mean vectors; transfer remains unresolved."
+      "limitation": "Full fitted calibration gave 0.944-0.948 g for July stationary mean vectors; transfer remains unresolved.",
+      "measurementDate": "2026-11-09"
     },
     "redtiger": {
-      "status": "provisional empirical estimate",
-      "outputUnits": "g (estimated)",
-      "gPerIntegerIncrement": 0.048,
-      "limitation": "November calibration clips contained zero-filled telemetry, so no measured replacement is available."
+      "status": "measured stationary calibration",
+      "measurementDate": "2026-11-11",
+      "columnOrder": [
+        "accelX",
+        "accelY"
+      ],
+      "sensorAxisOrder": [
+        "X",
+        "Y"
+      ],
+      "inputUnits": "signed integer values",
+      "outputUnits": "g (measured calibration)",
+      "offset": [
+        -0.42559523809523725,
+        -0.9336111111111105
+      ],
+      "scale": [
+        0.05147847403094837,
+        0.05212028202863721
+      ],
+      "basis": "Opposing stationary orientations for each retained axis; two passes with equal weight, pooled after first-pass coefficients were checked on the second pass.",
+      "limitation": "Z is unavailable. Gravity remains in sensor axes. Holder alignment was assumed, not independently measured; dynamic response, temperature dependence, and transfer to the July recording were not independently validated."
     }
   },
   "limitations": [
@@ -245,15 +265,36 @@
             ],
             "axisMedian": [
               -1.0,
-              -3.0000000000000004
+              -3.0
             ],
             "axisStd": [
               0.16510168678179266,
-              0.2912120028412694
+              0.2912120028412687
             ],
             "axisSlopePerMinute": [
               -0.0008574123295894923,
               -0.07488067678413206
+            ]
+          },
+          "ACCL_g": {
+            "nRawSamples": 108,
+            "firstSec": 15.0,
+            "lastSec": 122.0,
+            "axisMean": [
+              -0.030999438230938144,
+              -0.10287481963004276
+            ],
+            "axisMedian": [
+              -0.02956948061896741,
+              -0.1077007716697312
+            ],
+            "axisStd": [
+              0.008499182895462271,
+              0.015178051718211221
+            ],
+            "axisSlopePerMinute": [
+              -4.413827834257613e-05,
+              -0.0039028019924841947
             ]
           }
         }
@@ -357,15 +398,36 @@
             ],
             "axisMedian": [
               -1.0,
-              -3.0000000000000004
+              -3.0
             ],
             "axisStd": [
               0.07254762501100115,
-              0.29963311827880257
+              0.2996331182788026
             ],
             "axisSlopePerMinute": [
               -0.008870343397761214,
-              -0.029182904906243607
+              -0.029182904906243937
+            ]
+          },
+          "ACCL_g": {
+            "nRawSamples": 190,
+            "firstSec": 1124.0,
+            "lastSec": 1313.0,
+            "axisMean": [
+              -0.029840419955972305,
+              -0.11154121350342032
+            ],
+            "axisMedian": [
+              -0.02956948061896741,
+              -0.1077007716697312
+            ],
+            "axisStd": [
+              0.003734641030135803,
+              0.01561696262981122
+            ],
+            "axisSlopePerMinute": [
+              -0.0004566317422472512,
+              -0.001521021234128352
             ]
           }
         }
@@ -469,7 +531,7 @@
             ],
             "axisMedian": [
               -1.0,
-              -3.0000000000000004
+              -3.0
             ],
             "axisStd": [
               0.15957672558078242,
@@ -477,7 +539,28 @@
             ],
             "axisSlopePerMinute": [
               -0.002168609379235397,
-              -0.0037457798368604077
+              -0.003745779836861755
+            ]
+          },
+          "ACCL_g": {
+            "nRawSamples": 154,
+            "firstSec": 2423.0,
+            "lastSec": 2576.0,
+            "axisMean": [
+              -0.030906583840550398,
+              -0.11108520556769495
+            ],
+            "axisMedian": [
+              -0.02956948061896741,
+              -0.1077007716697312
+            ],
+            "axisStd": [
+              0.00821476632375407,
+              0.016509138742163303
+            ],
+            "axisSlopePerMinute": [
+              -0.000111636701612246,
+              -0.00019523110151437932
             ]
           }
         }
@@ -577,19 +660,40 @@
             "lastSec": 3768.0,
             "axisMean": [
               -1.0177777777777777,
-              -3.0311111111111115
+              -3.031111111111111
             ],
             "axisMedian": [
               -1.0,
-              -3.0000000000000004
+              -3.0
             ],
             "axisStd": [
               0.1324374665254604,
-              0.23887966021302823
+              0.2388796602130283
             ],
             "axisSlopePerMinute": [
               0.012262958280657469,
               0.007269279393173612
+            ]
+          },
+          "ACCL_g": {
+            "nRawSamples": 225,
+            "firstSec": 3544.0,
+            "lastSec": 3768.0,
+            "axisMean": [
+              -0.030484653490628608,
+              -0.10932229155506652
+            ],
+            "axisMedian": [
+              -0.02956948061896741,
+              -0.1077007716697312
+            ],
+            "axisStd": [
+              0.00681767868125555,
+              0.01245047526120811
+            ],
+            "axisSlopePerMinute": [
+              0.0006312783793934224,
+              0.0003788768921171796
             ]
           }
         }

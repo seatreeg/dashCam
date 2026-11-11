@@ -1,6 +1,5 @@
 {
-  "version": 1,
-  "measurementDate": "2026-11-09",
+  "version": 2,
   "accelerationFormula": "corrected = (decoded - offset) * scale, component by component; gravity remains; no vehicle-frame rotation",
   "acceleration": {
     "gopro": {
@@ -28,7 +27,8 @@
         0.9955525616175961
       ],
       "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
-      "limitation": "Sensor axes, not vehicle axes."
+      "limitation": "Sensor axes, not vehicle axes.",
+      "measurementDate": "2026-11-09"
     },
     "rove": {
       "status": "measured; July transfer mismatch unresolved",
@@ -55,13 +55,32 @@
         1.0153648858784063
       ],
       "basis": "five stationary orientations; missing Y-; per-axis offsets and sensitivities",
-      "limitation": "Full fitted calibration gave 0.944-0.948 g for July stationary mean vectors; transfer remains unresolved."
+      "limitation": "Full fitted calibration gave 0.944-0.948 g for July stationary mean vectors; transfer remains unresolved.",
+      "measurementDate": "2026-11-09"
     },
     "redtiger": {
-      "status": "provisional empirical estimate",
-      "outputUnits": "g (estimated)",
-      "gPerIntegerIncrement": 0.048,
-      "limitation": "November calibration clips contained zero-filled telemetry, so no measured replacement is available."
+      "status": "measured stationary calibration",
+      "measurementDate": "2026-11-11",
+      "columnOrder": [
+        "accelX",
+        "accelY"
+      ],
+      "sensorAxisOrder": [
+        "X",
+        "Y"
+      ],
+      "inputUnits": "signed integer values",
+      "outputUnits": "g (measured calibration)",
+      "offset": [
+        -0.42559523809523725,
+        -0.9336111111111105
+      ],
+      "scale": [
+        0.05147847403094837,
+        0.05212028202863721
+      ],
+      "basis": "Opposing stationary orientations for each retained axis; two passes with equal weight, pooled after first-pass coefficients were checked on the second pass.",
+      "limitation": "Z is unavailable. Gravity remains in sensor axes. Holder alignment was assumed, not independently measured; dynamic response, temperature dependence, and transfer to the July recording were not independently validated."
     }
   },
   "gyroscope": {

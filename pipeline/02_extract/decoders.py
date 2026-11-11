@@ -51,10 +51,8 @@ noFixInt32 = -2147483648  # Garmin no-fix sentinel (0x80000000)
 # Rove no-fix sentinel, as raw double bits.
 roveNoFixBits = 0x41EFFFFFFFE00000
 
-# REDTIGER Z is not established as a usable channel. Its retained scale is
-# provisional: the November recordings supplied no usable calibration telemetry.
+# REDTIGER retains measured X/Y corrections; Z is not a usable channel.
 redtigerAccelOffsets = (124, 128, 132)
-redtigerGPerInteger = SENSOR_CALIBRATION["acceleration"]["redtiger"]["gPerIntegerIncrement"]
 
 # REDTIGER speed is float32, little-endian, KNOTS at byte 96 in this recording.
 # The footage's own MPH overlay corroborates the conversion on all three laps;
@@ -69,8 +67,9 @@ roveGpsRecordSize = 32
 def correctAcceleration(camera, values):
     """Apply saved offsets/scales once to decoded values; do not fit a model."""
     calibration = SENSOR_CALIBRATION["acceleration"][camera]
-    if len(values) != 3:
-        raise ValueError("Expected three acceleration components")
+    expected = len(calibration["columnOrder"])
+    if not len(values) == len(calibration["offset"]) == len(calibration["scale"]) == expected:
+        raise ValueError(f"Expected {expected} acceleration components and matching calibration values")
     return tuple((value - offset) * scale for value, offset, scale in
                  zip(values, calibration["offset"], calibration["scale"]))
 
@@ -232,7 +231,7 @@ def parseRedtigerChunk(chunk: bytes):
         "year": year, "month": month, "day": day, "speed_knots": speedKnots,
         "gx": accelX, "gy": accelY, "gz": accelZ, "lat": "", "lon": "",
     }
-    # The G-sensor is valid regardless of GPS fix, so it is filled either way.
+    # Preserve recorded integers regardless of GPS fix; this does not establish sensor validity.
     if active == "A":
         latitude = ddmmToDecimal(latRaw)
         longitude = ddmmToDecimal(lonRaw)
@@ -276,6 +275,8 @@ def parseRedtiger(clipPath: Path):
             except (ValueError, KeyError):
                 timestamp = ""
 
+            corrected = (correctAcceleration("redtiger", (sample["gx"], sample["gy"]))
+                         if sample["gx"] != "" and sample["gy"] != "" else ("", ""))
             row = blankRow()
             row.update(
                 camera="REDTIGER F7N Touch", clip=clipPath.name, sample_idx=sampleIndex,
@@ -287,10 +288,10 @@ def parseRedtiger(clipPath: Path):
                 # fix sentinel, so its original vocabulary is preserved.
                 fix_status="active" if sample["active"] == "A" else "inactive",
                 fix_ok=1 if sample["active"] == "A" else 0,
-                accel_x="" if sample["gx"] == "" else sample["gx"] * redtigerGPerInteger,
-                accel_y="" if sample["gy"] == "" else sample["gy"] * redtigerGPerInteger,
-                accel_z="",  # Unused field; not a measured zero acceleration. 
-                accel_units="g (estimated)",  
+                accel_x=corrected[0],
+                accel_y=corrected[1],
+                accel_z="",  # Unused field; not a measured zero acceleration.
+                accel_units=SENSOR_CALIBRATION["acceleration"]["redtiger"]["outputUnits"],
             )
             rows.append(row)
     return rows

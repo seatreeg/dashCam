@@ -1,6 +1,7 @@
 """Regression checks for invalid IMU input; run from the repository root."""
 import sys
 import struct
+import tempfile
 import unittest
 from unittest.mock import patch
 from datetime import datetime, timezone
@@ -47,6 +48,48 @@ class RedtigerSpeedTests(unittest.TestCase):
 
 
 class SavedAccelerationTests(unittest.TestCase):
+    def redtiger_row(self, x, y, truncate=False):
+        chunk = bytearray(256)
+        chunk[4:11] = b'freeGPS'
+        struct.pack_into('<ff', chunk, 40, 4048.0, 9641.0)
+        struct.pack_into('<6I', chunk, 48, 10, 28, 0, 2026, 7, 13)
+        chunk[72:75] = b'ANW'
+        struct.pack_into('<f', chunk, 96, 20)
+        struct.pack_into('<3i', chunk, 124, x, y, 0)
+        raw = decoders.parseRedtigerChunk(chunk)
+        self.assertEqual((raw['gx'], raw['gy'], raw['gz']), (x, y, 0))
+        if truncate:
+            chunk = chunk[:100]
+        # One gps table entry points to a freeGPS payload immediately after it.
+        gps = struct.pack('>I4s4I', 24, b'gps ', 0, 1, 24, len(chunk))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'sample.MP4'
+            path.write_bytes(gps + chunk)
+            return decoders.parseRedtiger(path)[0]
+
+    def test_redtiger_measured_endpoints_and_signed_values(self):
+        for x, y, expected in [(19, 18, (1.0, 0.986825150932)),
+                               (-20, -20, (-1.007660487207, -0.993745566157)),
+                               (0, 0, (0.021908993412, 0.048660074416))]:
+            with self.subTest(x=x, y=y):
+                row = self.redtiger_row(x, y)
+                for field, value in zip(('accel_x', 'accel_y'), expected):
+                    self.assertAlmostEqual(row[field], value, places=9)
+                self.assertEqual(row['accel_z'], '')
+                self.assertEqual(row['accel_units'], 'g (measured calibration)')
+                self.assertEqual(row['speed_knots'], 20)
+                self.assertEqual(row['ts_utc_raw'], '2026-07-13T10:28:00+00:00')
+
+    def test_redtiger_missing_acceleration_is_blank(self):
+        row = self.redtiger_row(0, 0, truncate=True)
+        self.assertEqual([row[k] for k in ('accel_x', 'accel_y', 'accel_z')], ['', '', ''])
+
+    def test_component_mismatch_does_not_silently_drop_an_axis(self):
+        with self.assertRaises(ValueError):
+            decoders.correctAcceleration('redtiger', (1, 2, 3))
+        with self.assertRaises(ValueError):
+            decoders.correctAcceleration('gopro', (1, 2))
+
     def test_gopro_export_keeps_zxy_order_and_gyro_unchanged(self):
         gps = dict(ts=datetime(2026, 7, 13, tzinfo=timezone.utc),
                    lat=40.8, lon=-96.6, speed_mph=0, speed_kmh=0, mode='3')

@@ -27,9 +27,6 @@ def extractCamera(camera, outputDir=None):
     if camera in ("gopro", "rove"):
         warnings.warn(f"{camera}: retained IMU averages use sequence-count grouping; "
                       "equal spacing and GPS-window time alignment are not validated.")
-    if camera == "redtiger":
-        warnings.warn("REDTIGER acceleration scale remains provisional; "
-                      "consult the Data Descriptor before inertial reuse.")
     if camera == "rove":
         warnings.warn("ROVE uses measured calibration values; transfer to the July recording remains unresolved.")
     clipPaths = sorted((projectDir / "Data Raw" / camera).glob("*"))
