@@ -1,0 +1,41 @@
+:root { color-scheme: light; --ink: #202b33; --muted: #586875; --accent: #1d5369; --line: #d9e1e5; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: #fff; font: 17px/1.62 Georgia, 'Times New Roman', serif; }
+.document { max-width: 1160px; margin: 0 auto; padding: 54px 58px 90px; }
+.eyebrow { color: var(--muted); font: 12px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .12em; }
+h1, h2, h3, h4 { color: #142f3c; line-height: 1.24; font-family: system-ui, sans-serif; }
+h1 { font-size: 35px; letter-spacing: -.025em; margin: 15px 0 13px; max-width: 960px; }
+h2 { font-size: 26px; margin-top: 52px; padding-top: 16px; border-top: 1px solid var(--line); }
+h3 { font-size: 20px; margin-top: 30px; }
+h4 { font-size: 17px; margin-top: 26px; }
+a { color: var(--accent); text-underline-offset: .16em; }
+p, li { overflow-wrap: anywhere; }
+blockquote { margin: 26px 0; padding: 12px 22px; border-left: 3px solid #648fa1; background: #f3f7f9; color: #384b56; font: 14px/1.65 system-ui, sans-serif; }
+blockquote p { margin: 4px 0; }
+code { font-size: .88em; background: #f1f4f5; padding: .08em .2em; border-radius: 2px; overflow-wrap: anywhere; }
+pre { background: #f1f4f5; padding: 17px 20px; overflow-x: auto; font-size: 14px; line-height: 1.6; }
+pre code { padding: 0; background: none; white-space: pre-wrap; }
+table { width: 100%; border-collapse: collapse; margin: 22px 0 34px; font: 13px/1.5 system-ui, sans-serif; table-layout: fixed; }
+th { text-align: left; background: #eef3f5; color: #1c3c4a; border-top: 2px solid #68828f; }
+th, td { padding: 10px 11px; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+tr:nth-child(even) td { background: #fafcfc; }
+table.dictionary th:first-child { width: 17%; }
+table.dictionary th:nth-child(2) { width: 35%; }
+table.dictionary th:nth-child(3) { width: 10%; }
+table.dictionary th:nth-child(4) { width: 15%; }
+table.dictionary th:nth-child(5) { width: 23%; }
+/* Quarto emits plain tables; apply the dictionary widths to five-column tables. */
+table:has(th:nth-child(5)) th:first-child { width: 17%; }
+table:has(th:nth-child(5)) th:nth-child(2) { width: 35%; }
+table:has(th:nth-child(5)) th:nth-child(3) { width: 10%; }
+table:has(th:nth-child(5)) th:nth-child(4) { width: 15%; }
+table:has(th:nth-child(5)) th:nth-child(5) { width: 23%; }
+img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+img[src*='pipeline-original'], .pipeline { max-height: 1000px; }
+.toc { margin: 25px 0 35px; padding: 20px 24px; background: #f7f9fa; font: 14px/1.8 system-ui, sans-serif; }
+.toc strong { display: block; margin-bottom: 5px; }
+.toc ul { columns: 2; margin: 0; padding-left: 18px; }
+.toc a { text-decoration: none; }
+.draft-note { color: var(--muted); font: 13px/1.5 system-ui, sans-serif; }
+@media (max-width: 750px) { .document { padding: 25px 18px 60px; } h1 { font-size: 27px; } body { font-size: 16px; } table { font-size: 11px; } th, td { padding: 7px 5px; } .toc ul { columns: 1; } }
+@media print { @page { size: A4 landscape; margin: 15mm; } .document { max-width: none; padding: 0; } body { font-size: 10pt; } h1 { font-size: 23pt; } h2 { font-size: 17pt; break-after: avoid; } h3, h4 { break-after: avoid; } table { font-size: 8pt; } thead { display: table-header-group; } tr { break-inside: avoid; } p { orphans: 3; widows: 3; } .toc { display: none; } a { color: inherit; } img { max-height: 160mm; } }
