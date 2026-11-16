@@ -1,0 +1,97 @@
+{
+  "basis": "Retained spatial-review exclusions from the pre-migration referenceIntervals.csv. Geometric agreement alone does not resolve these observations. Confidence, OBD, elevation, and distance-ratio rules are recomputed by laneModel.R.",
+  "intervals": [
+    {
+      "point_a": 0,
+      "point_b": 1,
+      "reasons": [
+        "conflicting_stop_coordinates",
+        "unresolved_spatial_review"
+      ]
+    },
+    {
+      "point_a": 54,
+      "point_b": 55,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 61,
+      "point_b": 62,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 175,
+      "point_b": 176,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 176,
+      "point_b": 177,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 180,
+      "point_b": 181,
+      "reasons": [
+        "unresolved_spatial_review"
+      ]
+    },
+    {
+      "point_a": 181,
+      "point_b": 182,
+      "reasons": [
+        "unresolved_spatial_review"
+      ]
+    },
+    {
+      "point_a": 182,
+      "point_b": 183,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 306,
+      "point_b": 307,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 307,
+      "point_b": 308,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    },
+    {
+      "point_a": 311,
+      "point_b": 312,
+      "reasons": [
+        "unresolved_spatial_review"
+      ]
+    },
+    {
+      "point_a": 312,
+      "point_b": 313,
+      "reasons": [
+        "unresolved_spatial_review"
+      ]
+    },
+    {
+      "point_a": 313,
+      "point_b": 314,
+      "reasons": [
+        "construction_or_occluded_lane_uncertainty"
+      ]
+    }
+  ]
+}

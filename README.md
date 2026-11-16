@@ -6,7 +6,7 @@ I found out that the redtiger cam likely only stores accelerometer data if it ha
 
 This repository compares GPS observations from four vehicle-mounted cameras against a modeled reference trajectory for a three-lap drive in Lincoln, Nebraska, on 13 July 2026. The cameras are Garmin Dash Cam X310, GoPro HERO13 Black, REDTIGER F7N Touch, and ROVE R2-4K Dual. A Raspberry Pi recorded vehicle telemetry, and manually reviewed video/map annotations and lane observations define the spatial reference.
 
-The reference is a reviewed model, not a surveyed ground-truth track. The implemented workflow uses the saved v4 lane observations; the previously proposed Lincoln GIS migration is not implemented.
+The reference is a reviewed model, not a surveyed ground-truth track. The implemented workflow uses frozen Lincoln pavement-marking and curbline data with saved lane choices.
 
 The [Data Descriptor](Data%20Descriptor.qmd) describes collection, methods, file relationships, column dictionaries, and scientific limitations. A [rendered HTML copy](Data%20Descriptor.html) is available for local reading. Some writing sections remain unfinished.
 
@@ -29,20 +29,21 @@ The older repository-root parsing scripts and historical working folders are ret
 
 ## Run the numerical analysis
 
-Run commands from the repository root. Install R with `jsonlite`, `sf`, and `digest`; rendering the analysis also requires Quarto, `knitr`, `rmarkdown`, and `ggplot2`.
+Run commands from the repository root. The lane builder uses Python with NumPy and SciPy; set `DASHCAM_PYTHON` to the desired Python executable when it is not `python` on PATH. Install R with `jsonlite`, `sf`, and `digest`; rendering the analysis also requires Quarto, `knitr`, `rmarkdown`, and `ggplot2`.
 
 ```r
 install.packages(c("jsonlite", "sf", "digest", "knitr", "rmarkdown", "ggplot2"))
 ```
 
 ```sh
+python -m pip install -r pipeline/04_lane/requirements.txt
 Rscript runAnalysis.R
 quarto render pipeline/05_analysis/autocorrelationAnalysis.qmd
 ```
 
 [runAnalysis.R](runAnalysis.R) synchronizes the input CSVs, rebuilds lane geometry and reference motion, computes camera errors, and records verified input/output hashes in [audit/analysisBuild.json](audit/analysisBuild.json). The analysis render refuses stale or incomplete builds. The report is written beneath `Data/analysis/`.
 
-This numerical build needs the camera CSVs, Pi log, annotations, saved lane observations, and elevation caches. It does not need the original MP4s or cached map tiles.
+This numerical build needs the camera CSVs, Pi log, annotations, frozen GIS inputs, saved lane choices, and elevation caches. It does not need the original MP4s or cached map tiles.
 
 ## Review annotations
 

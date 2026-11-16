@@ -49,14 +49,14 @@ readElevation <- function() {
   elevation <- read_json("pipeline/04_lane/inputs/elevation.json", simplifyVector = TRUE)
   stopifnot(elevation$grid_m == 5, elevation$units == "meters")
   cells <- unlist(elevation$cells)
-  for (fileName in c("elevationSupplement.json", "elevationV4.json")) {
+  for (fileName in c("elevationSupplement.json", "elevationV4.json", "elevationGis.json")) {
     extra <- read_json(paste0("pipeline/04_lane/inputs/", fileName))$cells
     for (key in setdiff(names(extra), names(cells))) cells[key] <- extra[[key]]$value_m
   }
   cells
 }
 
-# SAME V4 PROFILE: elevation every 5 m, local linear smoothing over 30 m
+# Elevation every 5 m, local linear smoothing over 30 m.
 surfaceProfile <- function(path, cells) {
   sampleM <- sort(unique(c(seq(0, tail(path$distanceM, 1), by = 5), tail(path$distanceM, 1))))
   east <- approx(path$distanceM, path$east, sampleM)$y
@@ -78,8 +78,8 @@ surfaceProfile <- function(path, cells) {
 checkReviewedAnnotations <- function() {
   annotations <- readCsv("Annotation Data/annotations.csv")
   original <- readCsv("Annotation Data/original_annotation/anno 8 11 2026.csv")
-  # these recorded imagery observations are tied to the original reviewed drive
-  # the geometry can be rebuilt, but new annotations need a new spatial review
+  # Saved lane choices use these stable point IDs and recorded events.
+  # Changed canonical annotations require a corresponding spatial review.
   stopifnot(identical(annotations$pointId, original$point_idx),
             identical(annotations$timeSec, original$video_time_sec),
             max(abs(annotations$latitude - original$click_lat)) < 1e-11,
@@ -125,15 +125,13 @@ buildLaneModel <- function() {
     }
     path <- data.frame(east = xy[, 1], north = xy[, 2], distanceM)
     odo <- odometerAt(vehicle, c(segment$time_a, segment$time_b))
-    reasons <- character()
+    reasons <- unlist(segment$review_flags, use.names = FALSE)
     if (segment$mode == "stop_conflict") reasons <- c(reasons, "conflicting_stop_coordinates")
     if (held && !segment$mode %in% c("held_stop", "stop_conflict"))
       reasons <- c(reasons, "coincident_anchors_without_held_stop")
-    if (segment$status %in% c("conflict", "unsupported")) reasons <- c(reasons, "flagged_v4_geometry")
+    if (segment$status %in% c("conflict", "unsupported")) reasons <- c(reasons, "unresolved_spatial_review")
     confidence <- min(annotations$confidencePct[index:(index + 1)])
     if (confidence < 60) reasons <- c(reasons, "anchor_confidence_below_60")
-    if (segment$route %in% c("fork", "salt_creek_after_circle"))
-      reasons <- c(reasons, "construction_or_occluded_lane_uncertainty")
     maximumGrade <- NA_real_
     available <- TRUE
     path$distanceSurface <- 0
@@ -157,7 +155,7 @@ buildLaneModel <- function() {
       segment = index, pointA = segment$point_a, pointB = segment$point_b,
       timeA = segment$time_a, timeB = segment$time_b, lap = annotations$lap[index],
       held, modelAvailable = available, referenceOk = available && !length(reasons),
-      reason = if (length(reasons)) paste(unique(reasons), collapse = ";") else "supported_v4_model",
+      reason = if (length(reasons)) paste(unique(reasons), collapse = ";") else "supported_gis_model",
       obdA = odo[1], obdB = odo[2], surfaceM = tail(path$distanceSurface, 1), maximumGrade)
   }
   list(paths = paths, intervals = do.call(rbind, intervals), vehicle = vehicle,

@@ -7,9 +7,10 @@ buildInputFiles <- function(root = ".") {
     "pipeline/03_annotate/convertAnnotations.R", "Annotation Data/annotations.csv",
     "Annotation Data/original_annotation/anno 8 11 2026.csv", "Data Raw/pi/car_telemetry.csv",
     paste0("Data Raw/Dashcam Extract/", c("garmin", "gopro", "redtiger", "rove"), ".csv"),
-    paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "geometryMath.R", "geometryStages.R", "laneModel.R", "interpolateCar.R")))
+    paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "sourceChains.py", "laneGeometry.py", "requirements.txt", "laneModel.R", "interpolateCar.R")),
+    "pipeline/04_lane/inputs/laneChoices.json", "pipeline/04_lane/inputs/reviewExclusions.json")
   sort(c(fixed,
-    paste0("pipeline/04_lane/observations/", list.files(file.path(root, "pipeline/04_lane/observations"), "[.]json$")),
+    paste0("pipeline/04_lane/inputs/gis/", list.files(file.path(root, "pipeline/04_lane/inputs/gis"), "[.]json$")),
     paste0("pipeline/04_lane/inputs/", list.files(file.path(root, "pipeline/04_lane/inputs"), "^elevation.*[.]json$"))))
 }
 
@@ -27,7 +28,7 @@ fileHashes <- function(files, root = ".") {
 dataSettingsHash <- function(root = ".") {
   config <- jsonlite::fromJSON(file.path(root, "settings.json"))
   # plot settings and the inclusion switch do not change the modeled data
-  config <- config[sort(setdiff(names(config), c("maximumLagSec", "preserveV4Exclusions")))]
+  config <- config[sort(setdiff(names(config), c("maximumLagSec", "applyReferenceExclusions")))]
   digest::digest(jsonlite::toJSON(config, auto_unbox = TRUE, digits = NA), algo = "sha256", serialize = FALSE)
 }
 

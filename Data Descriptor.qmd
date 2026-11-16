@@ -371,8 +371,8 @@ File: [Data/referenceIntervals.csv](Data/referenceIntervals.csv).
 | `lap` | Lap around the repeated circuit. | integer | 1 | 1, 2, or 3 |
 | `held` | Reference position is held fixed for this interval, including the two diagnostic holds. | logical | TRUE | TRUE or FALSE |
 | `modelAvailable` | Inputs support calculating a finite reference; does not mean all quality checks passed. | logical | TRUE | TRUE or FALSE |
-| `referenceOk` | Interval passes the preserved v4 quality-selection rules. | logical | FALSE | TRUE or FALSE |
-| `reason` | Separate interval-audit reasons, joined with semicolons. supported_v4_model means no exclusion. | text | conflicting_stop_coordinates;flagged_v4_geometry | supported_v4_model; conflicting_stop_coordinates; coincident_anchors_without_held_stop; flagged_v4_geometry; anchor_confidence_below_60; construction_or_occluded_lane_uncertainty; missing_or_gapped_obd; no_supported_obd_motion; elevation_grade_needs_review; path_obd_distance_disagreement |
+| `referenceOk` | Interval passes the current interval-quality rules. | logical | FALSE | TRUE or FALSE |
+| `reason` | Separate interval-audit reasons, joined with semicolons. supported_gis_model means no exclusion. | text | conflicting_stop_coordinates;unresolved_spatial_review | supported_gis_model; conflicting_stop_coordinates; coincident_anchors_without_held_stop; unresolved_spatial_review; anchor_confidence_below_60; construction_or_occluded_lane_uncertainty; missing_or_gapped_obd; no_supported_obd_motion; elevation_grade_needs_review; path_obd_distance_disagreement |
 | `obdA` | Cumulative integrated OBD distance at the interval's start/end, from the first retained connected OBD row. | number | 0 | Nonnegative metres; blank beyond OBD coverage |
 | `obdB` | Cumulative integrated OBD distance at the interval's start/end, from the first retained connected OBD row. | number | 0.7689087702 | Nonnegative metres; blank beyond OBD coverage |
 | `surfaceM` | Length of the interval's modeled path including the smoothed terrain profile. | number | 0 | Nonnegative metres; zero for held stops |

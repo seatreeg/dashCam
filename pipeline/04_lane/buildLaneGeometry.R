@@ -1,73 +1,80 @@
-# Run from the project root: Rscript pipeline/04_lane/buildLaneGeometry.R
-source("pipeline/04_lane/geometryStages.R")
-
+# Run from the project root. DASHCAM_PYTHON selects the NumPy/SciPy interpreter.
+source("helpers.R")
+suppressPackageStartupMessages(library(sf))
 
 buildLaneGeometry <- function(outputDir = "Data/laneGeometry") {
   stopifnot(settings$distanceCrs == 32614)
-  dir.create(outputDir, recursive = TRUE, showWarnings = FALSE)
-  points <- readGeometryAnnotations()
-  cat("1/5: Rebuild annotation connectors and imagery-coordinate scaffolds.\n")
-  paths <- annotationConnectors(points)
-  drafts <- buildDraftScaffolds(points, outputDir)
-  cat("2/5: Fit the recorded lane boundaries and endpoint connections.\n")
-  corridors <- buildCorridors(points, drafts, outputDir)
-  cat("3/5: Rebuild parking, fork, intersection, and roundabout maneuvers.\n")
-  maneuvers <- buildManeuvers(points, paths, corridors$paths, outputDir)
-  stopifnot(!any(names(maneuvers) %in% names(corridors$paths)))
-  for (replacement in list(corridors$paths, maneuvers)) {
-    for (name in names(replacement)) paths[[as.integer(name)]] <- replacement[[name]]
-  }
-  cat("4/5: Rebuild persistent road/lane guidance across all three laps.\n")
-  network <- buildNetwork(points, paths, outputDir)
-  cat("5/5: Apply the recorded v4 rightmost-lane correction.\n")
-  result <- applyRightmostCorrection(points, network)
-  paths <- result$paths
-  anchors <- result$anchors
-  adjusted <- as.matrix(anchors[, c("derivedEast", "derivedNorth")])
-  endpointGaps <- vapply(seq_along(paths), function(index) {
-    xy <- paths[[index]]$xy
-    max(sqrt(rowSums((xy[c(1, nrow(xy)), , drop = FALSE] - adjusted[c(index, index + 1), ])^2)))
-  }, numeric(1))
-  stopifnot(length(paths) == 374, nrow(anchors) == 375, max(endpointGaps) < 1e-6,
-            length(result$changed) == 19)
-
-  # Lane-specific check: observed right curb / left divider, not just pavement.
-  observations <- asMatrix(readObservations("rightmostObservations")$boundaries)
-  xy <- do.call(rbind, lapply(paths[result$changed], `[[`, "xy"))
-  station <- vapply(seq_len(nrow(xy)), function(row) projectStation(result$rightmostFrame, xy[row, ]), numeric(1))
-  frame <- frameAt(result$rightmostFrame, station)
-  offset <- rowSums((xy - frame$xy) * frame$left)
-  use <- station >= 0 & station <= 235
-  right <- splinefun(observations[, 1], observations[, 2], method = "monoH.FC")(station[use])
-  left <- splinefun(observations[, 1], observations[, 3], method = "monoH.FC")(station[use])
-  clearance <- min(offset[use] - right, left - offset[use])
-  stopifnot(clearance > 1)
-
-  # keep the established segment metadata names for the timing consumer
-  # there are no pixel coordinates or camera observations in these outputs
-  segments <- lapply(seq_along(paths), function(index) {
-    path <- paths[[index]]
-    list(id = index, lap = points$lap[index], point_a = points$pointId[index],
-      point_b = points$pointId[index + 1], time_a = points$timeSec[index], time_b = points$timeSec[index + 1],
-      status = path$status, mode = path$mode, route = path$route, length_m = tail(pathDistance(path$xy), 1))
+  points <- readCsv("Annotation Data/annotations.csv")
+  choices <- fromJSON("pipeline/04_lane/inputs/laneChoices.json", simplifyVector = FALSE)
+  stopifnot(nrow(points) == 375, all(points$pointId == unlist(choices$annotation_point_ids)),
+            all(diff(points$timeSec) > 0), all(points$lap %in% 1:3),
+            choices$distance_crs == settings$distanceCrs)
+  projected <- st_coordinates(st_transform(st_as_sf(points,
+    coords = c("longitude", "latitude"), crs = 4326), settings$distanceCrs))
+  records <- lapply(seq_len(nrow(points)), function(i) {
+    row <- as.list(points[i, ])
+    row$xy <- unname(projected[i, ])
+    row
   })
-  saveSpatialStage(paths, points, file.path(outputDir, "lanePaths.geojson"))
-  write_json(anchors, file.path(outputDir, "laneAnchors.json"), pretty = TRUE, digits = 12, na = "null")
-  write_json(list(status = "reconstructed_v4_spatial_assumptions_not_surveyed_truth", segments = segments),
-    file.path(outputDir, "laneRoute.json"), auto_unbox = TRUE, digits = 12)
-  inputFiles <- c("Annotation Data/annotations.csv", list.files("pipeline/04_lane/observations", "[.]json$", full.names = TRUE))
-  codeFiles <- c("helpers.R", paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "geometryMath.R", "geometryStages.R")))
+  dir.create(outputDir, recursive = TRUE, showWarnings = FALSE)
+  annotationFile <- file.path(outputDir, "annotationsUtm.json")
+  write_json(records, annotationFile, auto_unbox = TRUE, digits = NA, na = "null")
+  python <- Sys.getenv("DASHCAM_PYTHON", unset = "python")
+  for (script in c("sourceChains.py", "laneGeometry.py")) {
+    arguments <- c("-X", "utf8", shQuote(paste0("pipeline/04_lane/", script)),
+      "--annotations", shQuote(annotationFile), "--output-dir", shQuote(outputDir))
+    log <- system2(python, arguments, stdout = TRUE, stderr = TRUE)
+    cat(paste(log, collapse = "\n"), "\n")
+    if (!is.null(attr(log, "status")) && attr(log, "status") != 0)
+      stop("GIS geometry build failed. Install pipeline/04_lane/requirements.txt in DASHCAM_PYTHON.")
+  }
+  result <- fromJSON(file.path(outputDir, "sourceGuidedGeometry.json"), simplifyVector = FALSE)
+  reviewed <- fromJSON("pipeline/04_lane/inputs/reviewExclusions.json", simplifyVector = FALSE)$intervals
+  heldIds <- unlist(lapply(result$stationary_anchor_groups, function(ids) head(unlist(ids), -1)))
+  xyPaths <- lapply(result$paths, function(p) do.call(rbind, lapply(p$xy, unlist)))
+  adjusted <- do.call(rbind, lapply(as.character(points$pointId), function(id) unlist(result$anchors[[id]])))
+  lengths <- vapply(xyPaths, function(xy) sum(sqrt(rowSums(diff(xy)^2))), 0.0)
+  segments <- lapply(seq_along(xyPaths), function(i) {
+    p <- result$paths[[i]]
+    reasons <- unique(unlist(lapply(Filter(function(x) x$point_a == points$pointId[i], reviewed), `[[`, "reasons")))
+    held <- points$pointId[i] %in% heldIds
+    list(id = i, lap = points$lap[i], point_a = points$pointId[i], point_b = points$pointId[i + 1],
+      time_a = points$timeSec[i], time_b = points$timeSec[i + 1],
+      status = if (held) "stop" else "modeled", mode = if (held) "held_stop" else "source_guided",
+      route = p$road, length_m = lengths[i], method = p$method,
+      source_ids = p$source_ids, curb_ids = p$curb_ids, review_flags = as.list(reasons))
+  })
+  features <- st_sf(point_a = points$pointId[-nrow(points)], point_b = points$pointId[-1],
+    trip = points$lap[-nrow(points)], route = vapply(segments, `[[`, "", "route"),
+    status = vapply(segments, `[[`, "", "status"), mode = vapply(segments, `[[`, "", "mode"),
+    geometry = st_sfc(lapply(xyPaths, st_linestring), crs = settings$distanceCrs))
+  st_write(st_transform(features, 4326), file.path(outputDir, "lanePaths.geojson"), delete_dsn = TRUE, quiet = TRUE)
+  anchors <- data.frame(pointId = points$pointId, lap = points$lap, timeSec = points$timeSec,
+    rawEast = projected[, 1], rawNorth = projected[, 2], derivedEast = adjusted[, 1], derivedNorth = adjusted[, 2],
+    adjustmentM = sqrt(rowSums((adjusted - projected)^2)), model = "source_guided_gis",
+    confidencePct = points$confidencePct)
+  endpointGaps <- vapply(seq_along(xyPaths), function(i)
+    max(sqrt(rowSums((xyPaths[[i]][c(1, nrow(xyPaths[[i]])), , drop = FALSE] - adjusted[c(i, i + 1), ])^2))), 0.0)
+  stopifnot(length(xyPaths) == 374, all(is.finite(unlist(xyPaths))), max(endpointGaps) < 1e-6)
+  write_json(anchors, file.path(outputDir, "laneAnchors.json"), pretty = TRUE, digits = NA, na = "null")
+  write_json(list(status = "source_guided_gis_model_not_surveyed_truth", segments = segments),
+    file.path(outputDir, "laneRoute.json"), auto_unbox = TRUE, digits = NA, null = "null")
+  inputFiles <- c("Annotation Data/annotations.csv", "settings.json",
+    "pipeline/04_lane/inputs/laneChoices.json", "pipeline/04_lane/inputs/reviewExclusions.json",
+    list.files("pipeline/04_lane/inputs/gis", "[.]json$", full.names = TRUE))
+  codeFiles <- c("helpers.R", paste0("pipeline/04_lane/", c("buildLaneGeometry.R", "sourceChains.py", "laneGeometry.py", "requirements.txt")))
   hashes <- function(files) as.list(setNames(vapply(files, function(file) digest::digest(file = file, algo = "sha256"), ""), files))
-  outputFiles <- file.path(outputDir, c("lanePaths.geojson", "laneAnchors.json", "laneRoute.json"))
-  audit <- list(status = "built_from_annotations_and_recorded_spatial_observations",
-    intervals = length(paths), annotations = nrow(anchors), persistentLaneIntervals = sum(network$covered),
-    v4ChangedIntervals = length(result$changed), maximumEndpointGapM = max(endpointGaps),
-    rightmostMinimumClearanceM = clearance, corridorChecks = corridors$checks,
+  outputFiles <- file.path(outputDir, c("annotationsUtm.json", "sourceChains.json", "sourceGuidedGeometry.json",
+    "lanePaths.geojson", "laneAnchors.json", "laneRoute.json"))
+  runtime <- system2(python, c("-c", shQuote("import sys,numpy,scipy,json;print(json.dumps(dict(python=sys.version,numpy=numpy.__version__,scipy=scipy.__version__)))")), stdout = TRUE)
+  audit <- list(status = "built_from_frozen_municipal_features_and_saved_lane_choices",
+    intervals = length(xyPaths), annotations = nrow(anchors), maximumEndpointGapM = max(endpointGaps),
+    typicalWidthM = result$typical_width_m, modeledRoadJoins = result$modeled_road_joins,
     finishedPathsRead = FALSE, cameraGpsRead = FALSE, distanceCrs = settings$distanceCrs,
-    inputs = hashes(inputFiles), code = hashes(codeFiles), outputs = hashes(outputFiles))
-  write_json(audit, file.path(outputDir, "geometryBuild.json"), pretty = TRUE, auto_unbox = TRUE, digits = 12)
-  cat("Rebuilt", length(paths), "intervals; output:", outputDir, "\n")
-  invisible(result)
+    runtime = fromJSON(paste(runtime, collapse = "\n")), inputs = hashes(inputFiles), code = hashes(codeFiles), outputs = hashes(outputFiles))
+  write_json(audit, file.path(outputDir, "geometryBuild.json"), pretty = TRUE, auto_unbox = TRUE, digits = NA)
+  cat("Rebuilt", length(xyPaths), "source-guided GIS intervals; output:", outputDir, "\n")
+  invisible(list(paths = xyPaths, anchors = anchors))
 }
 
 if (sys.nframe() == 0) buildLaneGeometry()

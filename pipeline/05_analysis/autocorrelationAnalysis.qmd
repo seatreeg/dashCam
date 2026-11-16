@@ -43,14 +43,14 @@ Missing values are blank in the CSV and read as `NA` in R; these are separate fr
 
 The quality flags are now in `../../Data/referenceIntervals.csv`, matched using "segment".
 "referenceOk" is TRUE if the interval passed the model quality checks; "reason" explains any flags.
-The default `preserveV4Exclusions` setting in `../../settings.json` keeps the same exclusions as the original analysis.
+The default `applyReferenceExclusions` setting in `../../settings.json` applies the current interval-quality flags.
 Set it to FALSE to include all modeled intervals with accepted GPS fixes instead.
 
 More info on the flags:
 path_obd_distance_disagreement : modeled path distance divided by integrated OBD distance falls outside of (0.75,1.25)
 anchor_confidence_below_60: at least one endpoint annotation had a confidence score below 60%
 construction_or_occluded_lane_uncertainty: interval belonged to route section previously flagged for uncertaihn lane placement.
-flagged_v4_geometry: the saved v4 geometry retained an unsuported/conflict flag
+unresolved_spatial_review: a retained spatial-review concern has not been resolved
 elevation_grade_needs_review: The elevation profile implied a slope above 15% grade. possibly not accurate.
 conflicting_stop_coordinates: points 0-1 had this, stop with different positions, but this was not severe.
 coincident_anchors_without_held_stop: points 118-119 shared a position without a complete held-stop label
@@ -79,7 +79,7 @@ Keep excluded readings as NA so time gaps are not removed.
 gps$radius <- gps$distanceM
 gps$theta <- gps$directionRad
 gps$usable <- gps$fix == 1 & is.finite(gps$radius)
-if (settings$preserveV4Exclusions) {
+if (settings$applyReferenceExclusions) {
   gps$usable <- gps$usable & intervals$referenceOk[match(gps$segment, intervals$segment)]
 }
 gps$usable[is.na(gps$usable)] <- FALSE
@@ -128,7 +128,7 @@ result <- do.call(rbind, results)
 ```{r plot}
 #| fig-width: 10
 #| fig-height: 4.5
-#| fig-alt: "Static distance and direction autocorrelation versus lag in seconds for four receivers, relative to the interpolated v4 lane-center car."
+#| fig-alt: "Static distance and direction autocorrelation versus lag in seconds for four receivers, relative to the interpolated GIS-based lane-center car."
 result$camera <- factor(result$camera, levels = cameras,
                         labels = c("Garmin", "GoPro", "REDTIGER", "ROVE"))
 result$component <- factor(result$component, levels = c("Distance", "Direction"))

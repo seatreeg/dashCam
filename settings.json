@@ -9,5 +9,5 @@
   "localTimezone": "America/Chicago",
   "distanceCrs": 32614,
   "maximumLagSec": 300,
-  "preserveV4Exclusions": true
+  "applyReferenceExclusions": true
 }
