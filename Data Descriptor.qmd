@@ -13,14 +13,14 @@ execute:
 
 ## Abstract
 
-This dataset combines positioning observations from four vehicle-mounted cameras with vehicle telemetry and a manually annotated spatial reference for an urban drive in Lincoln, Nebraska. The recording, acquired on 13 July 2026, comprises three laps and includes 51,460 camera positioning observations at nominal frequencies of 1 or 10 Hz. Vehicle speed, engine speed, throttle position, and two trailer connector electrical signals are retained on a common time axis. A set of 375 manually placed annotations and recorded lane observations defines 374 reference intervals. Vehicle progress between annotations is reconstructed from integrated on-board diagnostic speed along modeled lane paths, with cached terrain elevations used for distance adjustment. The data include original format extractions, synchronized observations, annotation records, per-observation error distance and direction, and separate interval-quality flags. 
+This dataset combines positioning observations from four vehicle-mounted cameras with vehicle telemetry and a modeled spatial reference for an urban drive in Lincoln, Nebraska. The recording, acquired on 13 July 2026, comprises three laps and includes 51,460 camera positioning observations at nominal frequencies of 1 or 10 Hz. Vehicle speed, engine speed, throttle position, and two trailer connector electrical signals are retained on a common time axis. A set of 375 manually placed annotations defines 374 reference intervals. We reconstructed the lane paths using a saved snapshot of Lincoln pavement markings and curblines, together with recorded lane and maneuver choices. Vehicle progress between annotations is reconstructed from integrated on-board diagnostic speed along modeled lane paths, with cached terrain elevations used for distance adjustment. The data include original format extractions, synchronized observations, annotation records, per-observation error distance and direction, and separate interval-quality flags.
 
 
 ## Background & Summary
 
 Positioning observations recorded by consumer cameras can provide a time indexed account of vehicle movement alongside video. Comparing these observations requires more than placing several tracks on a map. Each device stores telemetry differently, sampling rates differ, recording files are split into clips, and vehicle mounted recorders may use clocks that do not agree. A second difficulty is the construction of a reference trajectory against which the positions can be evaluated. A reference obtained by averaging the receivers being evaluated would share their errors and would not provide an independent spatial comparison, as obstructions that cause GPS errors could cause similar errors across separate devices.
 
-Four cameras recorded the same drive, and a separate vehicle logger collected speed and other telemetry. Recorded lane observations supplied the spatial constraints between those annotations, and vehicle speed supplied the timing of progress along each reference path. The resulting error records remain linked to the source camera, clip, and telemetry sample.
+Four cameras recorded the same drive, and a separate vehicle logger collected speed and other telemetry. Published road markings and curblines supplied spatial geometry, while we used the reviewed annotations to specify the vehicle's lane and maneuver choices. Vehicle speed supplied the timing of progress along each reference path. The resulting error records remain linked to the source camera, clip, and telemetry sample.
 
 The collection represents one vehicle, one recording session, and three laps of a repeated urban route. The files distinguish three kinds of information: observations reported by devices, positions manually interpreted from video and imagery, and positions calculated using the vehicle's intended path and odometry.
 
@@ -48,7 +48,7 @@ The logger converted OBD speed from kilometres per hour to miles per hour and ro
 
 ![](docs/assets/pipeline-original.svg){fig-alt="Project pipeline"}
 
-The analysis begins with the individual camera CSVs in [Data Raw/Dashcam Extract](Data%20Raw/Dashcam%20Extract/) and the [original Pi log](Data%20Raw/pi/car_telemetry.csv). In this descriptor, these CSVs are the source observations. Clock and speed-unit harmonization produces the combined tables; reviewed annotations, spatial observations, and OBD speed then define the modeled reference trajectory and per-observation GPS errors.
+The analysis begins with the individual camera CSVs in [Data Raw/Dashcam Extract](Data%20Raw/Dashcam%20Extract/) and the [original Pi log](Data%20Raw/pi/car_telemetry.csv). In this descriptor, these CSVs are the source observations. Clock and speed-unit harmonization produces the combined tables; reviewed annotations, the [saved GIS inputs](pipeline/04_lane/inputs/gis/), [lane choices](pipeline/04_lane/inputs/laneChoices.json), and OBD speed then define the modeled reference trajectory and per-observation GPS errors.
 
 ![Analysis workflow from the individual camera CSVs and Pi log to synchronized tables, a reviewed spatial reference, and GPS-error analysis.](docs/assets/data-workflow.svg)
 
@@ -101,13 +101,43 @@ The [current review application](pipeline/03_annotate/) displays GoPro video, a 
 
 ### Reconstruction of the lane geometry
 
-Complicated, working on rewriting this.
+#### Source data and saved choices
 
+We reconstructed the lane paths from the City of Lincoln's [pavement-marking layer](https://gis.lincoln.ne.gov/public/rest/services/LTUTraffic/Markings/MapServer/0) and [curbline layer](https://gis.lincoln.ne.gov/public/rest/services/LTUStreetMaintenance/PavementCurblines/MapServer/0). We saved the route-area download on 16 November 2026, containing 2,416 marking features and 6,007 curb features, in [inputs/gis](pipeline/04_lane/inputs/gis/). The [download manifest](pipeline/04_lane/inputs/gis/download_manifest.json) retains query addresses, retrieval time, and file hashes. Rebuilding uses this saved copy rather than querying the live services. The download date does not establish when each feature was surveyed or whether all features match the road conditions during the July recording.
 
+![North 10th Street in the cached aerial imagery (a), with the saved city pavement markings in yellow and curblines in cyan (b).](docs/assets/lane-snapshot.png){#fig-lane-snapshot fig-alt="North 10th Street in the cached aerial imagery (a), with the saved city pavement markings in yellow and curblines in cyan (b)." width=100%}
+
+We saved the selected road features, lane side, initial lane, lane-change events, and maneuver directions in [laneChoices.json](pipeline/04_lane/inputs/laneChoices.json). Annotation point identifiers connect these choices to the recorded video times and laps. These choices express our interpretation of the reviewed recording; they are not automatically detected from the video. The code calculates the path coordinates from these inputs. The original manual annotation coordinates remain an input, including in areas without usable mapped lane boundaries.
+
+![Lap 1 lane change between annotations 49 and 50, at 490.56–496.57 s. Crosses show the original annotation positions; red points and the red line show the positions and path calculated from the saved lane choice.](docs/assets/lane-choices.png){#fig-lane-choices fig-alt="Lap 1 lane change between annotations 49 and 50, at 490.56–496.57 s. Crosses show the original annotation positions; red points and the red line show the positions and path calculated from the saved lane choice." width=100%}
+
+#### Constructing the lane paths
+
+The calculation uses east and north coordinates in WGS 84 / UTM zone 14N (EPSG:32614), in metres. For each configured road section, [sourceChains.py](pipeline/04_lane/sourceChains.py) starts from a selected feature and searches for compatible marking segments near the original annotation guide. It filters candidates by marking class, active status, road name where available, and any saved feature-ID restrictions. It checks separation, direction, and sideways mismatch before connecting segments. Gaps between selected source segments are filled with cubic curves aligned with their endpoint directions; these connections are modeled geometry, not additional observed markings.
+
+![Marking features 1469 and 4194 end 35.93 m apart (a). The magenta connection is the curve generated between them, retained in sourceChains.json (b).](docs/assets/lane-chain.png){#fig-lane-chain fig-alt="Marking features 1469 and 4194 end 35.93 m apart (a). The magenta connection is the curve generated between them, retained in sourceChains.json (b)." width=100%}
+
+[laneGeometry.py](pipeline/04_lane/laneGeometry.py) resamples the selected lines at approximately 0.5 m spacing and smooths their coordinates before calculating lane offsets. Where configured, it estimates the distance from a marking to a nearby, nearly parallel curb on the selected side. It interpolates and smooths the supported distances and places the base path halfway between the marking and curb. Other sections, and sections with insufficient curb support, use a common width of 3.6627 m, calculated as the median nearest-point separation between marking features 1469 and 1470. This reused width is an assumption for those sections, not a measurement of every lane. A saved shift in lane-width units then places the path in the intended lane.
+
+![One aerial view shows the two mapped sides: left in cyan and right in yellow. The dashed red line is calculated halfway between them. These are GIS marking features 1470 and 1469; their median separation of 3.6627 m supplies the common width.](docs/assets/lane-offset.png){#fig-lane-offset fig-alt="An aerial image with the left mapped side in cyan, the right mapped side in yellow, and a dashed red center line calculated halfway between them. All three lines are labeled directly." width=100%}
+
+The code projects annotations onto the selected lane path while preserving their order along the road. Lane changes use a smooth sideways transition between the saved start and finish events. The implementation constructs the path in six fixed passes, updating projected event positions between passes; this is a fixed calculation, not a convergence test. Where the useful painted line ends near the traffic circle, selected curb features continue the road shape. The code joins and offsets those curbs, then blends them into the preceding lane path. Source-line ends can also be extended by up to 80 m in their endpoint direction to support nearby annotation projections; these extensions are modeled.
+
+![Traffic-circle approach in lap 1. The selected curblines continue beyond marking 12447 (a); the computed path follows their offset toward annotation 60 (b).](docs/assets/lane-transitions.png){#fig-lane-transitions fig-alt="Traffic-circle approach in lap 1. The selected curblines continue beyond marking 12447 (a); the computed path follows their offset toward annotation 60 (b)." width=100%}
+
+#### Maneuvers, stops, and joins
+
+For intervals without a constructed road-line path, the code uses the annotation positions, recorded intersection and turn events, and saved maneuver directions. Outside intersections and recorded turns, these intervals use straight connections. Turns use curves aligned with the approach and departure directions. Recorded stop groups share a single modeled position. If adjacent moving paths end at different coordinates, the code uses their endpoint midpoint as the shared join and gradually applies the adjustment over at most 15 m on each side. These rules produce a continuous sequence of 374 intervals while leaving the original annotation CSV unchanged.
+
+![Join at annotation 54. The two generated paths initially end 2.92 m apart (a). The code brings them to a shared midpoint, spreading the adjustment over 15 m on each side (b).](docs/assets/lane-maneuvers.png){#fig-lane-maneuvers fig-alt="Join at annotation 54. The two generated paths initially end 2.92 m apart (a). The code brings them to a shared midpoint, spreading the adjustment over 15 m on each side (b)." width=100%}
+
+[buildLaneGeometry.R](pipeline/04_lane/buildLaneGeometry.R) runs the geometry construction and writes the paths, derived annotation positions, and interval metadata to [Data/laneGeometry](Data/laneGeometry/). The lane geometry determines where the modeled vehicle can travel. OBD speed determines when it reaches positions along that path, as described below. The result is a modeled lane-center reference, not a surveyed vehicle trajectory. Saved lane choices, manual annotation positions, source-map alignment, reused widths, and inferred connections remain sources of uncertainty.
+
+![White points show the calculated reference positions at 436, 440, 444, and 448 s in lap 1, taken from carPath.csv. The adjoining trace is the recorded OBD speed from vehicle.csv.](docs/assets/lane-timing.png){#fig-lane-timing fig-alt="White points show the calculated reference positions at 436, 440, 444, and 448 s in lap 1, taken from carPath.csv. The adjoining trace is the recorded OBD speed from vehicle.csv." width=100%}
 
 ### Terrain adjustment and vehicle progress
 
-The reference-motion model uses cached elevation values identified in the project as USGS 3D Elevation Program Elevation Point Query Service data, retained with the [lane-model inputs](pipeline/04_lane/inputs/). The implementation is in [laneModel.R](pipeline/04_lane/laneModel.R). 
+The reference-motion model uses cached elevation values identified in the project as USGS 3D Elevation Program Elevation Point Query Service data, retained with the [lane-model inputs](pipeline/04_lane/inputs/). The implementation is in [laneModel.R](pipeline/04_lane/laneModel.R).
 
 Along moving paths, elevation is sampled at 5 m intervals and smoothed by local linear fits over a 30 m neighborhood. The smoothed profile converts horizontal path distance to a surface-distance coordinate. Paths are additionally sampled at approximately 0.5 m spacing for interpolation. Missing elevation cells cause the build to stop rather than substitute camera altitude. Elevation is used to allocate progress along the path; the reported positional error remains horizontal.
 
@@ -126,14 +156,16 @@ Here D is the integrated OBD distance. The reference position is evaluated at f(
 ### Organization and file relationships
 
 
-The [Data Raw](Data%20Raw/) directory contains camera-specific video folders and the original [Pi log](Data%20Raw/pi/car_telemetry.csv). Its [Dashcam Extract](Data%20Raw/Dashcam%20Extract/) subdirectory contains the four individual camera CSVs and clip manifests. Generated tables and geometry belong in [Data](Data/). Annotations and review saves belong in [Annotation Data](Annotation%20Data/). Spatial observations and elevation caches remain with [the lane-model code](pipeline/04_lane/); generated geometry is in [Data/laneGeometry](Data/laneGeometry/).
+The [Data Raw](Data%20Raw/) directory contains camera-specific video folders and the original [Pi log](Data%20Raw/pi/car_telemetry.csv). Its [Dashcam Extract](Data%20Raw/Dashcam%20Extract/) subdirectory contains the four individual camera CSVs and clip manifests. Generated tables and geometry belong in [Data](Data/). Annotations and review saves belong in [Annotation Data](Annotation%20Data/). The [frozen GIS snapshot](pipeline/04_lane/inputs/gis/), [saved lane choices](pipeline/04_lane/inputs/laneChoices.json), [spatial-review exclusions](pipeline/04_lane/inputs/reviewExclusions.json), and elevation caches remain with [the lane-model inputs](pipeline/04_lane/inputs/); generated geometry is in [Data/laneGeometry](Data/laneGeometry/).
 
 CSV records use a header row and named columns. Blank fields represent missing values and are read as NA by the R workflow. A blank value is distinct from a numerical zero, a false flag, or an inactive electrical state. Camera names use the stable lowercase values garmin, gopro, redtiger, and rove. Geographic positions are stored in decimal degrees. GeoJSON coordinate arrays are ordered longitude, latitude; projected internal coordinates are east, north in EPSG:32614 metres.
 
 
 ### Non-tabular records
 
-wip
+[lanePaths.geojson](Data/laneGeometry/lanePaths.geojson) contains one path for each consecutive annotation pair, with coordinates stored as longitude and latitude. [laneAnchors.json](Data/laneGeometry/laneAnchors.json) records the original and derived annotation positions in projected metres and the distance each position was adjusted. [laneRoute.json](Data/laneGeometry/laneRoute.json) links intervals to times, construction methods, source-feature IDs, and retained spatial-review flags.
+
+The intermediate [sourceChains.json](Data/laneGeometry/sourceChains.json) retains the assembled source lines and modeled gaps. [sourceGuidedGeometry.json](Data/laneGeometry/sourceGuidedGeometry.json) retains lane widths, projected annotation positions, completed paths, shared joins, and stationary groups. The [geometry build record](Data/laneGeometry/geometryBuild.json) stores file hashes, coordinate-system information, and runtime versions. [runAnalysis.R](runAnalysis.R) rebuilds the numerical data and records the verified input and output hashes in [analysisBuild.json](audit/analysisBuild.json).
 
 ### Column dictionaries
 
@@ -447,6 +479,8 @@ The saved collection contains 51,460 original camera observations, 38,767 synchr
 1. GoPro. *GPMF parser and format documentation*. <https://gopro.github.io/gpmf-parser/>. Sensor units and timing metadata.
 2. Harvey, P. *ExifTool: QuickTimeStream.pl*. <https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/QuickTimeStream.pl>. Technical implementation reference for Novatek/freeGPS variants; not a device calibration specification.
 3. Fisher, C. J. *AN-1057: Using an Accelerometer for Inclination Sensing*. Analog Devices. <https://www.analog.com/en/resources/app-notes/2020/07/22/16/49/an-1057.html>. Offset and sensitivity calibration principles.
+4. City of Lincoln. *Marking, layer 0, LTUTraffic/Markings*. [ArcGIS REST service](https://gis.lincoln.ne.gov/public/rest/services/LTUTraffic/Markings/MapServer/0). Route-area snapshot retrieved 16 November 2026; original responses are retained in [inputs/gis](pipeline/04_lane/inputs/gis/).
+5. City of Lincoln. *Curb Lines, layer 0, LTUStreetMaintenance/PavementCurblines*. [ArcGIS REST service](https://gis.lincoln.ne.gov/public/rest/services/LTUStreetMaintenance/PavementCurblines/MapServer/0). Route-area snapshot retrieved 16 November 2026; original responses are retained in [inputs/gis](pipeline/04_lane/inputs/gis/).
 
 
 
